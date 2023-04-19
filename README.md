@@ -88,7 +88,7 @@ semver get # 1.2.3
 ```
 
 ```sh
-# parsers a version string
+# parses a version string
 semver parse 1.0.0 # {"major":1,"minor":1,"patch":0,"prerelease":[],"build":[]}
 ```
 
@@ -120,7 +120,7 @@ semver inc major # 2.0.0
 semver set 1.2.3-pre.0
 semver inc --pre              # 1.2.3-pre.1
 semver inc --pre --name alpha # 1.2.3-alpha.0
-semver inc --pre --build 1    # 1.2.3-pre.0+1
+semver inc --pre --build 1    # 1.2.3-alpha.1+1
 ```
 
 ### Increment Post Hooks
@@ -149,7 +149,7 @@ project kinds which make updating source code files easy.
 | `Chart.yaml`   | Updates the `version: 0.1.0` of the chart file                                 |
 | `pom.xml`      | Updates the `<project><version>0.1.0</version></project>` element              |
 
-> If you would like another well known file type supported please file and issue
+> If you would like another well known file type supported please file an issue
 > or contribute a pull request. The `replace` or `regexp` post hook kinds are
 > flexible in the meantime.
 
