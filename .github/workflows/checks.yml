@@ -1,0 +1,47 @@
+name: Checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main, 'version/*' ]
+
+jobs:
+  check:
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - run: deno --version
+      - run: deno fmt  --check
+      - run: deno lint
+      - run: deno test
+      
+      - id: parse_version
+        name: Parse the Version
+        run: deno run -A main.ts parse
+
+      - name: Print the Version
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY<<EOF
+          
+          # Version
+          
+          \`\`\`
+          ${{ steps.parse_version.outputs.version }}
+          \`\`\`
+          
+          | part       | value |
+          | ---------- | --- |
+          | version    | \`${{ steps.parse_version.outputs.version }}\` |
+          | major      | \`${{ steps.parse_version.outputs.major }}\` |
+          | minor      | \`${{ steps.parse_version.outputs.minor }}\` |
+          | patch      | \`${{ steps.parse_version.outputs.patch }}\` |
+          | prerelease | \`${{ steps.parse_version.outputs.prerelease || ' ' }}\` |
+          | build      | \`${{ steps.parse_version.outputs.build || ' ' }}\` |
+          EOF

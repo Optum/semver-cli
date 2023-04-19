@@ -8,10 +8,12 @@ assignees: ""
 
 ## Bug Report
 
-Thanks for reporting an issue, please review the task list below before submitting the
-issue. Your issue report will be closed if the issue is incomplete and the below tasks not completed.
+Thanks for reporting an issue, please review the task list below before
+submitting the issue. Your issue report will be closed if the issue is
+incomplete and the below tasks not completed.
 
 ## Task List
+
 _Put an `x` in the boxes that apply_
 
 - [ ] Steps to reproduce provided
@@ -33,7 +35,8 @@ Tell us what happens instead
 
 ## Steps to Reproduce
 
-Please explain the steps required to duplicate the issue, especially if you are able to provide a sample application.
+Please explain the steps required to duplicate the issue, especially if you are
+able to provide a sample application.
 
 1. TODO
 2. TODO
@@ -49,4 +52,5 @@ insert short code snippets here
 
 ## Further comments
 
-List any other information that is relevant to your issue. Related issues, suggestions on how to fix, Stack Overflow links, forum links, etc.
+List any other information that is relevant to your issue. Related issues,
+suggestions on how to fix, Stack Overflow links, forum links, etc.

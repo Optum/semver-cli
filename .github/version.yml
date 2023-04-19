@@ -1,0 +1,8 @@
+on:
+  post:
+    - kind: regexp
+      file: src/info.ts
+      pattern: '(?<=export const version = ").*(?=";)'
+    - kind: regexp
+      file: README.md
+      pattern: '(?<=semver-cli@).*(?=\/main.ts)'
