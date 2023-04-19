@@ -22,7 +22,7 @@ help! This is simply a reminder of what we are going to look for before merging
 your code._
 
 - [ ] I have read the
-      [CONTRIBUTING](https://github.com/Optum/oss-template/blob/main/CONTRIBUTING.md)
+      [CONTRIBUTING](https://github.com/Optum/semver-cli/blob/main/CONTRIBUTING.md)
       doc
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have added necessary documentation (if appropriate)
