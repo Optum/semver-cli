@@ -1,0 +1,63 @@
+name-template: '$RESOLVED_VERSION'
+tag-template: '$RESOLVED_VERSION'
+categories:
+  - title: '🚀 Features'
+    labels:
+      - breaking
+      - enhancement
+      - feature
+      - new-feature
+      - breaking-change
+  - title: '🐛 Bug Fixes'
+    labels:
+      - bug
+      - hotfix
+  - title: '🧰 Maintenance'
+    labels:
+      - documentation
+      - maintenance
+      - dependencies
+      - performance
+      - refactor
+      - ci
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+version-resolver:
+  major:
+    labels:
+      - breaking
+      - major
+  minor:
+    labels:
+      - enhancement
+      - feature
+      - new-feature
+      - minor
+  patch:
+    labels:
+      - bug
+      - hotfix
+  default: patch
+autolabeler:
+  - label: 'documentation'
+    files:
+      - '**/*.md'
+  - label: 'bug'
+    branch:
+      - '/(hot)?fix\/.+/i'
+    title:
+      - '/fix/i'
+  - label: 'feature'
+    branch:
+      - '/feature\/.+/'
+  - label: 'ci'
+    files:
+      - '.github/workflows/*.yml'
+  - label: 'dependencies'
+    files:
+      - 'deps/*.ts'
+      - 'deno.lock'
+template: |
+  ## Changes
+
+  $CHANGES
+      

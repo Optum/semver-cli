@@ -1,0 +1,4 @@
+on:
+  post:
+    - kind: patch
+      file: Chart.yaml

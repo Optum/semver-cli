@@ -1,172 +1,182 @@
-<div id="top"></div>
+# About The Project
 
-<!-- NOTES -->
-<!--
-*** Individual sections below can be removed if not needed
--->
+A technology agnostic cli for common semantic versioning operations.
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** We are using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+Built with [Deno](https://deno.land/) 🦕
 
+# Installation
 
+Binaries can be found in the
+[Releases](https://github.com/Optum/semver-cli/releases) section. Get the
+[latest](https://github.com/Optum/semver-cli/releases/latest) or install from a
+supported package manager below.
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
+Installing from binaries or package manager does _not_ require the Deno runtime
+to also be installed.
 
-<h3 align="center">project_title</h3>
+## Homebrew
 
-  <p align="center">
-    project_description
-    <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
-  </p>
-</div>
+```sh
+brew install optum/tap/semver
+```
 
+via [optum](https://github.com/Optum/homebrew-tap)
 
+## From Source
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+Installation from source will require
+[Deno](https://deno.land/manual/getting_started/installation) to be installed.
 
+#### module
 
+```sh
+deno install --allow-run --allow-env --allow-read --allow-write https://deno.land/x/semver-cli@0.1.0/main.ts -n semver
+```
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+### git
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+```sh
+git clone https://github.com/optum/semver-cli.git
+cd semver-cli
+deno task install
+```
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+# Usage
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+```
+semver <command>
 
+Commands:
+  semver get            Get the version
+  semver set <current>  Set the version
+  semver inc            Increment the version
+  semver parse [value]  Parse the version
 
+Options:
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
+```
 
-### Built With
+### About
 
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+The `get`, `set` and `inc` commands operate against your working directory. They
+all operate against a `VERSION` file found in the root folder of your project.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+If the `VERSION` file is not found the default version is `0.1.0`. The `inc`
+command will create the `VERSION` file if it doesn't already exist.
 
+The `parse` command can accept an optional version string as input, if one is
+not provided it will read from the `VERSION` file, if that is not found the
+version will be `0.1.0`.
 
+#### examples
 
-<!-- GETTING STARTED -->
-## Getting Started
+```sh
+# No VERSION file
+semver get # 0.1.0
+```
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+```sh
+# Sets the VERSION file to 1.2.3 specifically
+semver set 1.2.3  # 1.2.3
+```
 
-### Prerequisites
+```sh
+# Gets the version and increments it, but does not update the VERSION file
+semver get minor # 1.3.0
+semver get # 1.2.3
+```
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+```sh
+# parsers a version string
+semver parse 1.0.0 # {"major":1,"minor":1,"patch":0,"prerelease":[],"build":[]}
+```
 
-### Installation
+### Incrementing
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+When calling the command `inc` the `VERSION` file will be updated based on the
+sub command specified, `major`, `minor`, `patch`, `none`. Additional metadata
+may be added to the version using the `--pre` and `--build` parameters. If the
+`--name` parameter is specified then that will be used instead of the default
+`pre`. If the same prerelease name is used multiple times the prerelease number
+will be incremented and it defaults to `0` if set initially or changed to a new
+name.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+`none` can be used to synchronize new or out of sync files with post hooks, and
+also it can be used in conjunction with `--pre` and `--build` without
+incrementing the main version numbers.
 
+#### examples
 
+```sh
+semver set 1.2.3
+semver inc none  # 1.2.3
+semver inc patch # 1.2.4
+semver inc minor # 1.3.0
+semver inc major # 2.0.0
+```
 
-<!-- USAGE EXAMPLES -->
-## Usage
+```sh
+semver set 1.2.3-pre.0
+semver inc --pre              # 1.2.3-pre.1
+semver inc --pre --name alpha # 1.2.3-alpha.0
+semver inc --pre --build 1    # 1.2.3-pre.0+1
+```
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+### Increment Post Hooks
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+In addition to updating the `VERSION` file, semver can optionally update source
+code files in your project. To configure the version command you can provide a
+configuration file at `.github/version.yml`.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+There are a number of supported post hook kinds and a number of supported known
+project kinds which make updating source code files easy.
 
+#### post hook kind
 
+| kind      | description                                                                 |
+| --------- | --------------------------------------------------------------------------- |
+| `replace` | replaced the previous version string with the next version string in a file |
+| `patch`   | supports auto-updating a set of well known file types (e.g. package.json)   |
+| `regex`   | replaces matching string using a regexp                                     |
 
-<!-- ROADMAP -->
-## Roadmap
+#### patch file kinds
 
-- [] Feature 1
-- [] Feature 2
-- [] Feature 3
-    - [] Nested Feature
+| file kind      | description                                                                    |
+| -------------- | ------------------------------------------------------------------------------ |
+| `.csproj`      | Updates the `<PropertyGroup><Version>0.1.0</Version></PropertyGroup>` element  |
+| `package.json` | Updates the `"version": "0.1.0"` of the `package.json` and `package-lock.json` |
+| `Chart.yaml`   | Updates the `version: 0.1.0` of the chart file                                 |
+| `pom.xml`      | Updates the `<project><version>0.1.0</version></project>` element              |
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+> If you would like another well known file type supported please file and issue
+> or contribute a pull request. The `replace` or `regexp` post hook kinds are
+> flexible in the meantime.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+#### example
 
+```yml
+on:
+  post:
+    # Updates both package.json and package-lock.json
+    - kind: patch
+      file: package.json
+      
+    # Uses non-matching groups to isolate the version to replace.
+    - kind: regexp
+      file: src/info.js
+      pattern: '^(?<=export const version = ").*(?=";)$'
+```
 
+# Contributing
 
-<!-- CONTRIBUTING -->
-## Contributing
+Contributions are what make the open source community such an amazing place to
+learn, inspire, and create. Any contributions you make are **greatly
+appreciated**.
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and
+create a pull request. You can also simply open an issue with the tag
+"enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -174,56 +184,13 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
 ## License
 
-Distributed under the Apache 2.0 License. See `LICENSE.txt` for more information.
+Distributed under the Apache 2.0 License. See [`LICENSE`](./LICENSE) for more
+information.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MAINTAINERS -->
 ## Maintainers
 
-- Full Name 1
-  - GitHub Enterprise: [github_username](https://github.com/username1)
-  - Email: email1@email.com
-- Full Name 2
-  - GitHub Enterprise: [github_username](https://github.com/username2)
-  - Email: email2@email.com
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
+- Justin Chase
+  - GitHub Enterprise: [justinmchase](https://github.com/justinmchase)
+  - Email: justin.chase@optum.com

@@ -1,0 +1,7 @@
+# comment
+apiVersion: v2
+type: application
+name: .
+description: A Helm chart for Kubernetes
+version: 0.3.0-beta.0+abc.123
+appVersion: 1.16.0

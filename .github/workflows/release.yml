@@ -1,0 +1,45 @@
+name: Release Drafter
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+          
+      - id: release_draft
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version Update
+        if: github.event_name == 'push'
+        env:
+          TAG_NAME: ${{ steps.release_draft.outputs.tag_name }}
+        run: |
+          deno run -A main.ts set $TAG_NAME
+          git config --global user.email "justin.m.chase@gmail.com"
+          git config --global user.name "Justin Chase"
+          git status --short
+          if [[ $(git commit -am "$TAG_NAME") ]]
+          then
+            git push
+          else
+            echo "No changes detected, skipping commit."
+          fi
