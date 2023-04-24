@@ -54,7 +54,7 @@ describe("patch", () => {
       args: ["VERSION", "1.2.4-pre.0\n"],
     });
   });
-  it("patch01", async () => {
+  it("patch02", async () => {
     await patch.handler(
       {
         _: [],
@@ -66,6 +66,39 @@ describe("patch", () => {
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
       args: ["VERSION", "1.2.4+1\n"],
+    });
+  });
+  it("patch03", async () => {
+    await patch.handler(
+      {
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+      } as unknown as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.2.4-pre.7"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.2.4-pre.7\n"],
+    });
+  });
+  it("patch04", async () => {
+    await patch.handler(
+      {
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+        build: "abc.123",
+      } as unknown as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.2.4-pre.7+abc.123"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.2.4-pre.7+abc.123\n"],
     });
   });
 });

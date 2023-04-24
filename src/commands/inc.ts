@@ -22,6 +22,14 @@ const prereleaseNameOption = {
   example: "alpha",
   default: "pre",
 };
+
+const prereleaseValueOption = {
+  alias: "v",
+  type: "number",
+  description: "Prerelease number value",
+  default: undefined
+}
+
 export const inc = {
   command: "inc",
   describe: "Increment the version",
@@ -30,6 +38,7 @@ export const inc = {
       .option("build", buildOption)
       .option("pre", prereleaseOption)
       .option("name", prereleaseNameOption)
+      .option("value", prereleaseValueOption)
       .command(major)
       .command(minor)
       .command(patch)

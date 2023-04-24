@@ -68,4 +68,37 @@ describe("none", () => {
       args: ["VERSION", "1.2.3+1\n"],
     });
   });
+  it("none03", async () => {
+    await none.handler(
+      {
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+      } as unknown as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.2.3-pre.7"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.2.3-pre.7\n"],
+    });
+  });
+  it("none04", async () => {
+    await none.handler(
+      {
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+        build: "abc.123",
+      } as unknown as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.2.3-pre.7+abc.123"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.2.3-pre.7+abc.123\n"],
+    });
+  });
 });
