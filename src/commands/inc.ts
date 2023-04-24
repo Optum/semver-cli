@@ -27,8 +27,8 @@ const prereleaseValueOption = {
   alias: "v",
   type: "number",
   description: "Prerelease number value",
-  default: undefined
-}
+  default: undefined,
+};
 
 export const inc = {
   command: "inc",

@@ -28,30 +28,36 @@ export function increment(options: IncrementOptions) {
       switch (kind) {
         case IncrementKind.Major:
           return pre && value
-            ? (semver.increment("major", undefined, build), semver.prerelease = [...pre.split("."), parseInt(value)], semver)
+            ? (semver.increment("major", undefined, build),
+              semver.prerelease = [...pre.split("."), parseInt(value)],
+              semver)
             : pre
-              ? semver.increment("premajor", pre, build)
-              : semver.increment("major", undefined, build);
+            ? semver.increment("premajor", pre, build)
+            : semver.increment("major", undefined, build);
         case IncrementKind.Minor:
           return pre && value !== undefined
-            ? (semver.increment("minor", undefined, build), semver.prerelease = [...pre.split("."), parseInt(value)], semver)
+            ? (semver.increment("minor", undefined, build),
+              semver.prerelease = [...pre.split("."), parseInt(value)],
+              semver)
             : pre
-              ? semver.increment("preminor", pre, build)
-              : semver.increment("minor", undefined, build);
+            ? semver.increment("preminor", pre, build)
+            : semver.increment("minor", undefined, build);
         case IncrementKind.Patch:
           return pre && value
-            ? (semver.increment("patch", undefined, build), semver.prerelease = [...pre.split("."), parseInt(value)], semver)
+            ? (semver.increment("patch", undefined, build),
+              semver.prerelease = [...pre.split("."), parseInt(value)],
+              semver)
             : pre
-              ? semver.increment("prepatch", pre, build)
-              : semver.increment("patch", undefined, build);
+            ? semver.increment("prepatch", pre, build)
+            : semver.increment("patch", undefined, build);
         case IncrementKind.None: {
           if (pre && value && build != undefined) {
-            semver.prerelease = [...pre.split("."), parseInt(value)]
+            semver.prerelease = [...pre.split("."), parseInt(value)];
             semver.build = build.split(".").map((b) => b.trim());
-            return semver
+            return semver;
           } else if (pre && value) {
-            semver.prerelease = [...pre.split("."), parseInt(value)]
-            return semver
+            semver.prerelease = [...pre.split("."), parseInt(value)];
+            return semver;
           } else if (pre) {
             return semver.increment("pre", pre, build);
           } else if (build !== undefined) {
