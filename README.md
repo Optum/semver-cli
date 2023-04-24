@@ -100,7 +100,8 @@ may be added to the version using the `--pre` and `--build` parameters. If the
 `--name` parameter is specified then that will be used instead of the default
 `pre`. If the same prerelease name is used multiple times the prerelease number
 will be incremented and it defaults to `0` if set initially or changed to a new
-name.
+name. If the argument `--value` is set then the prerelease number will be
+specifically set to the value provided.
 
 `none` can be used to synchronize new or out of sync files with post hooks, and
 also it can be used in conjunction with `--pre` and `--build` without
@@ -119,8 +120,13 @@ semver inc major # 2.0.0
 ```sh
 semver set 1.2.3-pre.0
 semver inc --pre              # 1.2.3-pre.1
+semver inc --pre --value 10   # 1.2.3-pre.10
 semver inc --pre --name alpha # 1.2.3-alpha.0
-semver inc --pre --build 1    # 1.2.3-alpha.1+1
+semver inc --build 1          # 1.2.3-alpha.1+1
+semver inc --pre \
+  --name alpha \
+  --value 11 \
+  --build abc123              # 1.2.3-alpha.11+abc123
 ```
 
 ### Increment Post Hooks

@@ -80,4 +80,39 @@ describe("minor", () => {
       args: ["VERSION", "1.3.0+1\n"],
     });
   });
+  it("minor04", async () => {
+    await minor.handler(
+      {
+        ...context,
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+      } as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.3.0-pre.7"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.3.0-pre.7\n"],
+    });
+  });
+  it("minor05", async () => {
+    await minor.handler(
+      {
+        ...context,
+        _: [],
+        pre: true,
+        name: "pre",
+        value: "7",
+        build: "abc123",
+      } as Arguments & IContext,
+    );
+    assertSpyCall(ctx0.consoleLog, 0, {
+      args: ["1.3.0-pre.7+abc123"],
+    });
+    assertSpyCall(ctx0.writeTextFile, 0, {
+      args: ["VERSION", "1.3.0-pre.7+abc123\n"],
+    });
+  });
 });

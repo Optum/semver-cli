@@ -7,12 +7,13 @@ export const major = {
   command: "major",
   describe: "A major version increment",
   handler: async (args: Arguments & IContext) => {
-    const { pre, name, build } = args;
+    const { pre, name = "pre", value, build } = args;
     const version = await readVersionFile();
     const { current } = increment({
       kind: IncrementKind.Major,
       version,
       pre: pre ? name : undefined,
+      value,
       build,
     });
     await printVersion(args, current);
