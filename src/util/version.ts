@@ -41,11 +41,13 @@ export async function printVersion(
   });
   if (full) {
     console.log(JSON.stringify({
+      version: formatted,
       major,
       minor,
       patch,
       prerelease: pre,
       build: b,
+      ...other
     }));
   } else {
     console.log(formatted);
