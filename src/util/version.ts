@@ -1,3 +1,4 @@
+import { path } from "../../deps/std.ts";
 import { parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
 
@@ -7,9 +8,12 @@ async function writeGithubOutput(
   context: IContext,
   values: Record<string, string | number>,
 ) {
-  if (context.githubOutput) {
+  if (context.output) {
+    const dir = path.dirname(context.output);
+    await Deno.mkdir(dir, { recursive: true });
     for (const [name, value] of Object.entries(values)) {
-      await Deno.writeTextFile(context.githubOutput, `${name}=${value}\n`, {
+      await Deno.writeTextFile(context.output, `${name}=${value}\n`, {
+        create: true,
         append: true,
       });
     }

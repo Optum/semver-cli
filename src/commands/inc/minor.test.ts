@@ -12,9 +12,8 @@ import { testContext } from "../../util/testContext.ts";
 import { IContext } from "../../context.ts";
 
 const context: IContext = {
-  githubOutput: undefined,
-  githubDir: ".github",
-  postVersionFile: "version.yml",
+  output: undefined,
+  config: "version.yml",
   hooks: {
     replace: async () => await undefined,
     patch: async () => await undefined,

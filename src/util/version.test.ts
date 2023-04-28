@@ -147,6 +147,7 @@ Deno.test({
   name: "VER08",
   fn: async () => {
     const consoleLog = stub(console, "log");
+    const mkdirp = stub(Deno, "mkdir", resolvesNext([undefined]));
     const appendTextFile = stub(
       Deno,
       "writeTextFile",
@@ -154,50 +155,51 @@ Deno.test({
     );
     try {
       const version = new SemVer("1.2.3-pre.0+1");
-      await printVersion({ githubOutput: "/test/output" } as IContext, version);
+      await printVersion({ output: "/test/output" } as IContext, version);
       assertSpyCall(appendTextFile, 0, {
         args: [
           "/test/output",
           "version=1.2.3-pre.0+1\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
       assertSpyCall(appendTextFile, 1, {
         args: [
           "/test/output",
           "major=1\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
       assertSpyCall(appendTextFile, 2, {
         args: [
           "/test/output",
           "minor=2\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
       assertSpyCall(appendTextFile, 3, {
         args: [
           "/test/output",
           "patch=3\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
       assertSpyCall(appendTextFile, 4, {
         args: [
           "/test/output",
           "prerelease=pre.0\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
       assertSpyCall(appendTextFile, 5, {
         args: [
           "/test/output",
           "build=1\n",
-          { append: true },
+          { create: true, append: true },
         ],
       });
     } finally {
+      mkdirp.restore();
       consoleLog.restore();
       appendTextFile.restore();
     }

@@ -38,6 +38,7 @@ describe("set", () => {
           _: [],
           current: "1.2.3",
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -56,6 +57,7 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -101,6 +103,7 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -129,6 +132,7 @@ describe("set", () => {
           _: [],
           current: "1.2.3",
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -144,6 +148,7 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -174,6 +179,7 @@ describe("set", () => {
           _: [],
           current: "1.2.3",
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -198,6 +204,7 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -217,7 +224,7 @@ describe("set", () => {
   });
   describe("patch with package.json posthook", () => {
     // todo: implement this feature...
-    it.ignore("not yet implemented", () => {});
+    it.ignore("not yet implemented", () => { });
   });
   describe("replace posthook", () => {
     const ctx1 = testContext({
@@ -239,6 +246,7 @@ describe("set", () => {
           _: [],
           current: "1.2.3",
           hooks,
+          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
@@ -264,6 +272,7 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
+          config: "version.yml"
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
