@@ -27,6 +27,7 @@ export async function printVersion(
 ) {
   const formatted = semver.format({ style: "full" });
   const { major, minor, patch, prerelease, build } = semver;
+  const other = variants(formatted);
   const pre = prerelease.join(".");
   const b = build.join(".");
   await writeGithubOutput(context, {
@@ -36,6 +37,7 @@ export async function printVersion(
     patch,
     prerelease: pre,
     build: b,
+    ...other
   });
   if (full) {
     console.log(JSON.stringify({
@@ -47,6 +49,15 @@ export async function printVersion(
     }));
   } else {
     console.log(formatted);
+  }
+}
+
+export function variants(version: string) {
+  const kabobBuild = version.replace(/[+]/g, '-');
+  // todo: add any other platform specific variants here.
+  return {
+    version_dotnet: kabobBuild,
+    version_docker: kabobBuild,
   }
 }
 
