@@ -1,4 +1,3 @@
-
 export const config = {
   alias: "c",
   type: "string",

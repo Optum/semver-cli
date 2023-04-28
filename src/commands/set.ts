@@ -20,8 +20,7 @@ export const set = {
         describe: "The version to set to",
       })
       .option("config", config)
-      .option("output", output)
-      ;
+      .option("output", output);
   },
   async handler(args: Arguments & IContext) {
     const previous = await readVersionFile();

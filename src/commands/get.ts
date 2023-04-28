@@ -1,6 +1,13 @@
 import { YargsInstance } from "../../deps/yargs.ts";
 import { major, minor, none, patch } from "./get/mod.ts";
-import { config, output, build, prerelease, prereleaseName, prereleaseValue } from "./options.ts";
+import {
+  build,
+  config,
+  output,
+  prerelease,
+  prereleaseName,
+  prereleaseValue,
+} from "./options.ts";
 
 export const get = {
   command: "get",
