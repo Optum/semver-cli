@@ -1,9 +1,8 @@
 import { patch, regexp, replace } from "./hooks/mod.ts";
 
 export interface IContext {
-  githubOutput: string | undefined;
-  githubDir: string;
-  postVersionFile: string;
+  output?: string;
+  config: string;
   hooks: {
     patch: (file: string, version: string) => Promise<void>;
     replace: (
@@ -22,17 +21,16 @@ export interface IContext {
 
 export function getContext(): IContext {
   const env = Deno.env.toObject();
-  const githubOutput = readOptionalString(env, "GITHUB_OUTPUT");
   const githubDir = readString(env, "GITHUB_DIR", `${Deno.cwd()}/.github`);
-  const postVersionFile = readString(
+  const output = readOptionalString(env, "GITHUB_OUTPUT");
+  const config = readString(
     env,
     "VERSION_CONFIG",
     `${githubDir}/version.yml`,
   );
   return {
-    githubOutput,
-    githubDir,
-    postVersionFile,
+    ...output ? { output } : {},
+    config,
     hooks: {
       patch,
       replace,

@@ -1,7 +1,7 @@
 {
   "tasks": {
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",
-    "test": "deno test && deno task test:node && deno task test:helm",
+    "test": "deno test && deno task test:node && deno task test:helm && deno task test:maven",
     "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --pre --name alpha --build xyz.987)",
     "test:helm": "(cd test/helm && deno run -A ../../main.ts inc minor --pre --name beta  --build abc.123)",
     "test:maven": "(cd test/maven && deno run -A ../../main.ts inc minor --pre --name omega --build def.456)"

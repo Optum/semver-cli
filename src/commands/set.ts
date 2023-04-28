@@ -9,6 +9,7 @@ import {
 import { postVersionHook } from "../hooks/mod.ts";
 import { InvalidVersionError } from "../errors/invalidVersion.error.ts";
 import { IContext } from "../context.ts";
+import { config, output } from "./options.ts";
 
 export const set = {
   command: "set <current>",
@@ -17,7 +18,9 @@ export const set = {
     return yargs
       .positional("current", {
         describe: "The version to set to",
-      });
+      })
+      .option("config", config)
+      .option("output", output);
   },
   async handler(args: Arguments & IContext) {
     const previous = await readVersionFile();

@@ -15,12 +15,12 @@ export async function postVersionHook(
   previous: string,
   current: string,
 ) {
-  const { postVersionFile } = context;
-  if (await exists(postVersionFile)) {
+  const { config } = context;
+  if (await exists(config)) {
     console.log(`Invoking post_version hook...`);
-    const contents = await Deno.readTextFile(postVersionFile);
-    const config = YAML.parse(contents) as VersionConfig;
-    const postHooks = config?.on?.post ?? [];
+    const contents = await Deno.readTextFile(config);
+    const versionConfig = YAML.parse(contents) as VersionConfig;
+    const postHooks = versionConfig?.on?.post ?? [];
     if (!Array.isArray(postHooks)) {
       throw new HookError(
         "post_hook",

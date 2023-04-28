@@ -20,7 +20,7 @@ jobs:
       - run: deno --version
       - run: deno fmt  --check
       - run: deno lint
-      - run: deno test
+      - run: deno task test
       
       - id: parse_version
         name: Parse the Version
