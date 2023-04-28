@@ -30,7 +30,7 @@ Installation from source will require
 #### module
 
 ```sh
-deno install --allow-run --allow-env --allow-read --allow-write https://deno.land/x/semver-cli@0.2.1/main.ts -n semver
+deno install --allow-run --allow-env --allow-read --allow-write https://deno.land/x/semver-cli@0.3.0/main.ts -n semver
 ```
 
 ### git
