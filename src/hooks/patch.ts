@@ -2,6 +2,7 @@ import { path } from "../../deps/std.ts";
 import { Node, xml } from "../../deps/xml.ts";
 import { JSONC } from "../../deps/jsonc.ts";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
+import { variants } from "../util/version.ts";
 
 export async function patch(
   file: string,
@@ -25,6 +26,7 @@ export async function patch(
 }
 
 async function patchCsproj(file: string, version: string) {
+  const { version_dotnet } = variants(version);
   const contents = await Deno.readTextFile(file);
   const document = xml.parse(contents, {
     captureSpacesBetweenElements: true,
@@ -45,7 +47,7 @@ async function patchCsproj(file: string, version: string) {
         if (property.type === "element" && property.name === "Version") {
           const value = property.elements[0];
           if (value.type === "text") {
-            value.text = version;
+            value.text = version_dotnet;
             isVersionSet = true;
             break;
           }
