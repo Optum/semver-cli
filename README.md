@@ -144,7 +144,7 @@ project kinds which make updating source code files easy.
 | --------- | --------------------------------------------------------------------------- |
 | `replace` | replaced the previous version string with the next version string in a file |
 | `patch`   | supports auto-updating a set of well known file types (e.g. package.json)   |
-| `regexp`   | replaces matching string using a regexp                                     |
+| `regexp`  | replaces matching string using a regexp                                     |
 
 #### patch file kinds
 
