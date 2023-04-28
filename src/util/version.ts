@@ -37,7 +37,7 @@ export async function printVersion(
     patch,
     prerelease: pre,
     build: b,
-    ...other
+    ...other,
   });
   if (full) {
     console.log(JSON.stringify({
@@ -47,7 +47,7 @@ export async function printVersion(
       patch,
       prerelease: pre,
       build: b,
-      ...other
+      ...other,
     }));
   } else {
     console.log(formatted);
@@ -55,12 +55,12 @@ export async function printVersion(
 }
 
 export function variants(version: string) {
-  const kabobBuild = version.replace(/[+]/g, '-');
+  const kabobBuild = version.replace(/[+]/g, "-");
   // todo: add any other platform specific variants here.
   return {
     version_dotnet: kabobBuild,
     version_docker: kabobBuild,
-  }
+  };
 }
 
 /**
