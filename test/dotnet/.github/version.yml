@@ -1,0 +1,7 @@
+on:
+  post:
+    - kind: patch
+      file: example.csproj
+    - kind: regexp
+      file: src/lib.cs
+      pattern: '(?<=return ").*(?=";)'
