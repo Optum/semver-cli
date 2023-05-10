@@ -3,6 +3,7 @@ import { Node, xml } from "../../deps/xml.ts";
 import { JSONC } from "../../deps/jsonc.ts";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
 import { variants } from "../util/version.ts";
+import { exists } from "../util/exists.ts";
 
 export async function patch(
   file: string,
@@ -119,20 +120,22 @@ async function patchPackageJson(file: string, version: string) {
   await Deno.writeTextFile(file, result);
 }
 
-async function patchPackageLockJson(file: string, version: string) {
-  const dir = path.dirname(file);
-  const packageJsonPath = path.resolve(dir, "package-lock.json");
-  const contents = await Deno.readTextFile(packageJsonPath);
-  const versionEdits = JSONC.modify(contents, ["version"], version, {});
-  const moduleVersionEdits = JSONC.modify(
-    contents,
-    ["packages", "", "version"],
-    version,
-    {},
-  );
-  const edits = [...versionEdits, ...moduleVersionEdits];
-  const result = JSONC.applyEdits(contents, edits);
-  await Deno.writeTextFile(packageJsonPath, result);
+async function patchPackageLockJson(packageJsonPath: string, version: string) {
+  const dir = path.dirname(packageJsonPath);
+  const packageLockJsonPath = path.resolve(dir, "package-lock.json");
+  if (await exists(packageLockJsonPath)) {
+    const contents = await Deno.readTextFile(packageLockJsonPath);
+    const versionEdits = JSONC.modify(contents, ["version"], version, {});
+    const moduleVersionEdits = JSONC.modify(
+      contents,
+      ["packages", "", "version"],
+      version,
+      {},
+    );
+    const edits = [...versionEdits, ...moduleVersionEdits];
+    const result = JSONC.applyEdits(contents, edits);
+    await Deno.writeTextFile(packageLockJsonPath, result);
+  }
 }
 
 async function patchChartYaml(file: string, version: string) {
