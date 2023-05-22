@@ -1,6 +1,7 @@
 name: Publish
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
     
@@ -12,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      version: {{ steps.parse_version.outputs.version }}
     strategy:
       matrix:
         target:
@@ -23,63 +26,89 @@ jobs:
           extension: ""
         - name: "aarch64-apple-darwin"
           extension: ""
-
     steps:
-    - uses: actions/checkout@master
-    - uses: denoland/setup-deno@v1.1.0
-      with:
-        deno-version: v1.x
-        
-    
-    - id: parse_version
-      name: Parse the Version
-      run: deno run -A main.ts parse
+      - uses: actions/checkout@master
+      - uses: denoland/setup-deno@v1.1.0
+        with:
+          deno-version: v1.x
+          
+      
+      - id: parse_version
+        name: Parse the Version
+        run: deno run -A main.ts parse
 
-    # Binaries are compiled on full Release
-    - name: Compile
-      if: github.event_name == 'release'
-      env:
-        TARGET: ${{ matrix.target.name }}
-        EXT: ${{ matrix.target.extension }}
-      run: |
-        deno --version
-        deno compile --allow-run --allow-env --allow-read --allow-write -o bin/$APP_NAME --target $TARGET main.ts
-        cd bin && tar -czf $APP_NAME.$TARGET.tar.gz ${APP_NAME}${EXT}
-        ls -la
+      # Binaries are compiled on full Release
+      - name: Compile
+        if: github.event_name == 'release'
+        env:
+          TARGET: ${{ matrix.target.name }}
+          EXT: ${{ matrix.target.extension }}
+        run: |
+          deno --version
+          deno compile --allow-run --allow-env --allow-read --allow-write -o bin/$APP_NAME --target $TARGET main.ts
+          cd bin && tar -czf $APP_NAME.$TARGET.tar.gz ${APP_NAME}${EXT}
+          ls -la
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      if: github.event_name == 'release'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./bin/${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
-        asset_name: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
-        asset_content_type: application/tar+gzip
-        
-    - name: Print Output
-      if: github.event_name == 'release'
-      env:
-        VERSION: ${{ steps.parse_version.outputs.version }}
-        TARGET: ${{ matrix.target.name }}
-        DOWNLOAD_URL: ${{ github.event.release.download_url }}
-        ASSET_NAME: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
-      run: |
-        URL="https://github.com/Optum/semver-cli/releases/download/${VERSION}/${ASSET_NAME}"
-        SHA=$(cat ./bin/${{ env.APP_NAME}}.${{ matrix.target.name }}.tar.gz | sha256sum | cut -d " " -f1)
-        cat >> $GITHUB_STEP_SUMMARY<<EOF
-        | part       | value              |
-        | ---------- | ------------------ |
-        | name       | \`${APP_NAME}\`    |
-        | version    | \`${VERSION}\`     |
-        | target     | \`${TARGET}\`      |
-        | asset      | [\`${ASSET_NAME}\`]($URL)  |
-        
-        #### formula
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./bin/${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
+          asset_name: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
+          asset_content_type: application/tar+gzip
+          
+      - name: Print Output
+        if: github.event_name == 'release'
+        env:
+          VERSION: ${{ steps.parse_version.outputs.version }}
+          TARGET: ${{ matrix.target.name }}
+          DOWNLOAD_URL: ${{ github.event.release.download_url }}
+          ASSET_NAME: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
+        run: |
+          URL="https://github.com/Optum/semver-cli/releases/download/${VERSION}/${ASSET_NAME}"
+          SHA=$(cat ./bin/${{ env.APP_NAME}}.${{ matrix.target.name }}.tar.gz | sha256sum | cut -d " " -f1)
+          cat >> $GITHUB_STEP_SUMMARY<<EOF
+          | part       | value              |
+          | ---------- | ------------------ |
+          | name       | \`${APP_NAME}\`    |
+          | version    | \`${VERSION}\`     |
+          | target     | \`${TARGET}\`      |
+          | asset      | [\`${ASSET_NAME}\`]($URL)  |
+          
+          #### formula
 
-        \`\`\`rb
-        url "$URL"
-        sha256 "$SHA"
-        \`\`\`
-        EOF
+          \`\`\`rb
+          url "$URL"
+          sha256 "$SHA"
+          \`\`\`
+          EOF
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: assets
+    steps:
+      - run: |
+          echo "Docker pushing not yet supported"
+          echo "Will build docker image version: ${{ needs.assets.outputs.version }}"
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # todo: Get creds from org admin
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: false # todo: switch to true once able to log in, should be ${{ github.event_name == 'release' }}
+          tags: optum/semver-cli:${{ needs.assets.outputs.version }}
