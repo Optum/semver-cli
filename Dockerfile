@@ -1,4 +1,4 @@
-FROM debian:stable@sha256:e822570981e13a6ef1efcf31870726fbd62e72d9abfdcf405a9d8f566e8d7028
+FROM debian:stable@sha256:4291be2c22ed27ed71aeeb5150f3cddba11ef2a44db978d06cafe9c845656ecd
 
 # Label the container
 LABEL maintainer="Justin Chase <justin.chase@optum.com>"
