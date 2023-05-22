@@ -6,3 +6,6 @@ on:
     - kind: regexp
       file: README.md
       pattern: '(?<=semver-cli@).*(?=\/main.ts)'
+    - kind: regexp
+      file: Dockerfile
+      pattern: '(?<=VERSION=).*(?=; \\)'
