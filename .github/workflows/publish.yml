@@ -117,4 +117,4 @@ jobs:
         with:
           push: false # todo: switch to true once able to log in, should be ${{ github.event_name == 'release' }}
           tags: optum/semver-cli:${{ needs.version.outputs.version }}
-          platform: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64
