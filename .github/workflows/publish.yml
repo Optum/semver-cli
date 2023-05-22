@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: write
     outputs:
-      version: {{ steps.parse_version.outputs.version }}
+      version: ${{ steps.parse_version.outputs.version }}
     strategy:
       matrix:
         target:
