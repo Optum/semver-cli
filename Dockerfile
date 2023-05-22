@@ -14,7 +14,7 @@ RUN apt update && apt install -y \
   ca-certificates \
   curl
 
-RUN VERSION=0.3.0; \
+RUN VERSION=0.4.0; \
   curl -o  .bin/semver.x86_64-unknown-linux-gnu.tar.gz "https://github.com/Optum/semver-cli/releases/download/$VERSION/semver.x86_64-unknown-linux-gnu.tar.gz" -L && \
   tar -xzf .bin/semver.x86_64-unknown-linux-gnu.tar.gz -C .bin/ && \
   chmod +x .bin/semver
