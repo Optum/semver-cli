@@ -1,4 +1,4 @@
-FROM debian:stable@sha256:e822570981e13a6ef1efcf31870726fbd62e72d9abfdcf405a9d8f566e8d7028
+FROM denoland/deno:alpine@sha256:b8d2cbb9bf57142596724f46de305baddbe1d4ba786e6192711be27b66d84699
 
 # Label the container
 LABEL maintainer="Justin Chase <justin.chase@optum.com>"
@@ -6,17 +6,21 @@ LABEL repository="https://github.com/optum/semver-cli"
 LABEL homepage="https://github.com/optum/semver-cli"
 
 WORKDIR /app
-RUN mkdir -p /app/.bin
-ENV PATH=/app/.bin:$PATH
+ENV PATH="/app/bin:${PATH}"
+RUN mkdir -p /app/bin
 
-# Install basics
-RUN apt update && apt install -y \
-  ca-certificates \
-  curl
+# Cache the dependencies as a layer (the following two steps are re-run only when deps.ts is modified).
+# Ideally cache deps.ts will download and compile _all_ external files used in main.ts.
+COPY deps/ /app/deps
+COPY deno.json /app/
+COPY deno.lock /app/
+RUN deno cache deps/mod.ts
 
-RUN VERSION=0.4.0; \
-  curl -o  .bin/semver.x86_64-unknown-linux-gnu.tar.gz "https://github.com/Optum/semver-cli/releases/download/$VERSION/semver.x86_64-unknown-linux-gnu.tar.gz" -L && \
-  tar -xzf .bin/semver.x86_64-unknown-linux-gnu.tar.gz -C .bin/ && \
-  chmod +x .bin/semver
+# These steps will be re-run upon any file change in your working directory:
+ADD src /app/src
+ADD main.ts /app
 
+# Compile the main app so that it doesn't need to be compiled each startup/entry.
+RUN deno cache main.ts
+RUN deno compile --allow-run --allow-env --allow-read --allow-write -o bin/semver main.ts
 ENTRYPOINT ["semver"]
