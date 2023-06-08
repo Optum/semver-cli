@@ -34,7 +34,7 @@ jobs:
           TAG_NAME: ${{ steps.release_draft.outputs.tag_name }}
         run: |
           deno run -A main.ts set $TAG_NAME
-          git config --global user.email "justin.m.chase@gmail.com"
+          git config --global user.email "justin.chase@optum.com"
           git config --global user.name "Justin Chase"
           git status --short
           if [[ $(git commit -am "$TAG_NAME") ]]
