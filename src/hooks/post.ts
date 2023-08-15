@@ -58,8 +58,8 @@ export async function postVersionHook(
 async function getVersionConfig(context: IContext) {
   const { config, githubDir } = context;
   const paths = config ? [config] : [
-    [githubDir, 'version.yml'].filter(p => p).join('/'),
-    [githubDir, 'version.yaml'].filter(p => p).join('/'),
+    [githubDir, "version.yml"].filter((p) => p).join("/"),
+    [githubDir, "version.yaml"].filter((p) => p).join("/"),
   ];
 
   for (const p of paths) {

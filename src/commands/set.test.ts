@@ -216,7 +216,7 @@ describe("set", () => {
   });
   describe("patch with package.json posthook", () => {
     // todo: implement this feature...
-    it.ignore("not yet implemented", () => { });
+    it.ignore("not yet implemented", () => {});
   });
   describe("replace posthook", () => {
     const ctx1 = testContext({
