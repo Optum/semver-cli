@@ -23,6 +23,7 @@ describe("major", () => {
         "stat",
         resolvesNext<Deno.FileInfo>([
           Object.assign(new Error("not found"), { code: "ENOENT" }),
+          Object.assign(new Error("not found"), { code: "ENOENT" }),
         ]),
       ),
   });

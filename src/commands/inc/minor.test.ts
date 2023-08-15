@@ -14,6 +14,7 @@ import { IContext } from "../../context.ts";
 const context: IContext = {
   output: undefined,
   config: "version.yml",
+  githubDir: `./.github`,
   hooks: {
     replace: async () => await undefined,
     patch: async () => await undefined,

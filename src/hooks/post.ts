@@ -15,11 +15,9 @@ export async function postVersionHook(
   previous: string,
   current: string,
 ) {
-  const { config } = context;
-  if (await exists(config)) {
+  const versionConfig = await getVersionConfig(context);
+  if (versionConfig) {
     console.log(`Invoking post_version hook...`);
-    const contents = await Deno.readTextFile(config);
-    const versionConfig = YAML.parse(contents) as VersionConfig;
     const postHooks = versionConfig?.on?.post ?? [];
     if (!Array.isArray(postHooks)) {
       throw new HookError(
@@ -55,4 +53,20 @@ export async function postVersionHook(
       }
     }
   }
+}
+
+async function getVersionConfig(context: IContext) {
+  const { config, githubDir } = context;
+  const paths = config ? [config] : [
+    [githubDir, 'version.yml'].filter(p => p).join('/'),
+    [githubDir, 'version.yaml'].filter(p => p).join('/'),
+  ];
+
+  for (const p of paths) {
+    if (await exists(p)) {
+      const contents = await Deno.readTextFile(p);
+      return YAML.parse(contents) as VersionConfig;
+    }
+  }
+  return undefined;
 }

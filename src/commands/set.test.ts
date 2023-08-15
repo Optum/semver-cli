@@ -38,13 +38,9 @@ describe("set", () => {
           _: [],
           current: "1.2.3",
           hooks,
-          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
-        args: ["Invoking post_version hook..."],
-      });
-      assertSpyCall(ctx0.consoleLog, 1, {
         args: ["1.2.3"],
       });
       assertSpyCall(ctx0.writeTextFile, 0, {
@@ -57,13 +53,9 @@ describe("set", () => {
           _: [],
           current: undefined,
           hooks,
-          config: "version.yml",
         } as unknown as Arguments & IContext,
       );
       assertSpyCall(ctx0.consoleLog, 0, {
-        args: ["Invoking post_version hook..."],
-      });
-      assertSpyCall(ctx0.consoleLog, 1, {
         args: ["1.0.0"],
       });
       assertSpyCalls(ctx1.patch, 0);
@@ -224,7 +216,7 @@ describe("set", () => {
   });
   describe("patch with package.json posthook", () => {
     // todo: implement this feature...
-    it.ignore("not yet implemented", () => {});
+    it.ignore("not yet implemented", () => { });
   });
   describe("replace posthook", () => {
     const ctx1 = testContext({
