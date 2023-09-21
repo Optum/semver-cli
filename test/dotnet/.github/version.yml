@@ -2,6 +2,8 @@ on:
   post:
     - kind: patch
       file: example.csproj
+    - kind: patch
+      file: example.targets
     - kind: regexp
       file: src/lib.cs
       pattern: '(?<=return ").*(?=";)'
