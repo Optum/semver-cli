@@ -6,6 +6,8 @@
     "https://deno.land/std/testing/asserts.ts": "https://deno.land/std@0.202.0/testing/asserts.ts"
   },
   "remote": {
+    "https://cdn.skypack.dev/-/json5@v2.2.1-74lHuvlVsKC0EwxWaS9l/dist=es2019,mode=imports/optimized/json5.js": "ece3fb60010a49b3198e9dd66a181ab394bdc8a784f5bacaafccd5511bb96197",
+    "https://cdn.skypack.dev/json5": "b1a4cac0b2f5da2a31e430435d990b76145c1a21e35bede598a7563353518d25",
     "https://deno.land/std@0.134.0/_util/assert.ts": "e94f2eb37cebd7f199952e242c77654e43333c1ac4c5c700e929ea3aa5489f74",
     "https://deno.land/std@0.134.0/_util/os.ts": "49b92edea1e82ba295ec946de8ffd956ed123e2948d9bd1d3e901b04e4307617",
     "https://deno.land/std@0.134.0/fmt/colors.ts": "30455035d6d728394781c10755351742dd731e3db6771b1843f9b9e490104d37",
@@ -698,6 +700,7 @@
     "https://deno.land/x/js2xml@1.0.4/mod.ts": "86416ef589509583a10fe955b7836fb139bf662330c8494b8e6562e0f7bd2745",
     "https://deno.land/x/js2xml@1.0.4/options-helper.ts": "37e04aec6262c01513c885e06bb3e1d2b1e52dce83784b68b099f298c858aefe",
     "https://deno.land/x/js2xml@1.0.4/options.ts": "884587788557979ad9b0c87eae9322e525576dd190b8bf4edb04f0df5a206c45",
+    "https://deno.land/x/json5@v1.0.0/mod.ts": "0975ee46086985b2e354e901d052f50b3c4b0ed828d0563492b6a02589402574",
     "https://deno.land/x/jsonc@1/impl/edit.ts": "20b85191c8936f44a98af16bc09923d9836aa9398543dcad3ce0a599ec1234e8",
     "https://deno.land/x/jsonc@1/impl/format.ts": "e5cefe9bb086d5041eedc7bc96b5a71d1cf01758c19db13552a3d18f89139f81",
     "https://deno.land/x/jsonc@1/impl/parser.ts": "38688f235ca92b1a938bf5bce700f37aace9db7f3164685b63a70ed937b83167",
