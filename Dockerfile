@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine@sha256:8d28f732e5127f02b9a85eb827addaced58db9333e0ae2eae97b35ca4207c5f8
+FROM denoland/deno:alpine@sha256:edfb413a7f261a77c6323cfd23761f8b7baac7de342c9909b3e384b0477e3e4d
 
 # Label the container
 LABEL maintainer="Justin Chase <justin.chase@optum.com>"
@@ -14,7 +14,7 @@ RUN mkdir -p /app/bin
 COPY deps/ /app/deps
 COPY deno.json /app/
 COPY deno.lock /app/
-RUN deno cache deps/mod.ts
+RUN deno cache --lock-write deps/mod.ts
 
 # These steps will be re-run upon any file change in your working directory:
 ADD src /app/src
