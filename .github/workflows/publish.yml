@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-    
+
 env:
   APP_NAME: semver
 
@@ -14,10 +14,11 @@ jobs:
     outputs:
       version: ${{ steps.parse_version.outputs.version }}
     steps:
-      - uses: actions/checkout@master
-      - uses: denoland/setup-deno@v1.1.0
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+
       - id: parse_version
         name: Parse the Version
         run: deno run -A main.ts parse
@@ -38,10 +39,11 @@ jobs:
           extension: ""
     needs: version
     steps:
-      - uses: actions/checkout@master
-      - uses: denoland/setup-deno@v1.1.0
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+
       # Binaries are compiled on full Release
       - name: Compile
         if: github.event_name == 'release'
@@ -64,7 +66,7 @@ jobs:
           asset_path: ./bin/${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
           asset_name: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
           asset_content_type: application/tar+gzip
-          
+
       - name: Print Output
         if: github.event_name == 'release'
         env:
@@ -82,7 +84,7 @@ jobs:
           | version    | \`${VERSION}\`     |
           | target     | \`${TARGET}\`      |
           | asset      | [\`${ASSET_NAME}\`]($URL)  |
-          
+
           #### formula
 
           \`\`\`rb
@@ -95,13 +97,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: version
     steps:
-      - run: |
-          echo "Docker pushing not yet supported"
-          echo "Will build docker image version: ${{ needs.version.outputs.version }}"
-          
+      - uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-        
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -110,7 +110,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
