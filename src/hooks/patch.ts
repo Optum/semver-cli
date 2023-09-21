@@ -12,7 +12,7 @@ export async function patch(
   console.log(`patching ${version} in ${file}`);
   const ext = path.extname(file);
   const fileName = path.basename(file);
-  if (ext === ".csproj") {
+  if (ext === ".csproj" || ext === ".targets") {
     await patchCsproj(file, version);
   } else if (fileName === "package.json") {
     await patchPackageJson(file, version);
