@@ -1,4 +1,5 @@
 import { Arguments } from "../../../deps/yargs.ts";
+import { format } from "../../../deps/semver.ts";
 import { increment, IncrementKind } from "../../util/increment.ts";
 import {
   printVersion,
@@ -24,8 +25,8 @@ export const patch = {
     await writeVersionFile(current);
     await postVersionHook(
       args,
-      previous.format({ style: "full" }),
-      current.format({ style: "full" }),
+      format(previous),
+      format(current),
     );
     await printVersion(args, current);
   },

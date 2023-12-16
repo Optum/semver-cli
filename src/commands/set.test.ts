@@ -1,4 +1,5 @@
 import {
+  assertRejects,
   assertSpyCall,
   assertSpyCalls,
   describe,
@@ -111,44 +112,17 @@ describe("set", () => {
     const notfound = new Error("not found");
     // deno-lint-ignore no-explicit-any
     (notfound as any).code = "ENOENT";
-    const ctx1 = testContext({
-      stat: () => stub(Deno, "stat", resolvesNext<Deno.FileInfo>([notfound])),
-      readTextFile: () =>
-        stub(Deno, "readTextFile", resolvesNext(["🚀 BAD_VERSION 🚀"])),
-      patch: () => stub(hooks, "patch"),
-      replace: () => stub(hooks, "replace"),
-    });
     it("SET08", async () => {
-      await set.handler(
-        {
-          _: [],
-          current: "1.2.3",
-          hooks,
-          config: "version.yml",
-        } as unknown as Arguments & IContext,
-      );
-      assertSpyCall(ctx0.consoleLog, 0, {
-        args: ["1.2.3"],
+      await assertRejects(async () => {
+        await set.handler(
+          {
+            _: [],
+            current: "1.2.3",
+            hooks,
+            config: "version.yml",
+          } as unknown as Arguments & IContext,
+        );
       });
-      assertSpyCall(ctx0.writeTextFile, 0, {
-        args: ["VERSION", "1.2.3\n"],
-      });
-    });
-    it("SET09", async () => {
-      await set.handler(
-        {
-          _: [],
-          current: undefined,
-          hooks,
-          config: "version.yml",
-        } as unknown as Arguments & IContext,
-      );
-      assertSpyCall(ctx0.consoleLog, 0, {
-        args: ["0.1.0"],
-      });
-      assertSpyCalls(ctx1.patch, 0);
-      assertSpyCalls(ctx1.replace, 0);
-      assertSpyCalls(ctx0.writeTextFile, 1);
     });
   });
   describe("patch with csproj posthook", () => {

@@ -1,8 +1,8 @@
 import { path } from "../../deps/std.ts";
-import { parse, SemVer } from "../../deps/semver.ts";
+import { format, parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
 
-export const DEFAULT_VERSION = new SemVer("0.1.0");
+export const DEFAULT_VERSION = parse("0.1.0");
 
 async function writeGithubOutput(
   context: IContext,
@@ -25,7 +25,7 @@ export async function printVersion(
   semver: SemVer,
   full = false,
 ) {
-  const formatted = semver.format({ style: "full" });
+  const formatted = format(semver);
   const { major, minor, patch, prerelease, build } = semver;
   const other = variants(formatted);
   const pre = prerelease.join(".");
@@ -88,5 +88,5 @@ export async function readVersionFile() {
  * @param version The version to write
  */
 export async function writeVersionFile(version: SemVer) {
-  await Deno.writeTextFile("VERSION", `${version.format({ style: "full" })}\n`);
+  await Deno.writeTextFile("VERSION", `${format(version)}\n`);
 }
