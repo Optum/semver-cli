@@ -1,4 +1,4 @@
-import { SemVer } from "../../deps/semver.ts";
+import { format, parse } from "../../deps/semver.ts";
 import {
   assertEquals,
   AssertionError,
@@ -16,7 +16,7 @@ Deno.test({
     const readTextFile = stub(Deno, "readTextFile", resolvesNext(["1.0.0"]));
     try {
       const version = await readVersionFile();
-      assertEquals(version.format(), "1.0.0");
+      assertEquals(format(version), "1.0.0");
     } finally {
       readTextFile.restore();
     }
@@ -36,7 +36,7 @@ Deno.test({
     );
     try {
       const version = await readVersionFile();
-      assertEquals(version.format(), "0.1.0");
+      assertEquals(format(version), "0.1.0");
     } finally {
       readTextFile.restore();
     }
@@ -72,7 +72,7 @@ Deno.test({
     );
     try {
       const version = await readVersionFile();
-      assertEquals(version.format(), "1.0.0");
+      assertEquals(format(version), "1.0.0");
     } finally {
       readTextFile.restore();
     }
@@ -84,7 +84,7 @@ Deno.test({
   fn: async () => {
     const consoleLog = stub(console, "log");
     try {
-      const version = new SemVer("1.2.3");
+      const version = parse("1.2.3");
       await printVersion({} as IContext, version);
       assertSpyCall(consoleLog, 0, {
         args: ["1.2.3"],
@@ -100,7 +100,7 @@ Deno.test({
   fn: async () => {
     const consoleLog = stub(console, "log");
     try {
-      const version = new SemVer("1.2.3-pre.0+1");
+      const version = parse("1.2.3-pre.0+1");
       await printVersion({} as IContext, version);
       assertSpyCall(consoleLog, 0, {
         args: ["1.2.3-pre.0+1"],
@@ -116,7 +116,7 @@ Deno.test({
   fn: async () => {
     const consoleLog = stub(console, "log");
     try {
-      const version = new SemVer("1.2.3");
+      const version = parse("1.2.3");
       await printVersion({} as IContext, version);
       assertSpyCall(consoleLog, 0, {
         args: ["1.2.3"],
@@ -132,7 +132,7 @@ Deno.test({
   fn: async () => {
     const writeTextFile = stub(Deno, "writeTextFile");
     try {
-      const version = new SemVer("1.2.3");
+      const version = parse("1.2.3");
       await writeVersionFile(version);
       assertSpyCall(writeTextFile, 0, {
         args: ["VERSION", "1.2.3\n"],
@@ -154,7 +154,7 @@ Deno.test({
       resolvesNext(new Array(8)),
     );
     try {
-      const version = new SemVer("1.2.3-pre.0+1");
+      const version = parse("1.2.3-pre.0+1");
       await printVersion({ output: "/test/output" } as IContext, version);
       assertSpyCall(appendTextFile, 0, {
         args: [

@@ -1,4 +1,4 @@
-import { parse, SemVer } from "../../deps/semver.ts";
+import { increment as inc, parse, SemVer } from "../../deps/semver.ts";
 import { InvalidVersionError } from "../errors/mod.ts";
 
 export enum IncrementKind {
@@ -28,41 +28,50 @@ export function increment(options: IncrementOptions) {
       switch (kind) {
         case IncrementKind.Major:
           return pre && value
-            ? (semver.increment("major", undefined, build),
-              semver.prerelease = [...pre.split("."), parseInt(value)],
-              semver)
+            ? {
+              ...inc(semver, "major", undefined, build),
+              prerelease: [...pre.split("."), parseInt(value)],
+            }
             : pre
-            ? semver.increment("premajor", pre, build)
-            : semver.increment("major", undefined, build);
+            ? inc(semver, "premajor", pre, build)
+            : inc(semver, "major", undefined, build);
         case IncrementKind.Minor:
           return pre && value !== undefined
-            ? (semver.increment("minor", undefined, build),
-              semver.prerelease = [...pre.split("."), parseInt(value)],
-              semver)
+            ? {
+              ...inc(semver, "minor", undefined, build),
+              prerelease: [...pre.split("."), parseInt(value)],
+            }
             : pre
-            ? semver.increment("preminor", pre, build)
-            : semver.increment("minor", undefined, build);
+            ? inc(semver, "preminor", pre, build)
+            : inc(semver, "minor", undefined, build);
         case IncrementKind.Patch:
           return pre && value
-            ? (semver.increment("patch", undefined, build),
-              semver.prerelease = [...pre.split("."), parseInt(value)],
-              semver)
+            ? {
+              ...inc(semver, "patch", undefined, build),
+              prerelease: [...pre.split("."), parseInt(value)],
+            }
             : pre
-            ? semver.increment("prepatch", pre, build)
-            : semver.increment("patch", undefined, build);
+            ? inc(semver, "prepatch", pre, build)
+            : inc(semver, "patch", undefined, build);
         case IncrementKind.None: {
           if (pre && value && build != undefined) {
-            semver.prerelease = [...pre.split("."), parseInt(value)];
-            semver.build = build.split(".").map((b) => b.trim());
-            return semver;
+            return {
+              ...semver,
+              prerelease: [...pre.split("."), parseInt(value)],
+              build: build.split(".").map((b) => b.trim()),
+            };
           } else if (pre && value) {
-            semver.prerelease = [...pre.split("."), parseInt(value)];
-            return semver;
+            return {
+              ...semver,
+              prerelease: [...pre.split("."), parseInt(value)],
+            };
           } else if (pre) {
-            return semver.increment("pre", pre, build);
+            return inc(semver, "pre", pre, build);
           } else if (build !== undefined) {
-            semver.build = build.split(".").map((b) => b.trim());
-            return semver;
+            return {
+              ...semver,
+              build: build.split(".").map((b) => b.trim()),
+            };
           } else {
             return semver;
           }

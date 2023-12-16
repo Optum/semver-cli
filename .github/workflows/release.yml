@@ -22,7 +22,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-          
+
       - id: release_draft
         uses: release-drafter/release-drafter@v5
         env:
