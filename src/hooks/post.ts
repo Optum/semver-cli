@@ -42,6 +42,7 @@ export async function postVersionHook(
             current,
             hook.pattern,
             hook.flags,
+            hook.variant
           );
           break;
         default:

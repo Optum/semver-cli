@@ -5,7 +5,9 @@ export interface IContext {
   config?: string;
   githubDir: string;
   hooks: {
-    patch: (file: string, version: string) => Promise<void>;
+    patch: (file: string,
+      version: string
+    ) => Promise<void>;
     replace: (
       file: string,
       previous: string,
@@ -16,6 +18,7 @@ export interface IContext {
       current: string,
       pattern: string,
       flags?: string,
+      variant?: string,
     ) => Promise<void>;
   };
 }

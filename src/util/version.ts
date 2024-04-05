@@ -58,9 +58,21 @@ export function variants(version: string) {
   const kabobBuild = version.replace(/[+]/g, "-");
   // todo: add any other platform specific variants here.
   return {
+    version_default: version,
     version_dotnet: kabobBuild,
     version_docker: kabobBuild,
   };
+}
+
+export function variantByKey(version: string, key: string) {
+  const { version_dotnet, version_docker, version_default } = variants(version);
+  if(key === "version_dotnet") {
+    return version_dotnet;
+  }
+  if(key === "version_docker") {
+    return version_docker;
+  }
+  return version_default;
 }
 
 /**
