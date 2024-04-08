@@ -1,6 +1,7 @@
 import { path } from "../../deps/std.ts";
 import { format, parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
+import { VariantKey } from "./variant.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -58,9 +59,17 @@ export function variants(version: string) {
   const kabobBuild = version.replace(/[+]/g, "-");
   // todo: add any other platform specific variants here.
   return {
+    version_default: version,
     version_dotnet: kabobBuild,
     version_docker: kabobBuild,
   };
+}
+
+export function variantByKey(
+  version: string,
+  variantKey: VariantKey = VariantKey.Default,
+) {
+  return variants(version)[variantKey];
 }
 
 /**

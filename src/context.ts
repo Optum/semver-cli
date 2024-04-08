@@ -1,4 +1,5 @@
 import { patch, regexp, replace } from "./hooks/mod.ts";
+import { VariantKey } from "./util/variant.ts";
 
 export interface IContext {
   output?: string;
@@ -16,6 +17,7 @@ export interface IContext {
       current: string,
       pattern: string,
       flags?: string,
+      variant?: VariantKey,
     ) => Promise<void>;
   };
 }

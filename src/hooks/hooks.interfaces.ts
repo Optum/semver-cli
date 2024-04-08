@@ -1,3 +1,5 @@
+import { VariantKey } from "../util/variant.ts";
+
 export enum PostHookKind {
   Replace = "replace",
   Patch = "patch",
@@ -17,6 +19,7 @@ export type RegExpPostHook = {
   file: string;
   pattern: string;
   flags?: string;
+  variant?: VariantKey;
 };
 
 export type PostHook =
