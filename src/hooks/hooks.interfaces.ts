@@ -17,7 +17,7 @@ export type RegExpPostHook = {
   file: string;
   pattern: string;
   flags?: string;
-  variant?: string
+  variant?: string;
 };
 
 export type PostHook =

@@ -1,6 +1,7 @@
 import { path } from "../../deps/std.ts";
 import { format, parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
+import { VariantKey } from "./variant.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -64,15 +65,11 @@ export function variants(version: string) {
   };
 }
 
-export function variantByKey(version: string, key: string) {
-  const { version_dotnet, version_docker, version_default } = variants(version);
-  if(key === "version_dotnet") {
-    return version_dotnet;
-  }
-  if(key === "version_docker") {
-    return version_docker;
-  }
-  return version_default;
+export function variantByKey(
+  version: string,
+  variantKey: VariantKey = VariantKey.Default,
+) {
+  return variants(version)[variantKey];
 }
 
 /**

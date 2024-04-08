@@ -1,13 +1,12 @@
 import { patch, regexp, replace } from "./hooks/mod.ts";
+import { VariantKey } from "./util/variant.ts";
 
 export interface IContext {
   output?: string;
   config?: string;
   githubDir: string;
   hooks: {
-    patch: (file: string,
-      version: string
-    ) => Promise<void>;
+    patch: (file: string, version: string) => Promise<void>;
     replace: (
       file: string,
       previous: string,
@@ -18,7 +17,7 @@ export interface IContext {
       current: string,
       pattern: string,
       flags?: string,
-      variant?: string,
+      variant?: VariantKey,
     ) => Promise<void>;
   };
 }
