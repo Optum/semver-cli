@@ -57,11 +57,13 @@ export async function printVersion(
 
 export function variants(version: string) {
   const kabobBuild = version.replace(/[+]/g, "-");
+  const semver = parse(version);
   // todo: add any other platform specific variants here.
   return {
     version_default: version,
     version_dotnet: kabobBuild,
     version_docker: kabobBuild,
+    version_major: `v${semver.major}`,
   };
 }
 

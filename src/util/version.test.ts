@@ -151,7 +151,7 @@ Deno.test({
     const appendTextFile = stub(
       Deno,
       "writeTextFile",
-      resolvesNext(new Array(9)),
+      resolvesNext(new Array(10)),
     );
     try {
       const version = parse("1.2.3-pre.0+1");
