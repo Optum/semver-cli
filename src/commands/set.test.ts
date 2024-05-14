@@ -12,6 +12,7 @@ import { Arguments } from "../../deps/yargs.ts";
 import { set } from "./set.ts";
 import { testContext } from "../util/testContext.ts";
 import { IContext } from "../context.ts";
+import { parse } from "../../deps/semver.ts";
 
 describe("set", () => {
   const hooks = {
@@ -160,7 +161,7 @@ describe("set", () => {
       assertSpyCall(ctx1.patch, 0, {
         args: [
           "src/test.csproj",
-          "1.2.3",
+          parse("1.2.3"),
         ],
       });
     });
@@ -183,7 +184,7 @@ describe("set", () => {
       assertSpyCall(ctx1.patch, 0, {
         args: [
           "src/test.csproj",
-          "1.0.0",
+          parse("1.0.0"),
         ],
       });
     });
@@ -227,8 +228,8 @@ describe("set", () => {
       assertSpyCall(ctx1.replace, 0, {
         args: [
           "src/info.ts",
-          "1.0.0",
-          "1.2.3",
+          parse("1.0.0"),
+          parse("1.2.3"),
         ],
       });
     });
@@ -251,8 +252,8 @@ describe("set", () => {
       assertSpyCall(ctx1.replace, 0, {
         args: [
           "src/info.ts",
-          "1.0.0",
-          "1.0.0",
+          parse("1.0.0"),
+          parse("1.0.0"),
         ],
       });
     });

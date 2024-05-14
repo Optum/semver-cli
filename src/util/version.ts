@@ -1,7 +1,7 @@
 import { path } from "../../deps/std.ts";
 import { format, parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
-import { VariantKey } from "./variant.ts";
+import { semverFormats } from "./variant.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -25,15 +25,17 @@ export async function printVersion(
   context: IContext,
   semver: SemVer,
   full = false,
+  prefix = "",
 ) {
   const formatted = format(semver);
-  const { major, minor, patch, prerelease, build } = semver;
-  const other = variants(formatted);
+  const sv_major = semver.major;
+  const { minor, patch, prerelease, build } = semver;
   const pre = prerelease.join(".");
   const b = build.join(".");
+  const other = semverFormats(semver, prefix);
   await writeGithubOutput(context, {
     version: formatted,
-    major,
+    sv_major,
     minor,
     patch,
     prerelease: pre,
@@ -43,7 +45,7 @@ export async function printVersion(
   if (full) {
     console.log(JSON.stringify({
       version: formatted,
-      major,
+      sv_major,
       minor,
       patch,
       prerelease: pre,
@@ -53,23 +55,6 @@ export async function printVersion(
   } else {
     console.log(formatted);
   }
-}
-
-export function variants(version: string) {
-  const kabobBuild = version.replace(/[+]/g, "-");
-  // todo: add any other platform specific variants here.
-  return {
-    version_default: version,
-    version_dotnet: kabobBuild,
-    version_docker: kabobBuild,
-  };
-}
-
-export function variantByKey(
-  version: string,
-  variantKey: VariantKey = VariantKey.Default,
-) {
-  return variants(version)[variantKey];
 }
 
 /**
