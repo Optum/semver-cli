@@ -1,5 +1,4 @@
 import { Arguments } from "../../../deps/yargs.ts";
-import { format } from "../../../deps/semver.ts";
 import { increment, IncrementKind } from "../../util/increment.ts";
 import {
   printVersion,

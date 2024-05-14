@@ -12,8 +12,7 @@ export async function regexp(
   const regexp = new RegExp(pattern, flags);
   const contents = await Deno.readTextFile(file);
   const match = contents.match(regexp);
-  // const semver = parse(current);
-  const applicableVersion = semverFormatByKey(current, format, prefix);
+  const applicableVersion = semverFormatByKey(current, prefix, format);
   console.log(
     `replacing [${match?.[0] || ""}] -> ${applicableVersion} in ${file}`,
   );

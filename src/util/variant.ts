@@ -1,7 +1,7 @@
 import { format, SemVer } from "../../deps/semver.ts";
 
 export enum FormatKind {
-  Default = "default",
+  Default = "def",
   Dotnet = "dotnet",
   Docker = "docker",
   Major = "major",
@@ -12,7 +12,7 @@ export function semverFormats(semver: SemVer, prefix = "") {
   const kebabVersion = formattedVersion.replace(/[+]/g, "-");
   const cleanedPrefix = prefix.trim();
   return {
-    default: `${cleanedPrefix}${formattedVersion}`,
+    def: `${cleanedPrefix}${formattedVersion}`,
     dotnet: `${cleanedPrefix}${kebabVersion}`,
     docker: `${cleanedPrefix}${kebabVersion}`,
     major: `${cleanedPrefix}${semver.major}`,

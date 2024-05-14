@@ -73,6 +73,7 @@ async function patchCsproj(file: string, version: SemVer) {
 }
 
 async function patchPomXml(file: string, version: SemVer) {
+  const { def } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
   const document = xml.parse(contents, {
     captureSpacesBetweenElements: true,
@@ -93,7 +94,7 @@ async function patchPomXml(file: string, version: SemVer) {
     } else if (el.type === "element" && el.name === "version") {
       const value = el.elements[0];
       if (value.type === "text") {
-        value.text = version;
+        value.text = def;
         isVersionSet = true;
         break;
       }
@@ -115,22 +116,24 @@ async function patchPomXml(file: string, version: SemVer) {
 }
 
 async function patchPackageJson(file: string, version: SemVer) {
+  const { def } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
-  const edits = JSONC.modify(contents, ["version"], version, {});
+  const edits = JSONC.modify(contents, ["version"], def, {});
   const result = JSONC.applyEdits(contents, edits);
   await Deno.writeTextFile(file, result);
 }
 
 async function patchPackageLockJson(packageJsonPath: string, version: SemVer) {
+  const { def } = semverFormats(version);
   const dir = path.dirname(packageJsonPath);
   const packageLockJsonPath = path.resolve(dir, "package-lock.json");
   if (await exists(packageLockJsonPath)) {
     const contents = await Deno.readTextFile(packageLockJsonPath);
-    const versionEdits = JSONC.modify(contents, ["version"], version, {});
+    const versionEdits = JSONC.modify(contents, ["version"], def, {});
     const moduleVersionEdits = JSONC.modify(
       contents,
       ["packages", "", "version"],
-      version,
+      def,
       {},
     );
     const edits = [...versionEdits, ...moduleVersionEdits];
@@ -140,10 +143,11 @@ async function patchPackageLockJson(packageJsonPath: string, version: SemVer) {
 }
 
 async function patchChartYaml(file: string, version: SemVer) {
+  const { def } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
   const result = contents.replace(
     /^version:\s*(.*)$/m,
-    `version: ${version}`,
+    `version: ${def}`,
   );
   await Deno.writeTextFile(file, result);
 }
