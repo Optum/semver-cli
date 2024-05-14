@@ -26,5 +26,5 @@ export function semverFormatByKey(
   variantKey: FormatKind = FormatKind.Original,
 ) {
   const format = semverFormats(semver)[variantKey];
-  return `${prefix}${format}`;
+  return `${prefix.trim()}${format}`;
 }
