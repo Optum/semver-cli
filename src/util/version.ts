@@ -25,32 +25,32 @@ export async function printVersion(
   context: IContext,
   semver: SemVer,
   full = false,
-  prefix = "",
 ) {
   const formatted = format(semver);
-  const sv_major = semver.major;
-  const { minor, patch, prerelease, build } = semver;
+  const { major, minor, patch, prerelease, build } = semver;
   const pre = prerelease.join(".");
   const b = build.join(".");
-  const other = semverFormats(semver, prefix);
+  const { dotnet, docker } = semverFormats(semver);
   await writeGithubOutput(context, {
     version: formatted,
-    sv_major,
+    major,
     minor,
     patch,
     prerelease: pre,
     build: b,
-    ...other,
+    dotnet,
+    docker,
   });
   if (full) {
     console.log(JSON.stringify({
       version: formatted,
-      sv_major,
+      major,
       minor,
       patch,
       prerelease: pre,
       build: b,
-      ...other,
+      dotnet,
+      docker,
     }));
   } else {
     console.log(formatted);
