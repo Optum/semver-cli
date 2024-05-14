@@ -166,7 +166,7 @@ Deno.test({
       assertSpyCall(appendTextFile, 1, {
         args: [
           "/test/output",
-          "sv_major=1\n",
+          "major=1\n",
           { create: true, append: true },
         ],
       });
@@ -201,18 +201,11 @@ Deno.test({
       assertSpyCall(appendTextFile, 6, {
         args: [
           "/test/output",
-          "def=1.2.3-pre.0+1\n",
-          { create: true, append: true },
-        ],
-      });
-      assertSpyCall(appendTextFile, 7, {
-        args: [
-          "/test/output",
           "dotnet=1.2.3-pre.0-1\n",
           { create: true, append: true },
         ],
       });
-      assertSpyCall(appendTextFile, 8, {
+      assertSpyCall(appendTextFile, 7, {
         args: [
           "/test/output",
           "docker=1.2.3-pre.0-1\n",
