@@ -25,8 +25,8 @@ export const minor = {
     await writeVersionFile(current);
     await postVersionHook(
       args,
-      format(previous),
-      format(current),
+      previous,
+      current,
     );
     await printVersion(args, current);
   },

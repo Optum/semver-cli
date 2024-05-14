@@ -2,12 +2,13 @@ import { path } from "../../deps/std.ts";
 import { Node, xml } from "../../deps/xml.ts";
 import { JSONC } from "../../deps/jsonc.ts";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
-import { variants } from "../util/version.ts";
+import { semverFormats } from "../util/variant.ts";
 import { exists } from "../util/exists.ts";
+import { SemVer } from "../../deps/semver.ts";
 
 export async function patch(
   file: string,
-  version: string,
+  version: SemVer,
 ) {
   console.log(`patching ${version} in ${file}`);
   const ext = path.extname(file);
@@ -26,8 +27,8 @@ export async function patch(
   }
 }
 
-async function patchCsproj(file: string, version: string) {
-  const { version_dotnet } = variants(version);
+async function patchCsproj(file: string, version: SemVer) {
+  const { dotnet } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
   const document = xml.parse(contents, {
     captureSpacesBetweenElements: true,
@@ -48,7 +49,7 @@ async function patchCsproj(file: string, version: string) {
         if (property.type === "element" && property.name === "Version") {
           const value = property.elements[0];
           if (value.type === "text") {
-            value.text = version_dotnet;
+            value.text = dotnet;
             isVersionSet = true;
             break;
           }
@@ -71,7 +72,7 @@ async function patchCsproj(file: string, version: string) {
   await Deno.writeTextFile(file, updated);
 }
 
-async function patchPomXml(file: string, version: string) {
+async function patchPomXml(file: string, version: SemVer) {
   const contents = await Deno.readTextFile(file);
   const document = xml.parse(contents, {
     captureSpacesBetweenElements: true,
@@ -113,14 +114,14 @@ async function patchPomXml(file: string, version: string) {
   await Deno.writeTextFile(file, updated);
 }
 
-async function patchPackageJson(file: string, version: string) {
+async function patchPackageJson(file: string, version: SemVer) {
   const contents = await Deno.readTextFile(file);
   const edits = JSONC.modify(contents, ["version"], version, {});
   const result = JSONC.applyEdits(contents, edits);
   await Deno.writeTextFile(file, result);
 }
 
-async function patchPackageLockJson(packageJsonPath: string, version: string) {
+async function patchPackageLockJson(packageJsonPath: string, version: SemVer) {
   const dir = path.dirname(packageJsonPath);
   const packageLockJsonPath = path.resolve(dir, "package-lock.json");
   if (await exists(packageLockJsonPath)) {
@@ -138,7 +139,7 @@ async function patchPackageLockJson(packageJsonPath: string, version: string) {
   }
 }
 
-async function patchChartYaml(file: string, version: string) {
+async function patchChartYaml(file: string, version: SemVer) {
   const contents = await Deno.readTextFile(file);
   const result = contents.replace(
     /^version:\s*(.*)$/m,

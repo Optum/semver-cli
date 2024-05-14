@@ -3,6 +3,7 @@ import { HookError } from "../errors/mod.ts";
 import { exists } from "../util/exists.ts";
 import { PostHookKind, VersionConfig } from "./hooks.interfaces.ts";
 import { IContext } from "../context.ts";
+import { SemVer } from "../../deps/semver.ts";
 
 // Post hooks are a set of per-repo configurable actions that can be taken
 // after the version is updated.
@@ -12,8 +13,8 @@ import { IContext } from "../context.ts";
 // See ../.github/version.yml for an example.
 export async function postVersionHook(
   context: IContext,
-  previous: string,
-  current: string,
+  previous: SemVer,
+  current: SemVer,
 ) {
   const versionConfig = await getVersionConfig(context);
   if (versionConfig) {
@@ -42,7 +43,8 @@ export async function postVersionHook(
             current,
             hook.pattern,
             hook.flags,
-            hook.variant,
+            hook.format,
+            hook.prefix,
           );
           break;
         default:
