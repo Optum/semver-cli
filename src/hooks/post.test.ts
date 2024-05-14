@@ -1,3 +1,4 @@
+import { parse } from "../../deps/semver.ts";
 import { resolvesNext, stub } from "../../deps/std.ts";
 import { YAML } from "../../deps/yaml.ts";
 import { IContext } from "../context.ts";
@@ -34,5 +35,5 @@ Deno.test("yml or yaml", async () => {
   );
   stub(context.hooks, "patch");
   stub(context.hooks, "replace");
-  await postVersionHook(context, "1.0.0", "1.2.3");
+  await postVersionHook(context, parse("1.0.0"), parse("1.2.3"));
 });

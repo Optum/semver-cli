@@ -1,23 +1,25 @@
+import { SemVer } from "../deps/semver.ts";
 import { patch, regexp, replace } from "./hooks/mod.ts";
-import { VariantKey } from "./util/variant.ts";
+import { FormatKind } from "./util/variant.ts";
 
 export interface IContext {
   output?: string;
   config?: string;
   githubDir: string;
   hooks: {
-    patch: (file: string, version: string) => Promise<void>;
+    patch: (file: string, current: SemVer) => Promise<void>;
     replace: (
       file: string,
-      previous: string,
-      current: string,
+      previous: SemVer,
+      current: SemVer,
     ) => Promise<void>;
     regexp: (
       file: string,
-      current: string,
+      current: SemVer,
       pattern: string,
       flags?: string,
-      variant?: VariantKey,
+      format?: FormatKind,
+      prefix?: string,
     ) => Promise<void>;
   };
 }

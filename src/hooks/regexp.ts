@@ -1,17 +1,18 @@
-import { variantByKey } from "../util/version.ts";
-import { VariantKey } from "../util/variant.ts";
+import { SemVer } from "../../deps/semver.ts";
+import { FormatKind, semverFormatByKey } from "../util/variant.ts";
 
 export async function regexp(
   file: string,
-  current: string,
+  current: SemVer,
   pattern: string,
   flags?: string,
-  variant?: VariantKey,
+  format?: FormatKind,
+  prefix?: string,
 ) {
   const regexp = new RegExp(pattern, flags);
   const contents = await Deno.readTextFile(file);
   const match = contents.match(regexp);
-  const applicableVersion = variantByKey(current, variant);
+  const applicableVersion = semverFormatByKey(current, prefix, format);
   console.log(
     `replacing [${match?.[0] || ""}] -> ${applicableVersion} in ${file}`,
   );
