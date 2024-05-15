@@ -151,7 +151,7 @@ Deno.test({
     const appendTextFile = stub(
       Deno,
       "writeTextFile",
-      resolvesNext(new Array(10)),
+      resolvesNext(new Array(13)),
     );
     try {
       const version = parse("1.2.3-pre.0+1");
@@ -209,6 +209,27 @@ Deno.test({
         args: [
           "/test/output",
           "docker=1.2.3-pre.0-1\n",
+          { create: true, append: true },
+        ],
+      });
+      assertSpyCall(appendTextFile, 8, {
+        args: [
+          "/test/output",
+          "version_default=1.2.3-pre.0+1\n",
+          { create: true, append: true },
+        ],
+      });
+      assertSpyCall(appendTextFile, 9, {
+        args: [
+          "/test/output",
+          "version_dotnet=1.2.3-pre.0-1\n",
+          { create: true, append: true },
+        ],
+      });
+      assertSpyCall(appendTextFile, 10, {
+        args: [
+          "/test/output",
+          "version_docker=1.2.3-pre.0-1\n",
           { create: true, append: true },
         ],
       });
