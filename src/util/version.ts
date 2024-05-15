@@ -40,6 +40,12 @@ export async function printVersion(
     build: b,
     dotnet,
     docker,
+
+    // Adding these for backwards compatibility, do not remove or add more
+    // todo: remove on next major version
+    version_default: formatted,
+    version_dotnet: dotnet,
+    version_docker: docker,
   });
   if (full) {
     console.log(JSON.stringify({
