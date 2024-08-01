@@ -51,4 +51,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./setup
-      - run: semver -v
+      - run: semver get
