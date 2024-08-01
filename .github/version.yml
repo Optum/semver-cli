@@ -9,3 +9,6 @@ on:
     - kind: regexp
       file: Dockerfile
       pattern: '(?<=VERSION=).*(?=; \\)'
+    - kind: regexp
+      file: action.yml
+      pattern: '(?<=default: ).*'
