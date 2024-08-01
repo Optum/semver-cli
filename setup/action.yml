@@ -19,7 +19,9 @@ runs:
       run: |
         VERSION='${{ inputs.version}}'
         DIR=$HOME/.semver-cli/.bin
+        mkdir -p $DIR
+
         gh release --repo https://github.com/optum/semver-cli download $VERSION -p semver.x86_64-unknown-linux-gnu.tar.gz --dir $DIR --clobber
-        tar -xzf DIR/semver.x86_64-unknown-linux-gnu.tar.gz -C $DIR
+        tar -xzf $DIR/semver.x86_64-unknown-linux-gnu.tar.gz -C $DIR
       env:
         GH_TOKEN: ${{ inputs.token || github.token }}
