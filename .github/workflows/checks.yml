@@ -12,7 +12,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
@@ -49,5 +49,6 @@ jobs:
   action:
     runs-on: [ ubuntu-latest ]
     steps:
+      - uses: actions/checkout@v4
       - uses: ./setup
       - run: semver -v
