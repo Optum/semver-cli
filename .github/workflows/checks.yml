@@ -49,5 +49,5 @@ jobs:
   action:
     runs-on: [ ubuntu-latest ]
     steps:
-      - uses: ./
+      - uses: ./setup
       - run: semver -v

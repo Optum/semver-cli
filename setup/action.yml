@@ -1,4 +1,4 @@
-name: semver-cli
+name: semver-cli-setup
 description: Optum Semver CLI
 branding:
   icon: activity
