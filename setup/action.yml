@@ -1,0 +1,29 @@
+name: semver-cli-setup
+description: Optum Semver CLI
+branding:
+  icon: activity
+  color: orange
+inputs:
+  version:
+    description: Version
+    default: 0.8.11
+  token:
+    description: GitHub Token
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Semver CLI
+      shell: bash
+      run: |
+        VERSION='${{ inputs.version}}'
+        DIR=$HOME/.semver-cli/.bin
+        mkdir -p $DIR
+
+        gh release --repo https://github.com/optum/semver-cli download $VERSION -p semver.x86_64-unknown-linux-gnu.tar.gz --dir $DIR --clobber
+        tar -xzf $DIR/semver.x86_64-unknown-linux-gnu.tar.gz -C $DIR
+
+        echo "$DIR" >> $GITHUB_PATH
+      env:
+        GH_TOKEN: ${{ inputs.token || github.token }}

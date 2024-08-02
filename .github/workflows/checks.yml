@@ -12,7 +12,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
@@ -21,7 +21,7 @@ jobs:
       - run: deno fmt  --check
       - run: deno lint
       - run: deno task test
-      
+
       - id: parse_version
         name: Parse the Version
         run: deno run -A main.ts parse
@@ -29,13 +29,13 @@ jobs:
       - name: Print the Version
         run: |
           cat >> $GITHUB_STEP_SUMMARY<<EOF
-          
+
           # Version
-          
+
           \`\`\`
           ${{ steps.parse_version.outputs.version }}
           \`\`\`
-          
+
           | part       | value |
           | ---------- | --- |
           | version    | \`${{ steps.parse_version.outputs.version }}\` |
@@ -45,3 +45,10 @@ jobs:
           | prerelease | \`${{ steps.parse_version.outputs.prerelease || ' ' }}\` |
           | build      | \`${{ steps.parse_version.outputs.build || ' ' }}\` |
           EOF
+
+  action:
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./setup
+      - run: semver get
