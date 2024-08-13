@@ -10,5 +10,5 @@ on:
       file: Dockerfile
       pattern: '(?<=VERSION=).*(?=; \\)'
     - kind: regexp
-      file: action.yml
+      file: setup/action.yml
       pattern: '(?<=default: ).*'
