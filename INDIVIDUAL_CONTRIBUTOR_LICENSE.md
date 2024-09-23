@@ -65,8 +65,8 @@ Contribution or Work shall terminate as of the date such litigation is filed.
 
 4. Representations.
 
-   (a)	You represent that you are legally entitled to grant the above license. If
-   your employer(s) has rights to intellectual property that you create that
+   (a)	You represent that you are legally entitled to grant the above license.
+   If your employer(s) has rights to intellectual property that you create that
    includes your Contributions, you represent that you have received permission
    to make Contributions on behalf of that employer, that your employer has
    waived such rights for your Contributions to the PROJECT, or that your
