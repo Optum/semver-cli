@@ -15,6 +15,3 @@ jobs:
       - uses: actions/checkout@v2
       - name: Sourcehawk Scan
         uses: optum/sourcehawk-scan-github-action@main
-
-
-

@@ -23,7 +23,7 @@ export async function postVersionHook(
     if (!Array.isArray(postHooks)) {
       throw new HookError(
         "post_hook",
-        `on.post is expected to be of type array but (${postHooks}) was found`
+        `on.post is expected to be of type array but (${postHooks}) was found`,
       );
     }
 
@@ -49,7 +49,7 @@ export async function postVersionHook(
         default:
           throw new HookError(
             "post_hook",
-            `unknown hook kind ${kind}`
+            `unknown hook kind ${kind}`,
           );
       }
     }

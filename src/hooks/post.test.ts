@@ -17,7 +17,7 @@ Deno.test("yml or yaml", async () => {
     Deno,
     "stat",
     resolvesNext<Deno.FileInfo>([
-      Object.assign(new Error("not found"), { code: "ENOENT" }), // version.yml, nah
+      Object.assign(new Deno.errors.NotFound("not found")), // version.yml, nah
       {
         isFile: true,
       } as Deno.FileInfo, // version.yaml, yah

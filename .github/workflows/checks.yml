@@ -3,13 +3,13 @@ name: Checks
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main, 'version/*' ]
+    branches: [main, "version/*"]
 
 jobs:
   check:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
           EOF
 
   action:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
     outputs:
       version: ${{ steps.parse_version.outputs.version }}
     steps:

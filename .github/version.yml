@@ -11,4 +11,4 @@ on:
       pattern: '(?<=VERSION=).*(?=; \\)'
     - kind: regexp
       file: setup/action.yml
-      pattern: '(?<=default: ).*'
+      pattern: "(?<=default: ).*"

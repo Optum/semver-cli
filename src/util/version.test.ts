@@ -26,7 +26,7 @@ Deno.test({
 Deno.test({
   name: "VER01",
   fn: async () => {
-    const err = new Error("not found");
+    const err = new Deno.errors.NotFound("not found");
     // deno-lint-ignore no-explicit-any
     (err as any).code = "ENOENT";
     const readTextFile = stub(

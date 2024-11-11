@@ -66,7 +66,7 @@ describe("set", () => {
     });
   });
   describe("without version file", () => {
-    const notfound = new Error("not found");
+    const notfound = new Deno.errors.NotFound("not found");
     // deno-lint-ignore no-explicit-any
     (notfound as any).code = "ENOENT";
     const ctx1 = testContext({
@@ -110,7 +110,7 @@ describe("set", () => {
   });
 
   describe("with an invalid version file", () => {
-    const notfound = new Error("not found");
+    const notfound = new Deno.errors.NotFound("not found");
     // deno-lint-ignore no-explicit-any
     (notfound as any).code = "ENOENT";
     it("SET08", async () => {
