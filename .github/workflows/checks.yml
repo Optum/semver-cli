@@ -48,13 +48,12 @@ jobs:
 
   action:
     runs-on: [ubuntu-latest]
-    outputs:
-      version: ${{ steps.parse_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./setup
-      - id: parse_version
-        run: semver parse
+        with:
+          version: 0.9.5
+      - run: semver parse
 
   docker:
     runs-on: ubuntu-latest
@@ -72,5 +71,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: false
-          tags: optum/semver-cli:${{ needs.action.outputs.version }}
+          tags: optum/semver-cli:pr
           platforms: linux/amd64
