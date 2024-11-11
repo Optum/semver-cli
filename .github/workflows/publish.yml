@@ -15,9 +15,9 @@ jobs:
       version: ${{ steps.parse_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: denoland/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - id: parse_version
         name: Parse the Version
@@ -40,9 +40,9 @@ jobs:
     needs: version
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - uses: denoland/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       # Binaries are compiled on full Release
       - name: Compile
