@@ -6,7 +6,7 @@ branding:
 inputs:
   version:
     description: Version
-    default: 0.9.6
+    default: 0.9.8
   token:
     description: GitHub Token
     required: false
