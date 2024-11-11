@@ -14,7 +14,7 @@ RUN mkdir -p /app/bin
 COPY deps/ /app/deps
 COPY deno.json /app/
 COPY deno.lock /app/
-RUN deno cache --lock-write deps/mod.ts
+RUN deno cache --allow-import deps/mod.ts
 
 # These steps will be re-run upon any file change in your working directory:
 ADD src /app/src

@@ -5,7 +5,7 @@ export class HookError extends ApplicationError {
   constructor(
     public readonly hook: string,
     public readonly details: string,
-    public readonly exitCode: number,
+    exitCode: number,
     options?: ErrorOptions,
   ) {
     super(
