@@ -29,14 +29,14 @@ jobs:
     strategy:
       matrix:
         target:
-        - name: "x86_64-unknown-linux-gnu"
-          extension: ""
-        - name: "x86_64-pc-windows-msvc"
-          extension: ".exe"
-        - name: "x86_64-apple-darwin"
-          extension: ""
-        - name: "aarch64-apple-darwin"
-          extension: ""
+          - name: "x86_64-unknown-linux-gnu"
+            extension: ""
+          - name: "x86_64-pc-windows-msvc"
+            extension: ".exe"
+          - name: "x86_64-apple-darwin"
+            extension: ""
+          - name: "aarch64-apple-darwin"
+            extension: ""
     needs: version
     steps:
       - uses: actions/checkout@v4

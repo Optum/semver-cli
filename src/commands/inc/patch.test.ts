@@ -22,8 +22,8 @@ describe("patch", () => {
         Deno,
         "stat",
         resolvesNext<Deno.FileInfo>([
-          Object.assign(new Error("not found"), { code: "ENOENT" }),
-          Object.assign(new Error("not found"), { code: "ENOENT" }),
+          Object.assign(new Deno.errors.NotFound("not found")),
+          Object.assign(new Deno.errors.NotFound("not found")),
         ]),
       ),
   });

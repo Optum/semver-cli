@@ -75,7 +75,7 @@ export async function readVersionFile() {
     const trimmed = versionText.trim();
     return parse(trimmed || DEFAULT_VERSION) || DEFAULT_VERSION;
   } catch (err) {
-    if (err.code === "ENOENT") {
+    if (err instanceof Deno.errors.NotFound) {
       return DEFAULT_VERSION;
     } else {
       throw err;

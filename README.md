@@ -167,7 +167,7 @@ on:
     # Updates both package.json and package-lock.json
     - kind: patch
       file: package.json
-      
+
     # Uses non-matching groups to isolate the version to replace.
     - kind: regexp
       file: src/info.js

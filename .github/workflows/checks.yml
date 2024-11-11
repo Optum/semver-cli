@@ -3,19 +3,19 @@ name: Checks
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main, 'version/*' ]
+    branches: [main, "version/*"]
 
 jobs:
   check:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - run: deno --version
       - run: deno fmt  --check
@@ -47,8 +47,29 @@ jobs:
           EOF
 
   action:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: ./setup
-      - run: semver get
+        with:
+          version: 0.9.5
+      - run: semver parse
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: action
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build
+        uses: docker/build-push-action@v4
+        with:
+          push: false
+          tags: optum/semver-cli:pr
+          platforms: linux/amd64

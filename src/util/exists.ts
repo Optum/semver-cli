@@ -3,7 +3,7 @@ export async function exists(file: string) {
     await Deno.stat(file);
     return true;
   } catch (err) {
-    if (err.code === "ENOENT") {
+    if (err instanceof Deno.errors.NotFound) {
       return false;
     } else {
       throw err;

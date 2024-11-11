@@ -24,7 +24,6 @@ export async function postVersionHook(
       throw new HookError(
         "post_hook",
         `on.post is expected to be of type array but (${postHooks}) was found`,
-        1,
       );
     }
 
@@ -51,7 +50,6 @@ export async function postVersionHook(
           throw new HookError(
             "post_hook",
             `unknown hook kind ${kind}`,
-            1,
           );
       }
     }
