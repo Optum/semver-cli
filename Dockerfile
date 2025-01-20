@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-2.1.4@sha256:bbbc64e254c4fbd928da597faae8633e2302c630386f3469595444c0b29e14d6
+FROM denoland/deno:alpine-2.1.6@sha256:27426fa238509465a52e5c09cf5d9c02033d6197755f39b2a50841c213162936
 
 # Label the container
 LABEL maintainer="Justin Chase <justin.chase@optum.com>"
