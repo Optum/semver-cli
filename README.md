@@ -30,7 +30,7 @@ Installation from source will require
 #### module
 
 ```sh
-deno install -A https://deno.land/x/semver_cli@0.5.0/main.ts -n semver
+deno install -gfA https://deno.land/x/semver_cli@0.9.13/main.ts -n semver
 ```
 
 ### git
