@@ -118,7 +118,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: latest,optum/semver-cli:${{ needs.version.outputs.version }},optum/semver-cli:v${{ needs.version.outputs.major }}.${{ needs.version.outputs.minor }},optum/semver-cli:v${{ needs.version.outputs.major }}
+          tags: optum/semver-cli:latest,optum/semver-cli:${{ needs.version.outputs.version }},optum/semver-cli:v${{ needs.version.outputs.major }}.${{ needs.version.outputs.minor }},optum/semver-cli:v${{ needs.version.outputs.major }}
           platforms: linux/amd64
 
   tags:
