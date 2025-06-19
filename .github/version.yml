@@ -12,3 +12,6 @@ on:
     - kind: regexp
       file: setup/action.yml
       pattern: "(?<=default: ).*"
+    - kind: regexp
+      file: Dockerfile.action
+      pattern: "(?<=semver-cli:).*"
