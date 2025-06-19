@@ -1,63 +1,63 @@
-name: 'semver-cli'
-description: 'Semver utility action'
+name: "semver-cli"
+description: "Semver utility action"
 branding:
   icon: activity
   color: orange
 inputs:
   action:
-    description: 'A versioning action to perform (get|set|inc|parse)'
+    description: "A versioning action to perform (get|set|inc|parse)"
     required: false
   command:
     type: choice
-    description: 'The kind of increment (major|minor|patch|none) for (get|inc) actions'
+    description: "The kind of increment (major|minor|patch|none) for (get|inc) actions"
     required: false
     options:
-    - none
-    - major
-    - minor
-    - patch
+      - none
+      - major
+      - minor
+      - patch
   pre:
     type: boolean
-    description: 'Whether or not to create a pre-release version (inc|get)'
+    description: "Whether or not to create a pre-release version (inc|get)"
   name:
-    description: 'If pre is set, you may optionally specify a prerelease name'
+    description: "If pre is set, you may optionally specify a prerelease name"
     required: false
   value:
-    description: 'If pre is set, you may optionally specify a prerelease number'
+    description: "If pre is set, you may optionally specify a prerelease number"
   build:
-    description: 'Optional build metadata'
+    description: "Optional build metadata"
     required: false
   current:
-    description: 'The version for the set command'
+    description: "The version for the set command"
 
 outputs:
   version:
-    description: 'The resulting version change'
+    description: "The resulting version change"
   version_docker:
-    description: 'The resulting version change formatted to be compatible with docker tags'
+    description: "The resulting version change formatted to be compatible with docker tags"
   version_dotnet:
-    description: 'The resulting version change formatted to be compatible with dotnet'
+    description: "The resulting version change formatted to be compatible with dotnet"
   major:
-    description: 'If parsing, the major version'
+    description: "If parsing, the major version"
   minor:
-    description: 'If parsing, the minor version'
+    description: "If parsing, the minor version"
   patch:
-    description: 'If parsing, the patch version'
+    description: "If parsing, the patch version"
   prerelease:
-    description: 'If parsing, the prerelease version'
+    description: "If parsing, the prerelease version"
   build:
-    description: 'If parsing, the build version'
+    description: "If parsing, the build version"
 runs:
-  using: 'docker'
-  image: 'Dockerfile.action'
+  using: "docker"
+  image: "Dockerfile.action"
   args:
-  - ${{ inputs.action || 'get' }}
-  - ${{ inputs.command }}
-  - ${{ inputs.pre && '--pre' || ''}}
-  - ${{ inputs.name && '--name' || '' }}
-  - ${{ inputs.name || '' }}
-  - ${{ inputs.value && '--value' || '' }}
-  - ${{ inputs.value || '' }}
-  - ${{ inputs.build && '--build' || '' }}
-  - ${{ inputs.build || '' }}
-  - ${{ inputs.current }}
+    - ${{ inputs.action || 'get' }}
+    - ${{ inputs.command }}
+    - ${{ inputs.pre && '--pre' || ''}}
+    - ${{ inputs.name && '--name' || '' }}
+    - ${{ inputs.name || '' }}
+    - ${{ inputs.value && '--value' || '' }}
+    - ${{ inputs.value || '' }}
+    - ${{ inputs.build && '--build' || '' }}
+    - ${{ inputs.build || '' }}
+    - ${{ inputs.current }}

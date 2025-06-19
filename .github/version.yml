@@ -8,7 +8,7 @@ on:
       pattern: '(?<=semver-cli@).*(?=\/main.ts)'
     - kind: regexp
       file: README.md
-      pattern: '(?<=semver-cli@).*$'
+      pattern: "(?<=semver-cli@).*$"
     - kind: regexp
       file: Dockerfile
       pattern: '(?<=VERSION=).*(?=; \\)'

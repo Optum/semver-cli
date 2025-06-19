@@ -176,7 +176,8 @@ on:
 
 ## Actions
 
-This repository has two actions available, either a basic setup action or a single docker based action.
+This repository has two actions available, either a basic setup action or a
+single docker based action.
 
 #### example
 
@@ -194,21 +195,21 @@ on:
 jobs:
   publish:
     steps:
-    - if: inputs.pre
-      name: Increment Pre-Release Version
-      uses: optum/semver-cli@0.9.20
-      with:
-        action: inc
-        pre: true
-        name: pr
-        value: ${{ github.run_number }}
-        build: ${{ github.run_id }}
+      - if: inputs.pre
+        name: Increment Pre-Release Version
+        uses: optum/semver-cli@0.9.20
+        with:
+          action: inc
+          pre: true
+          name: pr
+          value: ${{ github.run_number }}
+          build: ${{ github.run_id }}
 
-    - id: version
-      name: Get Version
-      uses: optum/semver-cli@0.9.20
+      - id: version
+        name: Get Version
+        uses: optum/semver-cli@0.9.20
 
-    - run: echo "The calculated ${{ steps.version.outputs.version }}"
+      - run: echo "The calculated ${{ steps.version.outputs.version }}"
 ```
 
 #### example of setup action
@@ -227,19 +228,19 @@ on:
 jobs:
   publish:
     steps:
-    - if: inputs.pre
-      name: Increment Pre-Release Version
-      uses: optum/semver-cli/setup@0.9.20
+      - if: inputs.pre
+        name: Increment Pre-Release Version
+        uses: optum/semver-cli/setup@0.9.20
 
-    - id: version
-      name: Parse Version
-      run: |
-        echo "version=$(semver parse | jq -r '.version')" > $GITHUB_OUTPUT
-        echo "major=$(semver parse | jq -r '.major')" > $GITHUB_OUTPUT
-        echo "minor=$(semver parse | jq -r '.minor')" > $GITHUB_OUTPUT
-        echo "patch=$(semver parse | jq -r '.patch')" > $GITHUB_OUTPUT
+      - id: version
+        name: Parse Version
+        run: |
+          echo "version=$(semver parse | jq -r '.version')" > $GITHUB_OUTPUT
+          echo "major=$(semver parse | jq -r '.major')" > $GITHUB_OUTPUT
+          echo "minor=$(semver parse | jq -r '.minor')" > $GITHUB_OUTPUT
+          echo "patch=$(semver parse | jq -r '.patch')" > $GITHUB_OUTPUT
 
-    - run: echo "The calculated ${{ steps.version.outputs.version }}"
+      - run: echo "The calculated ${{ steps.version.outputs.version }}"
 ```
 
 # Contributing
