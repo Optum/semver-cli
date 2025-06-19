@@ -174,6 +174,69 @@ on:
       pattern: '^(?<=export const version = ").*(?=";)$'
 ```
 
+## Actions
+
+This repository has two actions available, either a basic setup action or a
+single docker based action.
+
+#### example
+
+```yml
+name: Publish
+on:
+  workflow_dispatch:
+    inputs:
+      pre:
+        type: boolean
+        default: true
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    steps:
+      - if: inputs.pre
+        name: Increment Pre-Release Version
+        uses: optum/semver-cli@0.9.20
+        with:
+          action: inc
+          pre: true
+          name: pr
+          value: ${{ github.run_number }}
+          build: ${{ github.run_id }}
+
+      - id: version
+        name: Get Version
+        uses: optum/semver-cli@0.9.20
+
+      - run: echo "The calculated ${{ steps.version.outputs.version }}"
+```
+
+#### example of setup action
+
+```yml
+name: Publish
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    steps:
+      - name: Increment Pre-Release Version
+        uses: optum/semver-cli/setup@0.9.20
+
+      - id: version
+        name: Parse Version
+        run: |
+          echo "version=$(semver parse | jq -r '.version')" > $GITHUB_OUTPUT
+          echo "major=$(semver parse | jq -r '.major')" > $GITHUB_OUTPUT
+          echo "minor=$(semver parse | jq -r '.minor')" > $GITHUB_OUTPUT
+          echo "patch=$(semver parse | jq -r '.patch')" > $GITHUB_OUTPUT
+
+      - run: echo "The calculated ${{ steps.version.outputs.version }}"
+```
+
 # Contributing
 
 Contributions are what make the open source community such an amazing place to

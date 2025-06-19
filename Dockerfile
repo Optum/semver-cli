@@ -5,6 +5,17 @@ LABEL maintainer="Justin Chase <justin.chase@optum.com>"
 LABEL repository="https://github.com/optum/semver-cli"
 LABEL homepage="https://github.com/optum/semver-cli"
 
+# Label as GitHub action
+LABEL com.github.actions.name="semver-cli"
+
+# Limit to 160 characters
+LABEL com.github.actions.description="Get, set and increment your project version"
+
+# See branding:
+# https://docs.github.com/actions/creating-actions/metadata-syntax-for-github-actions#branding
+LABEL com.github.actions.icon="activity"
+LABEL com.github.actions.color="orange"
+
 WORKDIR /app
 ENV PATH="/app/bin:${PATH}"
 RUN mkdir -p /app/bin
