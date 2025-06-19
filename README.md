@@ -217,19 +217,13 @@ jobs:
 ```yml
 name: Publish
 on:
-  workflow_dispatch:
-    inputs:
-      pre:
-        type: boolean
-        default: true
   release:
     types: [published]
 
 jobs:
   publish:
     steps:
-      - if: inputs.pre
-        name: Increment Pre-Release Version
+      - name: Increment Pre-Release Version
         uses: optum/semver-cli/setup@0.9.20
 
       - id: version
