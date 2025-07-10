@@ -1,1 +1,1 @@
-FROM optum/semver-cli:0.9.22
+FROM optum/semver-cli:0.9.23
