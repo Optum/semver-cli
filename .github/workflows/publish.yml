@@ -143,8 +143,6 @@ jobs:
       - name: Create Tags
         run: |
           git tag "v${{ needs.version.outputs.version }}"
-          git tag "v${{ needs.version.outputs.major }}.${{ needs.version.outputs.minor }}"
-          git tag "v${{ needs.version.outputs.major }}"
           git push origin --tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
