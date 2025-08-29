@@ -4,6 +4,11 @@ import { FormatKind } from "./util/variant.ts";
 
 export interface IContext {
   output?: string;
+
+  // For an unknown reason, this one particular arg is coming through as 'c' instead of 'config'
+  // All of the other options are coming through as their full names.
+  // Therefore, we need to support both 'c' and 'config' for now.
+  c?: string;
   config?: string;
   githubDir: string;
   hooks: {
