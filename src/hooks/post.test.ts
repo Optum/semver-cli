@@ -54,7 +54,6 @@ Deno.test("custom config", async () => {
       regexp: async () => await undefined,
     },
   };
-  let n = 0;
   let configPath: string | URL = "";
   const stubs = [
     stub(
