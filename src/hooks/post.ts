@@ -57,8 +57,9 @@ export async function postVersionHook(
 }
 
 async function getVersionConfig(context: IContext) {
-  const { config, githubDir } = context;
-  const paths = config ? [config] : [
+  const { c: configShorthand, config, githubDir } = context;
+  const configPath = config ?? configShorthand;
+  const paths = configPath ? [configPath] : [
     [githubDir, "version.yml"].filter((p) => p).join("/"),
     [githubDir, "version.yaml"].filter((p) => p).join("/"),
   ];
