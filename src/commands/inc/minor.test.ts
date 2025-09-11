@@ -5,7 +5,7 @@ import {
   resolvesNext,
   returnsNext,
   stub,
-} from "testing";
+} from "testing/bdd";
 import type { Arguments } from "yargs";
 import { minor } from "./minor.ts";
 import { testContext } from "../../util/testContext.ts";

@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, type Spy } from "testing";
+import { afterEach, beforeEach } from "testing/bdd";
+import type { Spy } from "testing/mock";
 
 export function testContext<
   // deno-lint-ignore no-explicit-any

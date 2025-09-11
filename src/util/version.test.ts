@@ -8,7 +8,7 @@ import {
   assertSpyCall,
   resolvesNext,
   stub,
-} from "testing";
+} from "testing/mock";
 import { IContext } from "../context.ts";
 import { printVersion, readVersionFile, writeVersionFile } from "./version.ts";
 

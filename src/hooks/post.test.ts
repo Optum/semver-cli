@@ -1,6 +1,6 @@
 import { parse } from "semver";
 import { assertEquals } from "assert";
-import { resolvesNext, stub } from "testing";
+import { resolvesNext, stub } from "testing/bdd";
 import * as YAML from "yaml";
 import { IContext } from "../context.ts";
 import { postVersionHook } from "./post.ts";

@@ -18,41 +18,60 @@ export type IncrementOptions = {
 
 export function increment(options: IncrementOptions) {
   const { kind, version, pre, value, build } = options;
-  const semver = parse(version);
-  if (!semver) {
-    throw new InvalidVersionError(version.toString());
+  let semver: SemVer;
+  
+  if (typeof version === "string") {
+    const parsed = parse(version);
+    if (!parsed) {
+      throw new InvalidVersionError(version);
+    }
+    semver = parsed;
+  } else {
+    semver = version;
   }
   return {
     previous: semver,
     current: (() => {
       switch (kind) {
         case IncrementKind.Major:
-          return pre && value
-            ? {
-              ...inc(semver, "major", undefined, build),
+          if (pre && value) {
+            const newVer = inc(semver, "major");
+            return {
+              ...newVer,
               prerelease: [...pre.split("."), parseInt(value)],
-            }
-            : pre
-            ? inc(semver, "premajor", pre, build)
-            : inc(semver, "major", undefined, build);
+              build: build ? build.split(".") : [],
+            };
+          } else if (pre) {
+            return inc(semver, "premajor");
+          } else {
+            return inc(semver, "major");
+          }
         case IncrementKind.Minor:
-          return pre && value !== undefined
-            ? {
-              ...inc(semver, "minor", undefined, build),
+          if (pre && value !== undefined) {
+            const newVer = inc(semver, "minor");
+            return {
+              ...newVer,
               prerelease: [...pre.split("."), parseInt(value)],
-            }
-            : pre
-            ? inc(semver, "preminor", pre, build)
-            : inc(semver, "minor", undefined, build);
+              build: build ? build.split(".") : [],
+            };
+          } else if (pre) {
+            return inc(semver, "preminor");
+          } else {
+            return inc(semver, "minor");
+          }
         case IncrementKind.Patch:
-          return pre && value
-            ? {
-              ...inc(semver, "patch", undefined, build),
+          if (pre && value) {
+            const newVer = inc(semver, "patch");
+            return {
+              ...newVer,
               prerelease: [...pre.split("."), parseInt(value)],
-            }
-            : pre
-            ? inc(semver, "prepatch", pre, build)
-            : inc(semver, "patch", undefined, build);
+              build: build ? build.split(".") : [],
+            };
+          } else if (pre) {
+            return inc(semver, "prepatch");
+          } else {
+            return inc(semver, "patch");
+          }
         case IncrementKind.None: {
           if (pre && value && build != undefined) {
             return {
@@ -66,7 +85,7 @@ export function increment(options: IncrementOptions) {
               prerelease: [...pre.split("."), parseInt(value)],
             };
           } else if (pre) {
-            return inc(semver, "pre", pre, build);
+            return inc(semver, "prerelease");
           } else if (build !== undefined) {
             return {
               ...semver,

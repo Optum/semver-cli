@@ -1,12 +1,14 @@
 import {
   describe,
   it,
+} from "testing/bdd";
+import {
   assertSpyCall,
   assertSpyCalls,
   resolvesNext,
   returnsNext,
   stub,
-} from "testing";
+} from "testing/mock";
 import { assertRejects } from "assert";
 import type { Arguments } from "yargs";
 import { set } from "./set.ts";

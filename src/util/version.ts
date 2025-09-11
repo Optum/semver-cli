@@ -27,7 +27,7 @@ export async function printVersion(
   full = false,
 ) {
   const formatted = format(semver);
-  const { major, minor, patch, prerelease, build } = semver;
+  const { major, minor, patch, prerelease = [], build = [] } = semver;
   const pre = prerelease.join(".");
   const b = build.join(".");
   const { dotnet, docker } = semverFormats(semver);
@@ -73,7 +73,7 @@ export async function readVersionFile() {
   try {
     const versionText = await Deno.readTextFile("VERSION");
     const trimmed = versionText.trim();
-    return parse(trimmed || DEFAULT_VERSION) || DEFAULT_VERSION;
+    return parse(trimmed || DEFAULT_VERSION.toString()) || DEFAULT_VERSION;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
       return DEFAULT_VERSION;
