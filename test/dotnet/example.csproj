@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <PackageId>example</PackageId>
-    <Version>0.4.0-lambda.2-ghi.789</Version>
+    <Version>0.6.0-lambda.4-ghi.789</Version>
     <Authors>Justin Chase</Authors>
     <Company>Optum</Company>
     <PackageOutputPath>./nupkg</PackageOutputPath>

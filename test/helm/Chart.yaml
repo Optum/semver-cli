@@ -3,5 +3,5 @@ apiVersion: v2
 type: application
 name: .
 description: A Helm chart for Kubernetes
-version: 0.6.0-beta.3+abc.123
+version: 0.8.0-beta.5+abc.123
 appVersion: 1.16.0
