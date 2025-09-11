@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>0.7.0-lambda.5-ghi.789</Version>
+    <Version>0.4.0-lambda.2-ghi.789</Version>
   </PropertyGroup>
 </Project>
