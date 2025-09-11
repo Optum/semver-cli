@@ -1,4 +1,16 @@
 {
+  "imports": {
+    "json5": "npm:json5@^2.2.3",
+    "jsonc": "npm:jsonc@^2.0.0",
+    "semver": "jsr:@std/semver@^1.0.3",
+    "path": "jsr:@std/path@^1.0.6",
+    "assert": "jsr:@std/assert@^1.0.6",
+    "testing": "jsr:@std/testing@^1.0.3",
+    "xml2js": "npm:xml2js@^0.6.2",
+    "js2xml": "npm:js2xml@^1.0.4",
+    "yaml": "jsr:@std/yaml@^1.0.5",
+    "yargs": "npm:yargs@^17.7.2"
+  },
   "tasks": {
     "check": "deno fmt && deno lint && deno task test",
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",

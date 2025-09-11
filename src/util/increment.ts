@@ -1,4 +1,4 @@
-import { increment as inc, parse, SemVer } from "../../deps/semver.ts";
+import { increment as inc, parse, SemVer } from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 
 export enum IncrementKind {

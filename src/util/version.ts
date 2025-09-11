@@ -1,5 +1,5 @@
-import { path } from "../../deps/std.ts";
-import { format, parse, SemVer } from "../../deps/semver.ts";
+import * as path from "path";
+import { format, parse, SemVer } from "semver";
 import { IContext } from "../context.ts";
 import { semverFormats } from "./variant.ts";
 

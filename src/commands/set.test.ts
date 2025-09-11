@@ -1,18 +1,18 @@
 import {
-  assertRejects,
-  assertSpyCall,
-  assertSpyCalls,
   describe,
   it,
+  assertSpyCall,
+  assertSpyCalls,
   resolvesNext,
   returnsNext,
   stub,
-} from "../../deps/std.ts";
-import { Arguments } from "../../deps/yargs.ts";
+} from "testing";
+import { assertRejects } from "assert";
+import type { Arguments } from "yargs";
 import { set } from "./set.ts";
 import { testContext } from "../util/testContext.ts";
 import { IContext } from "../context.ts";
-import { parse } from "../../deps/semver.ts";
+import { parse } from "semver";
 
 describe("set", () => {
   const hooks = {

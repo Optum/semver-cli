@@ -1,5 +1,5 @@
-import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { parse } from "../../deps/semver.ts";
+import type { Arguments, YargsInstance } from "yargs";
+import { parse } from "semver";
 import { increment, IncrementKind } from "../util/increment.ts";
 import {
   printVersion,

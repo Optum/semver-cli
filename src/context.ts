@@ -1,4 +1,4 @@
-import { SemVer } from "../deps/semver.ts";
+import { SemVer } from "semver";
 import { patch, regexp, replace } from "./hooks/mod.ts";
 import { FormatKind } from "./util/variant.ts";
 

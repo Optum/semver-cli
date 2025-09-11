@@ -1,9 +1,9 @@
-import { YAML } from "../../deps/yaml.ts";
+import * as YAML from "yaml";
 import { HookError } from "../errors/mod.ts";
 import { exists } from "../util/exists.ts";
 import { PostHookKind, VersionConfig } from "./hooks.interfaces.ts";
 import { IContext } from "../context.ts";
-import { SemVer } from "../../deps/semver.ts";
+import { SemVer } from "semver";
 
 // Post hooks are a set of per-repo configurable actions that can be taken
 // after the version is updated.

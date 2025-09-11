@@ -5,8 +5,8 @@ import {
   resolvesNext,
   returnsNext,
   stub,
-} from "../../../deps/std.ts";
-import { Arguments } from "../../../deps/yargs.ts";
+} from "testing";
+import type { Arguments } from "yargs";
 import { none } from "./none.ts";
 import { testContext } from "../../util/testContext.ts";
 import { IContext } from "../../context.ts";

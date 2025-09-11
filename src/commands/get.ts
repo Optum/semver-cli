@@ -1,4 +1,4 @@
-import { YargsInstance } from "../../deps/yargs.ts";
+import type { YargsInstance } from "yargs";
 import { major, minor, none, patch } from "./get/mod.ts";
 import {
   build,

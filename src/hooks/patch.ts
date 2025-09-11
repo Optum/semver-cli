@@ -1,10 +1,47 @@
-import { path } from "../../deps/std.ts";
-import { Node, xml } from "../../deps/xml.ts";
-import { JSONC } from "../../deps/jsonc.ts";
+import * as path from "path";
+import { parseString as parseXml } from "xml2js";
+import { js2xml } from "js2xml";
+import * as JSONC from "jsonc";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
 import { semverFormats } from "../util/variant.ts";
 import { exists } from "../util/exists.ts";
-import { SemVer } from "../../deps/semver.ts";
+import { SemVer } from "semver";
+
+// Define interfaces that were previously in deps/xml.ts
+export interface Node extends Record<string, unknown> {
+  elements: Element[];
+}
+
+export interface Element extends Node {
+  type: "element" | "text";
+  name: string;
+  attributes: Record<string, string>;
+  text?: string;
+}
+
+// Create helper functions for XML parsing
+function parseXmlPromise(xmlString: string, options?: any): Promise<Node> {
+  return new Promise((resolve, reject) => {
+    parseXml(xmlString, options, (err, result) => {
+      if (err) reject(err);
+      else {
+        // Convert xml2js result to our expected format
+        const elements = result ? Object.keys(result).map(key => ({
+          type: "element" as const,
+          name: key,
+          attributes: {},
+          elements: []
+        })) : [];
+        resolve({ elements });
+      }
+    });
+  });
+}
+
+const xml = { 
+  parse: parseXmlPromise,
+  stringify: js2xml 
+};
 
 export async function patch(
   file: string,

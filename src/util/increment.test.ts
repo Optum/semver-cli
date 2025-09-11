@@ -1,5 +1,5 @@
-import { assertEquals } from "../../deps/std.ts";
-import { format } from "../../deps/semver.ts";
+import { assertEquals } from "assert";
+import { format } from "semver";
 import { increment, IncrementKind, IncrementOptions } from "./increment.ts";
 
 const testCases: (IncrementOptions & { expected: string })[] = [

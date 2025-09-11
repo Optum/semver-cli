@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, Spy } from "../../deps/std.ts";
+import { afterEach, beforeEach, type Spy } from "testing";
 
 export function testContext<
   // deno-lint-ignore no-explicit-any

@@ -1,6 +1,7 @@
-import { parse } from "../../deps/semver.ts";
-import { assertEquals, resolvesNext, stub } from "../../deps/std.ts";
-import { YAML } from "../../deps/yaml.ts";
+import { parse } from "semver";
+import { assertEquals } from "assert";
+import { resolvesNext, stub } from "testing";
+import * as YAML from "yaml";
 import { IContext } from "../context.ts";
 import { postVersionHook } from "./post.ts";
 

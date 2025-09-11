@@ -1,4 +1,4 @@
-import { yargs } from "./deps/yargs.ts";
+import yargs from "yargs";
 import { version } from "./src/info.ts";
 import { get, inc, parse, set } from "./src/commands/mod.ts";
 import { getContext } from "./src/context.ts";

@@ -1,4 +1,4 @@
-import { Arguments } from "../../../deps/yargs.ts";
+import type { Arguments } from "yargs";
 import { increment, IncrementKind } from "../../util/increment.ts";
 import {
   printVersion,
