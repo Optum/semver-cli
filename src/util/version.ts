@@ -1,5 +1,5 @@
 import { path } from "../../deps/std.ts";
-import { format, parse, SemVer } from "../../deps/semver.ts";
+import { format, parse, SemVer, compare } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
 import { semverFormats } from "./variant.ts";
 
@@ -61,6 +61,68 @@ export async function printVersion(
   } else {
     console.log(formatted);
   }
+}
+
+export async function printComparison(
+  context: IContext,
+  v1: string,
+  v2: string,
+  result: number,
+  command: string,
+  full = false,
+) {
+  // Write to GitHub output if running in GitHub Actions
+  await writeGithubOutput(context, {
+    v1,
+    v2,
+    result,
+    command,
+  });
+
+  if (full) {
+    // JSON output - emit structured data
+    console.log(JSON.stringify({
+      v1,
+      v2,
+      result,
+      command,
+    }));
+  } else {
+    // Human-readable output to stdout
+    if (command === "eq") {
+      if (result === 1) {
+        console.log(`${v1} and ${v2} are equal`);
+      } else {
+        console.log(`${v1} and ${v2} are not equal`);
+      }
+    } else if (command === "cmp") {
+      if (result === -1) {
+        console.log(`${v1} is less than ${v2}`);
+      } else if (result === 0) {
+        console.log(`${v1} is equal to ${v2}`);
+      } else {
+        console.log(`${v1} is greater than ${v2}`);
+      }
+    } else {
+      // For gt, gte, lt, lte commands - provide comparison result based on the actual comparison
+      // We need to determine the actual relationship between v1 and v2
+      const parsed1 = parse(v1);
+      const parsed2 = parse(v2);
+      if (parsed1 && parsed2) {
+        const cmpResult = compare(parsed1, parsed2);
+        if (cmpResult > 0) {
+          console.log(`${v1} is greater than ${v2}`);
+        } else if (cmpResult === 0) {
+          console.log(`${v1} is equal to ${v2}`);
+        } else {
+          console.log(`${v1} is less than ${v2}`);
+        }
+      }
+    }
+  }
+
+  // Set the exit code to the numeric result
+  Deno.exit(result);
 }
 
 /**

@@ -13,6 +13,12 @@ export const output = {
   default: undefined,
 };
 
+export const json = {
+  alias: "j",
+  type: "flag",
+  description: "Output comparison result as JSON",
+};
+
 export const build = {
   alias: "b",
   type: "string",

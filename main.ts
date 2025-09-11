@@ -1,16 +1,16 @@
 import { yargs } from "./deps/yargs.ts";
 import { version } from "./src/info.ts";
-import { 
-  get, 
-  inc, 
-  parse, 
-  set, 
-  compare, 
-  greater, 
-  greaterOrEqual, 
-  less, 
-  lessOrEqual, 
-  equal 
+import {
+  compare,
+  equal,
+  get,
+  greater,
+  greaterOrEqual,
+  inc,
+  less,
+  lessOrEqual,
+  parse,
+  set,
 } from "./src/commands/mod.ts";
 import { getContext } from "./src/context.ts";
 
