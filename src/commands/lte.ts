@@ -39,7 +39,7 @@ export const lessOrEqual = {
 
     // Use parsed versions for comparison
     const cmpResult = semverCompare(version1, version2);
-    const exitCode = await printComparison(
+    await printComparison(
       args,
       v1,
       v2,
@@ -47,6 +47,6 @@ export const lessOrEqual = {
       "lte",
       jsonOutput,
     );
-    Deno.exit(exitCode);
+    Deno.exit(cmpResult);
   },
 };

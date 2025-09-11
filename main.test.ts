@@ -1,8 +1,4 @@
-import {
-  assertEquals,
-  describe,
-  it,
-} from "./deps/std.ts";
+import { assertEquals, describe, it } from "./deps/std.ts";
 
 describe("main", () => {
   it("MAIN00 - filters empty arguments", () => {

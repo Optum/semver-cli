@@ -27,6 +27,6 @@ export const major = {
       previous,
       current,
     );
-    await printVersion(args, current, false, args.json);
+    await printVersion(args, current, args.json);
   },
 };

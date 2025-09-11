@@ -1,9 +1,4 @@
-import {
-  assertSpyCall,
-  describe,
-  it,
-  stub,
-} from "../../deps/std.ts";
+import { assertSpyCall, describe, it, stub } from "../../deps/std.ts";
 import { Arguments } from "../../deps/yargs.ts";
 import { equal } from "./eq.ts";
 import { testContext } from "../util/testContext.ts";

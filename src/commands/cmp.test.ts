@@ -1,9 +1,4 @@
-import {
-  assertSpyCall,
-  describe,
-  it,
-  stub,
-} from "../../deps/std.ts";
+import { assertSpyCall, describe, it, stub } from "../../deps/std.ts";
 import { Arguments } from "../../deps/yargs.ts";
 import { compare } from "./cmp.ts";
 import { testContext } from "../util/testContext.ts";
@@ -28,7 +23,7 @@ describe("compare", () => {
       args: ["1.0.0 is less than 2.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [255], // -1 as exit code becomes 255
+      args: [-1], // -1 as exit code
     });
   });
 
@@ -84,7 +79,7 @@ describe("compare", () => {
       })],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [255],
+      args: [-1],
     });
   });
 });

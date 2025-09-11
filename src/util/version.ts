@@ -24,7 +24,6 @@ async function writeGithubOutput(
 export async function printVersion(
   context: IContext,
   semver: SemVer,
-  full = false,
   forceJson = false,
 ) {
   const formatted = format(semver);
@@ -48,7 +47,7 @@ export async function printVersion(
     version_dotnet: dotnet,
     version_docker: docker,
   });
-  if (full || forceJson) {
+  if (forceJson) {
     console.log(JSON.stringify({
       version: formatted,
       major,
@@ -70,8 +69,8 @@ export async function printComparison(
   v2: string,
   result: number,
   command: string,
-  full = false,
-): Promise<number> {
+  forceJson = false,
+) {
   // Write to GitHub output if running in GitHub Actions
   await writeGithubOutput(context, {
     v1,
@@ -80,7 +79,7 @@ export async function printComparison(
     command,
   });
 
-  if (full) {
+  if (forceJson) {
     // JSON output - emit structured data
     console.log(JSON.stringify({
       v1,
@@ -114,26 +113,6 @@ export async function printComparison(
         console.log(`${v1} is less than ${v2}`);
       }
     }
-  }
-
-  // Return the exit code based on command type
-  if (command === "cmp") {
-    // For cmp, exit code is the comparison result but handle negative values
-    return result === -1 ? 255 : result;
-  } else {
-    // For boolean commands, convert comparison result to boolean result
-    if (command === "gt") {
-      return result > 0 ? 1 : 0;
-    } else if (command === "gte") {
-      return result >= 0 ? 1 : 0;
-    } else if (command === "lt") {
-      return result < 0 ? 1 : 0;
-    } else if (command === "lte") {
-      return result <= 0 ? 1 : 0;
-    } else if (command === "eq") {
-      return result === 0 ? 1 : 0;
-    }
-    return 0;
   }
 }
 

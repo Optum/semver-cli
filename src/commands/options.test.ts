@@ -1,9 +1,13 @@
+import { assertEquals, describe, it } from "../../deps/std.ts";
 import {
-  assertEquals,
-  describe,
-  it,
-} from "../../deps/std.ts";
-import { build, config, json, output, prerelease, prereleaseName, prereleaseValue } from "./options.ts";
+  build,
+  config,
+  json,
+  output,
+  prerelease,
+  prereleaseName,
+  prereleaseValue,
+} from "./options.ts";
 
 describe("options", () => {
   it("OPT00 - config option", () => {
@@ -17,7 +21,10 @@ describe("options", () => {
   it("OPT01 - output option", () => {
     assertEquals(output.alias, "o");
     assertEquals(output.type, "string");
-    assertEquals(output.description, "Outputs version as key value pairs to output file");
+    assertEquals(
+      output.description,
+      "Outputs version as key value pairs to output file",
+    );
     assertEquals(output.example, "$GITHUB_OUTPUT");
     assertEquals(output.default, undefined);
   });
