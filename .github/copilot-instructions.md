@@ -27,7 +27,7 @@ be in error.**
 ### Building and Testing
 
 1. **NEVER CANCEL builds or tests** - they complete quickly (under 2 minutes)
-2. **Format check**: `deno fmt --check` - Takes ~5 seconds, NEVER CANCEL
+2. **Format check**: `deno fmt` - Takes ~5 seconds, NEVER CANCEL
 3. **Lint check**: `deno lint` - Takes ~10 seconds, NEVER CANCEL
    - **KNOWN ISSUE**: 8 linting errors about import prefixes - these are
      expected and do not break functionality
@@ -67,7 +67,7 @@ fail.
 
 1. **Format and basic checks**:
    ```bash
-   deno fmt --check  # ~5 seconds
+   deno fmt          # ~5 seconds
    deno lint         # ~10 seconds (expect 8 import prefix errors - this is normal)
    ```
 
