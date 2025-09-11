@@ -88,16 +88,20 @@ fail.
    cat VERSION  # Should contain: 1.0.1
    ```
 
-4. **Project integration validation** - Test post-hooks work:
+4. **Project integration validation** - Test post-hooks work (READ-ONLY):
    ```bash
-   # Test Node.js integration
+   # Test Node.js integration (read-only - safe to run)
    cd test/node && deno run -A ../../main.ts get
 
-   # Test other project types
+   # Test other project types (read-only - safe to run)
    cd ../helm && deno run -A ../../main.ts get
    cd ../maven && deno run -A ../../main.ts get  
    cd ../dotnet && deno run -A ../../main.ts get
    ```
+
+   **IMPORTANT**: Only use `get` commands in test directories. Never run `inc`,
+   `set`, or other modifying commands in the `test/` folders as these are manual
+   test scenarios and their changes should not be committed.
 
 ### Known Limitations
 
@@ -107,6 +111,19 @@ fail.
   functionality
 - **Global install**: The install task is missing `--global` flag - add it if
   needed
+
+### Test Directory Guidelines
+
+**CRITICAL**: Files in the `test/` directory are manual test scenarios and
+should NOT have their version changes committed:
+
+- **Safe commands in test directories**: `get`, `parse` - these are read-only
+- **NEVER run in test directories**: `inc`, `set` - these modify files and
+  create unwanted commits
+- **If you accidentally modify test files**: Use `git checkout HEAD -- test/` to
+  revert all test directory changes before committing
+- **When adding test coverage**: It's fine to modify test files to expand
+  coverage, but revert any version changes made by running semver commands
 
 ## Common Tasks
 
@@ -164,6 +181,9 @@ The GitHub Actions workflow requires:
 3. **Compilation errors**: Expected due to environment limitations - focus on
    runtime testing
 4. **Lint errors in deps/**: These are expected and don't break functionality
+5. **Unwanted test file changes**: If you accidentally ran `inc` or `set`
+   commands in test directories, revert with `git checkout HEAD -- test/` before
+   committing
 
 ### Performance Expectations
 
