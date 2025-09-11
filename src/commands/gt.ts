@@ -1,5 +1,5 @@
 import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { gt, parse } from "../../deps/semver.ts";
+import { compare as semverCompare, parse } from "../../deps/semver.ts";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { IContext } from "../context.ts";
 import { printComparison } from "../util/version.ts";
@@ -38,7 +38,7 @@ export const greater = {
     }
 
     // Use parsed versions for comparison
-    const result = gt(version1, version2) ? 1 : 0;
-    await printComparison(args, v1, v2, result, "gt", jsonOutput);
+    const cmpResult = semverCompare(version1, version2);
+    await printComparison(args, v1, v2, cmpResult, "gt", jsonOutput);
   },
 };

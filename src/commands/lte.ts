@@ -1,5 +1,5 @@
 import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { lte, parse } from "../../deps/semver.ts";
+import { compare as semverCompare, parse } from "../../deps/semver.ts";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { IContext } from "../context.ts";
 import { printComparison } from "../util/version.ts";
@@ -38,7 +38,7 @@ export const lessOrEqual = {
     }
 
     // Use parsed versions for comparison
-    const result = lte(version1, version2) ? 1 : 0;
-    await printComparison(args, v1, v2, result, "lte", jsonOutput);
+    const cmpResult = semverCompare(version1, version2);
+    await printComparison(args, v1, v2, cmpResult, "lte", jsonOutput);
   },
 };

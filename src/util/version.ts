@@ -1,5 +1,5 @@
 import { path } from "../../deps/std.ts";
-import { format, parse, SemVer, compare } from "../../deps/semver.ts";
+import { format, parse, SemVer } from "../../deps/semver.ts";
 import { IContext } from "../context.ts";
 import { semverFormats } from "./variant.ts";
 
@@ -88,9 +88,9 @@ export async function printComparison(
       command,
     }));
   } else {
-    // Human-readable output to stdout
+    // Human-readable output to stdout using the result parameter
     if (command === "eq") {
-      if (result === 1) {
+      if (result === 0) {
         console.log(`${v1} and ${v2} are equal`);
       } else {
         console.log(`${v1} and ${v2} are not equal`);
@@ -104,25 +104,37 @@ export async function printComparison(
         console.log(`${v1} is greater than ${v2}`);
       }
     } else {
-      // For gt, gte, lt, lte commands - provide comparison result based on the actual comparison
-      // We need to determine the actual relationship between v1 and v2
-      const parsed1 = parse(v1);
-      const parsed2 = parse(v2);
-      if (parsed1 && parsed2) {
-        const cmpResult = compare(parsed1, parsed2);
-        if (cmpResult > 0) {
-          console.log(`${v1} is greater than ${v2}`);
-        } else if (cmpResult === 0) {
-          console.log(`${v1} is equal to ${v2}`);
-        } else {
-          console.log(`${v1} is less than ${v2}`);
-        }
+      // For gt, gte, lt, lte commands, use the result parameter (comparison result)
+      if (result > 0) {
+        console.log(`${v1} is greater than ${v2}`);
+      } else if (result === 0) {
+        console.log(`${v1} is equal to ${v2}`);
+      } else {
+        console.log(`${v1} is less than ${v2}`);
       }
     }
   }
 
-  // Set the exit code to the numeric result
-  Deno.exit(result);
+  // Set the exit code based on command type
+  if (command === "cmp") {
+    // For cmp, exit code is the comparison result but handle negative values
+    Deno.exit(result === -1 ? 255 : result);
+  } else {
+    // For boolean commands, convert comparison result to boolean result
+    let exitCode = 0;
+    if (command === "gt") {
+      exitCode = result > 0 ? 1 : 0;
+    } else if (command === "gte") {
+      exitCode = result >= 0 ? 1 : 0;
+    } else if (command === "lt") {
+      exitCode = result < 0 ? 1 : 0;
+    } else if (command === "lte") {
+      exitCode = result <= 0 ? 1 : 0;
+    } else if (command === "eq") {
+      exitCode = result === 0 ? 1 : 0;
+    }
+    Deno.exit(exitCode);
+  }
 }
 
 /**
