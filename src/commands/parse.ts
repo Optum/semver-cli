@@ -19,13 +19,7 @@ export const parse = {
   async handler(args: Arguments & IContext) {
     const { value } = args;
     const current = value ?? await readVersionFile();
-
-    // If current is already a SemVer object (from readVersionFile), use it directly
-    // Otherwise parse the string value
-    const result = typeof current === "string"
-      ? semver.parse(current)
-      : current;
-
+    const result = semver.parse(current as string);
     if (!result) {
       throw new InvalidVersionError(`${current}`);
     }
