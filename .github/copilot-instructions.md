@@ -34,40 +34,19 @@ be in error.**
    - Lint failures do not prevent the tool from working correctly
 4. **Run all tests**:
    ```bash
-   DENO_TLS_CA_STORE=system deno task test
+   deno task test
    ```
    - Takes ~1 second for 32 tests, NEVER CANCEL
    - Set timeout to 60+ seconds minimum for safety
-
-### SSL Certificate Issues (CRITICAL)
-
-This environment has SSL certificate validation issues. Use one of these
-approaches:
-
-**Option 1 (Preferred)**: Use environment variable
-
-```bash
-DENO_TLS_CA_STORE=system deno [command]
-```
-
-**Option 2**: Use unsafe flag (only when Option 1 fails)
-
-```bash
-deno run --unsafely-ignore-certificate-errors -A main.ts [args]
-```
 
 ### Running the CLI Tool
 
 **Basic usage**:
 
 ```bash
-# With SSL fix
-DENO_TLS_CA_STORE=system deno run -A main.ts --help
-DENO_TLS_CA_STORE=system deno run -A main.ts get
-DENO_TLS_CA_STORE=system deno run -A main.ts parse
-
-# If SSL issues persist, use:
-deno run --unsafely-ignore-certificate-errors -A main.ts --help
+deno run -A main.ts --help
+deno run -A main.ts get
+deno run -A main.ts parse
 ```
 
 ### Installation (Optional)
@@ -94,7 +73,7 @@ fail.
 
 2. **Full test suite** (NEVER CANCEL - completes in ~1 second):
    ```bash
-   DENO_TLS_CA_STORE=system deno task test
+   deno task test
    ```
 
 3. **Manual CLI validation** - Test core functionality:
@@ -103,21 +82,21 @@ fail.
    echo "1.0.0" > VERSION
 
    # Test basic commands
-   DENO_TLS_CA_STORE=system deno run -A /path/to/semver-cli/main.ts get      # Should output: 1.0.0
-   DENO_TLS_CA_STORE=system deno run -A /path/to/semver-cli/main.ts inc patch  # Should output: 1.0.1
-   DENO_TLS_CA_STORE=system deno run -A /path/to/semver-cli/main.ts get      # Should output: 1.0.1
+   deno run -A /path/to/semver-cli/main.ts get      # Should output: 1.0.0
+   deno run -A /path/to/semver-cli/main.ts inc patch  # Should output: 1.0.1
+   deno run -A /path/to/semver-cli/main.ts get      # Should output: 1.0.1
    cat VERSION  # Should contain: 1.0.1
    ```
 
 4. **Project integration validation** - Test post-hooks work:
    ```bash
    # Test Node.js integration
-   cd test/node && DENO_TLS_CA_STORE=system deno run -A ../../main.ts get
+   cd test/node && deno run -A ../../main.ts get
 
    # Test other project types
-   cd ../helm && DENO_TLS_CA_STORE=system deno run -A ../../main.ts get
-   cd ../maven && DENO_TLS_CA_STORE=system deno run -A ../../main.ts get  
-   cd ../dotnet && DENO_TLS_CA_STORE=system deno run -A ../../main.ts get
+   cd ../helm && deno run -A ../../main.ts get
+   cd ../maven && deno run -A ../../main.ts get  
+   cd ../dotnet && deno run -A ../../main.ts get
    ```
 
 ### Known Limitations
@@ -160,10 +139,10 @@ fail.
 deno task check
 
 # Run just tests (fastest)
-DENO_TLS_CA_STORE=system deno test
+deno test
 
 # Run integration tests
-DENO_TLS_CA_STORE=system deno task test
+deno task test
 ```
 
 ### CI Integration
@@ -180,14 +159,11 @@ The GitHub Actions workflow requires:
 
 ### Troubleshooting
 
-1. **SSL/TLS errors**: Use `DENO_TLS_CA_STORE=system` or
-   `--unsafely-ignore-certificate-errors`
-2. **Import errors**: Dependencies download on first run - be patient
-3. **Test failures**: Usually due to SSL issues - use the certificate
-   workarounds
-4. **Compilation errors**: Expected due to environment limitations - focus on
+1. **Import errors**: Dependencies download on first run - be patient
+2. **Test failures**: Check for any environment-specific issues
+3. **Compilation errors**: Expected due to environment limitations - focus on
    runtime testing
-5. **Lint errors in deps/**: These are expected and don't break functionality
+4. **Lint errors in deps/**: These are expected and don't break functionality
 
 ### Performance Expectations
 
