@@ -18,167 +18,74 @@ export type IncrementOptions = {
 
 export function increment(options: IncrementOptions) {
   const { kind, version, pre, value, build } = options;
-  let semver: SemVer;
   
-  if (typeof version === "string") {
-    const parsed = parse(version);
-    if (!parsed) {
-      throw new InvalidVersionError(version);
-    }
-    semver = parsed;
-  } else {
-    semver = version;
+  // Always validate that version parameter is a string or throw an error
+  if (typeof version !== "string" && !version) {
+    throw new InvalidVersionError(String(version));
   }
+  
+  const semver = typeof version === "string" ? parse(version) : version;
+  if (!semver) {
+    throw new InvalidVersionError(typeof version === "string" ? version : String(version));
+  }
+  
   return {
     previous: semver,
     current: (() => {
       switch (kind) {
         case IncrementKind.Major:
-          if (pre && value) {
-            // Increment major and set specific prerelease value
-            return {
-              major: semver.major + 1,
-              minor: 0,
-              patch: 0,
+          // Use JSR @std/semver inc function when possible, only customize for specific prerelease+value cases
+          return pre && value
+            ? {
+              // Custom logic needed: JSR @std/semver inc doesn't support setting specific prerelease values
+              // We need to increment major and set a specific prerelease value (e.g., alpha.5)
+              ...inc(semver, "major", undefined, build),
               prerelease: [...pre.split("."), parseInt(value)],
-              build: build ? build.split(".") : [],
-            };
-          } else if (pre) {
-            // Increment major and handle prerelease
-            const currentPre = semver.prerelease?.[0];
-            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
-              // Same prerelease name, increment both major and prerelease counter
-              const currentNum = typeof semver.prerelease[1] === "number" 
-                ? semver.prerelease[1] + 1 
-                : parseInt(String(semver.prerelease[1])) + 1;
-              return {
-                major: semver.major + 1,
-                minor: 0,
-                patch: 0,
-                prerelease: [pre, currentNum],
-                build: [],
-              };
-            } else {
-              // Different prerelease name or no existing prerelease
-              return {
-                major: semver.major + 1,
-                minor: 0,
-                patch: 0,
-                prerelease: [pre, 0],
-                build: [],
-              };
             }
-          } else {
-            return inc(semver, "major");
-          }
+            : pre
+            ? inc(semver, "premajor", pre, build) // Use inc function for standard prerelease increment
+            : inc(semver, "major", undefined, build); // Use inc function for standard major increment
         case IncrementKind.Minor:
-          if (pre && value !== undefined) {
-            // Increment minor and set specific prerelease value
-            return {
-              major: semver.major,
-              minor: semver.minor + 1,
-              patch: 0,
+          return pre && value !== undefined
+            ? {
+              // Custom logic needed: JSR @std/semver inc doesn't support setting specific prerelease values
+              // We need to increment minor and set a specific prerelease value (e.g., beta.3)
+              ...inc(semver, "minor", undefined, build),
               prerelease: [...pre.split("."), parseInt(value)],
-              build: build ? build.split(".") : [],
-            };
-          } else if (pre) {
-            // Increment minor and handle prerelease
-            const currentPre = semver.prerelease?.[0];
-            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
-              // Same prerelease name, increment both minor and prerelease counter
-              const currentNum = typeof semver.prerelease[1] === "number" 
-                ? semver.prerelease[1] + 1 
-                : parseInt(String(semver.prerelease[1])) + 1;
-              return {
-                major: semver.major,
-                minor: semver.minor + 1,
-                patch: 0,
-                prerelease: [pre, currentNum],
-                build: [],
-              };
-            } else {
-              // Different prerelease name or no existing prerelease
-              return {
-                major: semver.major,
-                minor: semver.minor + 1,
-                patch: 0,
-                prerelease: [pre, 0],
-                build: [],
-              };
             }
-          } else {
-            return inc(semver, "minor");
-          }
+            : pre
+            ? inc(semver, "preminor", pre, build) // Use inc function for standard prerelease increment
+            : inc(semver, "minor", undefined, build); // Use inc function for standard minor increment
         case IncrementKind.Patch:
-          if (pre && value) {
-            // Increment patch and set specific prerelease value
-            return {
-              major: semver.major,
-              minor: semver.minor,
-              patch: semver.patch + 1,
+          return pre && value
+            ? {
+              // Custom logic needed: JSR @std/semver inc doesn't support setting specific prerelease values
+              // We need to increment patch and set a specific prerelease value (e.g., rc.2)
+              ...inc(semver, "patch", undefined, build),
               prerelease: [...pre.split("."), parseInt(value)],
-              build: build ? build.split(".") : [],
-            };
-          } else if (pre) {
-            // Increment patch and handle prerelease
-            const currentPre = semver.prerelease?.[0];
-            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
-              // Same prerelease name, increment both patch and prerelease counter
-              const currentNum = typeof semver.prerelease[1] === "number" 
-                ? semver.prerelease[1] + 1 
-                : parseInt(String(semver.prerelease[1])) + 1;
-              return {
-                major: semver.major,
-                minor: semver.minor,
-                patch: semver.patch + 1,
-                prerelease: [pre, currentNum],
-                build: [],
-              };
-            } else {
-              // Different prerelease name or no existing prerelease
-              return {
-                major: semver.major,
-                minor: semver.minor,
-                patch: semver.patch + 1,
-                prerelease: [pre, 0],
-                build: [],
-              };
             }
-          } else {
-            return inc(semver, "patch");
-          }
+            : pre
+            ? inc(semver, "prepatch", pre, build) // Use inc function for standard prerelease increment
+            : inc(semver, "patch", undefined, build); // Use inc function for standard patch increment
         case IncrementKind.None: {
           if (pre && value && build != undefined) {
+            // Custom logic needed: Setting specific prerelease value and build metadata without version increment
             return {
               ...semver,
               prerelease: [...pre.split("."), parseInt(value)],
               build: build.split(".").map((b) => b.trim()),
             };
           } else if (pre && value) {
+            // Custom logic needed: Setting specific prerelease value without version increment
             return {
               ...semver,
               prerelease: [...pre.split("."), parseInt(value)],
             };
           } else if (pre) {
-            // Check if we're changing prerelease name or incrementing existing
-            const currentPre = semver.prerelease?.[0];
-            if (currentPre && currentPre !== pre) {
-              // Changing prerelease name, reset to 0
-              return {
-                ...semver,
-                prerelease: [pre, 0],
-              };
-            } else if (currentPre === pre) {
-              // Same prerelease name, increment
-              return inc(semver, "prerelease");
-            } else {
-              // No existing prerelease, add new one
-              return {
-                ...semver,
-                prerelease: [pre, 0],
-              };
-            }
+            // Use inc function for standard prerelease increment without version bump
+            return inc(semver, "prerelease", pre, build);
           } else if (build !== undefined) {
+            // Custom logic needed: JSR @std/semver inc doesn't handle build metadata updates without version increment
             return {
               ...semver,
               build: build.split(".").map((b) => b.trim()),

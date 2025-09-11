@@ -49,17 +49,91 @@ export async function patch(
 }
 
 async function patchCsproj(file: string, version: SemVer) {
-  // TODO: Implement XML parsing with fast-xml-parser
-  throw new UnsupportedFileKindError(file, {
-    cause: new Error("XML processing temporarily disabled during dependency migration"),
+  const { dotnet } = semverFormats(version);
+  const contents = await Deno.readTextFile(file);
+  const document = xml.parse(contents, {
+    captureSpacesBetweenElements: true,
+  }) as Node;
+  const project = document.elements[0];
+  if (project.type !== "element" || project.name !== "Project") {
+    throw new UnsupportedFileKindError(file, {
+      cause: new Error("The csproj file must contain a root Project element"),
+    });
+  }
+
+  let isVersionSet = false;
+  for (const el of project.elements) {
+    if (isVersionSet) {
+      break;
+    } else if (el.type === "element" && el.name === "PropertyGroup") {
+      for (const property of el.elements) {
+        if (property.type === "element" && property.name === "Version") {
+          const value = property.elements[0];
+          if (value.type === "text") {
+            value.text = dotnet;
+            isVersionSet = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (!isVersionSet) {
+    throw new UnsupportedFileKindError(file, {
+      cause: new Error(
+        "The csproj file must contain a '<PropertyGroup><Version>0.0.0</Version></PropertyGroup>' element",
+      ),
+    });
+  }
+
+  const updated = xml.stringify(document, {
+    compact: false,
   });
+  await Deno.writeTextFile(file, updated);
 }
 
 async function patchPomXml(file: string, version: SemVer) {
-  // TODO: Implement XML parsing with fast-xml-parser
-  throw new UnsupportedFileKindError(file, {
-    cause: new Error("XML processing temporarily disabled during dependency migration"),
+  const { original } = semverFormats(version);
+  const contents = await Deno.readTextFile(file);
+  const document = xml.parse(contents, {
+    captureSpacesBetweenElements: true,
+  }) as Node;
+  const project = document.elements[0];
+  if (project.type !== "element" || project.name !== "project") {
+    throw new UnsupportedFileKindError(file, {
+      cause: new Error(
+        "The pom.xml file must contain a root <project> element",
+      ),
+    });
+  }
+
+  let isVersionSet = false;
+  for (const el of project.elements) {
+    if (isVersionSet) {
+      break;
+    } else if (el.type === "element" && el.name === "version") {
+      const value = el.elements[0];
+      if (value.type === "text") {
+        value.text = original;
+        isVersionSet = true;
+        break;
+      }
+    }
+  }
+
+  if (!isVersionSet) {
+    throw new UnsupportedFileKindError(file, {
+      cause: new Error(
+        "The pom.xml file must contain a '<project><version>0.0.0</version></project>' element",
+      ),
+    });
+  }
+
+  const updated = xml.stringify(document, {
+    compact: false,
   });
+  await Deno.writeTextFile(file, updated);
 }
 
 async function patchPackageJson(file: string, version: SemVer) {
