@@ -1,7 +1,4 @@
-import {
-  describe,
-  it,
-} from "testing/bdd";
+import { describe, it } from "testing/bdd";
 import {
   assertSpyCall,
   assertSpyCalls,

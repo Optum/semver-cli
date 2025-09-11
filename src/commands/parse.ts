@@ -1,6 +1,6 @@
 import type { Arguments } from "yargs";
 import type { YargsInstance } from "yargs";
-import { parse as parseVersion, format } from "semver";
+import { format, parse as parseVersion } from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { printVersion, readVersionFile } from "../util/version.ts";
 import { IContext } from "../context.ts";

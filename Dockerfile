@@ -20,12 +20,11 @@ WORKDIR /app
 ENV PATH="/app/bin:${PATH}"
 RUN mkdir -p /app/bin
 
-# Cache the dependencies as a layer (the following two steps are re-run only when deps.ts is modified).
-# Ideally cache deps.ts will download and compile _all_ external files used in main.ts.
-COPY deps/ /app/deps
+# Cache the dependencies as a layer (the following two steps are re-run only when deno.json/deno.lock is modified).
+# Install dependencies from npm and JSR registries instead of copying deps folder
 COPY deno.json /app/
 COPY deno.lock /app/
-RUN deno cache --allow-import deps/mod.ts
+RUN deno install
 
 # These steps will be re-run upon any file change in your working directory:
 ADD src /app/src

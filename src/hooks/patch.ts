@@ -1,6 +1,6 @@
 import * as path from "path";
-import { XMLParser, XMLBuilder } from "xml";
-import { modify, applyEdits } from "jsonc-parser";
+import { XMLBuilder, XMLParser } from "xml";
+import { applyEdits, modify } from "jsonc-parser";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
 import { semverFormats } from "../util/variant.ts";
 import { exists } from "../util/exists.ts";
@@ -22,9 +22,9 @@ export interface Element extends Node {
 const xmlParser = new XMLParser({ ignoreAttributes: false });
 const xmlBuilder = new XMLBuilder({ ignoreAttributes: false });
 
-const xml = { 
+const xml = {
   parse: (xmlString: string, options?: any) => xmlParser.parse(xmlString),
-  stringify: (obj: any, options?: any) => xmlBuilder.build(obj)
+  stringify: (obj: any, options?: any) => xmlBuilder.build(obj),
 };
 
 export async function patch(

@@ -18,13 +18,12 @@ export type IncrementOptions = {
 
 export function increment(options: IncrementOptions) {
   const { kind, version, pre, value, build } = options;
-  
-  
+
   const semver = parse(version);
   if (!semver) {
     throw new InvalidVersionError(`${version}`);
   }
-  
+
   return {
     previous: semver,
     current: (() => {
