@@ -39,6 +39,14 @@ export const greaterOrEqual = {
 
     // Use parsed versions for comparison
     const cmpResult = semverCompare(version1, version2);
-    await printComparison(args, v1, v2, cmpResult, "gte", jsonOutput);
+    const exitCode = await printComparison(
+      args,
+      v1,
+      v2,
+      cmpResult,
+      "gte",
+      jsonOutput,
+    );
+    Deno.exit(exitCode);
   },
 };

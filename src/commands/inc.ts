@@ -3,6 +3,7 @@ import { major, minor, none, patch } from "./inc/mod.ts";
 import {
   build,
   config,
+  json,
   output,
   prerelease,
   prereleaseName,
@@ -16,6 +17,7 @@ export const inc = {
     yargs
       .option("config", config)
       .option("output", output)
+      .option("json", json)
       .option("build", build)
       .option("pre", prerelease)
       .option("name", prereleaseName)

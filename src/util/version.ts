@@ -25,6 +25,7 @@ export async function printVersion(
   context: IContext,
   semver: SemVer,
   full = false,
+  forceJson = false,
 ) {
   const formatted = format(semver);
   const { major, minor, patch, prerelease, build } = semver;
@@ -47,7 +48,7 @@ export async function printVersion(
     version_dotnet: dotnet,
     version_docker: docker,
   });
-  if (full) {
+  if (full || forceJson) {
     console.log(JSON.stringify({
       version: formatted,
       major,
@@ -70,7 +71,7 @@ export async function printComparison(
   result: number,
   command: string,
   full = false,
-) {
+): Promise<number> {
   // Write to GitHub output if running in GitHub Actions
   await writeGithubOutput(context, {
     v1,
@@ -115,25 +116,24 @@ export async function printComparison(
     }
   }
 
-  // Set the exit code based on command type
+  // Return the exit code based on command type
   if (command === "cmp") {
     // For cmp, exit code is the comparison result but handle negative values
-    Deno.exit(result === -1 ? 255 : result);
+    return result === -1 ? 255 : result;
   } else {
     // For boolean commands, convert comparison result to boolean result
-    let exitCode = 0;
     if (command === "gt") {
-      exitCode = result > 0 ? 1 : 0;
+      return result > 0 ? 1 : 0;
     } else if (command === "gte") {
-      exitCode = result >= 0 ? 1 : 0;
+      return result >= 0 ? 1 : 0;
     } else if (command === "lt") {
-      exitCode = result < 0 ? 1 : 0;
+      return result < 0 ? 1 : 0;
     } else if (command === "lte") {
-      exitCode = result <= 0 ? 1 : 0;
+      return result <= 0 ? 1 : 0;
     } else if (command === "eq") {
-      exitCode = result === 0 ? 1 : 0;
+      return result === 0 ? 1 : 0;
     }
-    Deno.exit(exitCode);
+    return 0;
   }
 }
 

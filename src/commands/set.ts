@@ -9,7 +9,7 @@ import {
 import { postVersionHook } from "../hooks/mod.ts";
 import { InvalidVersionError } from "../errors/invalidVersion.error.ts";
 import { IContext } from "../context.ts";
-import { config, output } from "./options.ts";
+import { config, json, output } from "./options.ts";
 
 export const set = {
   command: "set <current>",
@@ -20,7 +20,8 @@ export const set = {
         describe: "The version to set to",
       })
       .option("config", config)
-      .option("output", output);
+      .option("output", output)
+      .option("json", json);
   },
   async handler(args: Arguments & IContext) {
     const previous = await readVersionFile();
@@ -39,6 +40,6 @@ export const set = {
       previous,
       current,
     );
-    await printVersion(args, current);
+    await printVersion(args, current, false, args.json);
   },
 };

@@ -26,6 +26,8 @@ be in error.**
 
 ### Building and Testing
 
+**CRITICAL**: For every source file (*.ts) you create or modify in the src/ directory, you MUST create or update a corresponding unit test file (*.test.ts) in the same directory. This ensures comprehensive test coverage and validates that your changes work correctly.
+
 1. **NEVER CANCEL builds or tests** - they complete quickly (under 2 minutes)
 2. **Format check**: `deno fmt` - Takes ~5 seconds, NEVER CANCEL
 3. **Lint check**: `deno lint` - Takes ~10 seconds, NEVER CANCEL
