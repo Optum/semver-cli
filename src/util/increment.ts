@@ -19,14 +19,10 @@ export type IncrementOptions = {
 export function increment(options: IncrementOptions) {
   const { kind, version, pre, value, build } = options;
   
-  // Always validate that version parameter is a string or throw an error
-  if (typeof version !== "string" && !version) {
-    throw new InvalidVersionError(String(version));
-  }
   
-  const semver = typeof version === "string" ? parse(version) : version;
+  const semver = parse(version);
   if (!semver) {
-    throw new InvalidVersionError(typeof version === "string" ? version : String(version));
+    throw new InvalidVersionError(`${version}`);
   }
   
   return {
