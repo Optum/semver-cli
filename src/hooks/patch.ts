@@ -23,8 +23,8 @@ const xmlParser = new XMLParser({ ignoreAttributes: false });
 const xmlBuilder = new XMLBuilder({ ignoreAttributes: false });
 
 const xml = {
-  parse: (xmlString: string, options?: any) => xmlParser.parse(xmlString),
-  stringify: (obj: any, options?: any) => xmlBuilder.build(obj),
+  parse: (xmlString: string) => xmlParser.parse(xmlString),
+  stringify: (obj: any) => xmlBuilder.build(obj),
 };
 
 export async function patch(
@@ -51,9 +51,7 @@ export async function patch(
 async function patchCsproj(file: string, version: SemVer) {
   const { dotnet } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
-  const document = xml.parse(contents, {
-    captureSpacesBetweenElements: true,
-  }) as Node;
+  const document = xml.parse(contents) as Node;
   const project = document.elements[0];
   if (project.type !== "element" || project.name !== "Project") {
     throw new UnsupportedFileKindError(file, {
@@ -87,18 +85,14 @@ async function patchCsproj(file: string, version: SemVer) {
     });
   }
 
-  const updated = xml.stringify(document, {
-    compact: false,
-  });
+  const updated = xml.stringify(document);
   await Deno.writeTextFile(file, updated);
 }
 
 async function patchPomXml(file: string, version: SemVer) {
   const { original } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
-  const document = xml.parse(contents, {
-    captureSpacesBetweenElements: true,
-  }) as Node;
+  const document = xml.parse(contents) as Node;
   const project = document.elements[0];
   if (project.type !== "element" || project.name !== "project") {
     throw new UnsupportedFileKindError(file, {
@@ -130,9 +124,7 @@ async function patchPomXml(file: string, version: SemVer) {
     });
   }
 
-  const updated = xml.stringify(document, {
-    compact: false,
-  });
+  const updated = xml.stringify(document);
   await Deno.writeTextFile(file, updated);
 }
 

@@ -35,7 +35,8 @@
     "@std/testing@1.0.15": {
       "integrity": "a490169f5ccb0f3ae9c94fbc69d2cd43603f2cffb41713a85f99bbb0e3087cbc",
       "dependencies": [
-        "jsr:@std/assert@^1.0.13"
+        "jsr:@std/assert@^1.0.13",
+        "jsr:@std/internal"
       ]
     },
     "@std/yaml@1.0.9": {

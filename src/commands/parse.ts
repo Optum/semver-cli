@@ -1,6 +1,6 @@
 import type { Arguments } from "yargs";
 import type { YargsInstance } from "yargs";
-import { format, parse as parseVersion } from "semver";
+import * as semver from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { printVersion, readVersionFile } from "../util/version.ts";
 import { IContext } from "../context.ts";
@@ -19,11 +19,16 @@ export const parse = {
   async handler(args: Arguments & IContext) {
     const { value } = args;
     const current = value ?? await readVersionFile();
-    const versionStr = typeof current === "string" ? current : format(current);
-    const semver = parseVersion(versionStr);
-    if (!semver) {
-      throw new InvalidVersionError(versionStr);
+
+    // If current is already a SemVer object (from readVersionFile), use it directly
+    // Otherwise parse the string value
+    const result = typeof current === "string"
+      ? semver.parse(current)
+      : current;
+
+    if (!result) {
+      throw new InvalidVersionError(`${current}`);
     }
-    await printVersion(args, semver, true);
+    await printVersion(args, result, true);
   },
 };
