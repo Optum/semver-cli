@@ -1,11 +1,13 @@
 import {
-  assertSpyCall,
   describe,
   it,
+} from "testing/bdd";
+import {
+  assertSpyCall,
   resolvesNext,
   returnsNext,
   stub,
-} from "testing/bdd";
+} from "testing/mock";
 import type { Arguments } from "yargs";
 import { none } from "./none.ts";
 import { testContext } from "../../util/testContext.ts";

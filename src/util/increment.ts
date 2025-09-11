@@ -35,40 +35,115 @@ export function increment(options: IncrementOptions) {
       switch (kind) {
         case IncrementKind.Major:
           if (pre && value) {
-            const newVer = inc(semver, "major");
+            // Increment major and set specific prerelease value
             return {
-              ...newVer,
+              major: semver.major + 1,
+              minor: 0,
+              patch: 0,
               prerelease: [...pre.split("."), parseInt(value)],
               build: build ? build.split(".") : [],
             };
           } else if (pre) {
-            return inc(semver, "premajor");
+            // Increment major and handle prerelease
+            const currentPre = semver.prerelease?.[0];
+            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
+              // Same prerelease name, increment both major and prerelease counter
+              const currentNum = typeof semver.prerelease[1] === "number" 
+                ? semver.prerelease[1] + 1 
+                : parseInt(String(semver.prerelease[1])) + 1;
+              return {
+                major: semver.major + 1,
+                minor: 0,
+                patch: 0,
+                prerelease: [pre, currentNum],
+                build: [],
+              };
+            } else {
+              // Different prerelease name or no existing prerelease
+              return {
+                major: semver.major + 1,
+                minor: 0,
+                patch: 0,
+                prerelease: [pre, 0],
+                build: [],
+              };
+            }
           } else {
             return inc(semver, "major");
           }
         case IncrementKind.Minor:
           if (pre && value !== undefined) {
-            const newVer = inc(semver, "minor");
+            // Increment minor and set specific prerelease value
             return {
-              ...newVer,
+              major: semver.major,
+              minor: semver.minor + 1,
+              patch: 0,
               prerelease: [...pre.split("."), parseInt(value)],
               build: build ? build.split(".") : [],
             };
           } else if (pre) {
-            return inc(semver, "preminor");
+            // Increment minor and handle prerelease
+            const currentPre = semver.prerelease?.[0];
+            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
+              // Same prerelease name, increment both minor and prerelease counter
+              const currentNum = typeof semver.prerelease[1] === "number" 
+                ? semver.prerelease[1] + 1 
+                : parseInt(String(semver.prerelease[1])) + 1;
+              return {
+                major: semver.major,
+                minor: semver.minor + 1,
+                patch: 0,
+                prerelease: [pre, currentNum],
+                build: [],
+              };
+            } else {
+              // Different prerelease name or no existing prerelease
+              return {
+                major: semver.major,
+                minor: semver.minor + 1,
+                patch: 0,
+                prerelease: [pre, 0],
+                build: [],
+              };
+            }
           } else {
             return inc(semver, "minor");
           }
         case IncrementKind.Patch:
           if (pre && value) {
-            const newVer = inc(semver, "patch");
+            // Increment patch and set specific prerelease value
             return {
-              ...newVer,
+              major: semver.major,
+              minor: semver.minor,
+              patch: semver.patch + 1,
               prerelease: [...pre.split("."), parseInt(value)],
               build: build ? build.split(".") : [],
             };
           } else if (pre) {
-            return inc(semver, "prepatch");
+            // Increment patch and handle prerelease
+            const currentPre = semver.prerelease?.[0];
+            if (currentPre === pre && semver.prerelease?.[1] !== undefined) {
+              // Same prerelease name, increment both patch and prerelease counter
+              const currentNum = typeof semver.prerelease[1] === "number" 
+                ? semver.prerelease[1] + 1 
+                : parseInt(String(semver.prerelease[1])) + 1;
+              return {
+                major: semver.major,
+                minor: semver.minor,
+                patch: semver.patch + 1,
+                prerelease: [pre, currentNum],
+                build: [],
+              };
+            } else {
+              // Different prerelease name or no existing prerelease
+              return {
+                major: semver.major,
+                minor: semver.minor,
+                patch: semver.patch + 1,
+                prerelease: [pre, 0],
+                build: [],
+              };
+            }
           } else {
             return inc(semver, "patch");
           }
@@ -85,7 +160,24 @@ export function increment(options: IncrementOptions) {
               prerelease: [...pre.split("."), parseInt(value)],
             };
           } else if (pre) {
-            return inc(semver, "prerelease");
+            // Check if we're changing prerelease name or incrementing existing
+            const currentPre = semver.prerelease?.[0];
+            if (currentPre && currentPre !== pre) {
+              // Changing prerelease name, reset to 0
+              return {
+                ...semver,
+                prerelease: [pre, 0],
+              };
+            } else if (currentPre === pre) {
+              // Same prerelease name, increment
+              return inc(semver, "prerelease");
+            } else {
+              // No existing prerelease, add new one
+              return {
+                ...semver,
+                prerelease: [pre, 0],
+              };
+            }
           } else if (build !== undefined) {
             return {
               ...semver,
