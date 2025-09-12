@@ -23,11 +23,7 @@ export const set = {
   async handler(args: Arguments & IContext) {
     const { value } = args;
     const previous = await readVersionFile();
-    const version = value
-      ? parse(value)
-      : previous
-      ? previous
-      : parse("0.1.0");
+    const version = value ? parse(value) : previous ? previous : parse("0.1.0");
     await writeVersionFile(version);
     await postVersionHook(
       args,

@@ -37,7 +37,7 @@ describe("set", () => {
       await set.handler(
         {
           _: [],
-          current: "1.2.3",
+          value: "1.2.3",
           hooks,
         } as unknown as Arguments & IContext,
       );
@@ -79,7 +79,7 @@ describe("set", () => {
       await set.handler(
         {
           _: [],
-          current: "1.2.3",
+          value: "1.2.3",
           hooks,
         } as unknown as Arguments & IContext,
       );
@@ -143,7 +143,7 @@ describe("set", () => {
       await set.handler(
         {
           _: [],
-          current: "1.2.3",
+          value: "1.2.3",
           hooks,
           config: "version.yml",
         } as unknown as Arguments & IContext,
@@ -210,7 +210,7 @@ describe("set", () => {
       await set.handler(
         {
           _: [],
-          current: "1.2.3",
+          value: "1.2.3",
           hooks,
           config: "version.yml",
         } as unknown as Arguments & IContext,
