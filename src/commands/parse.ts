@@ -4,24 +4,24 @@ import * as semver from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { printVersion, readVersionFile } from "../util/version.ts";
 import { IContext } from "../context.ts";
-import { output } from "./options.ts";
+import { output,  } from "./options.ts";
 
 export const parse = {
-  command: "parse [value]",
-  describe: "Parse the version and print as JSON",
+  command: "parse [version]",
+  describe: "Parse the version (or version file if not provided) and print",
   builder(yargs: YargsInstance) {
     return yargs
-      .positional("value", {
+      .positional("version", {
         describe: "The version to parse, or the VERSION file (default)",
       })
-      .option("output", output);
+      .option("output", output)
+      ;
   },
   async handler(args: Arguments & IContext) {
-    const { value } = args;
-    const current = value ?? await readVersionFile();
-    const result = semver.parse(current as string);
+    const { version } = args;
+    const result = semver.parse(version) ?? await readVersionFile();
     if (!result) {
-      throw new InvalidVersionError(`${current}`);
+      throw new InvalidVersionError(`${result}`);
     }
     await printVersion(args, result, true);
   },

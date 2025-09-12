@@ -1,22 +1,20 @@
 import type { Arguments, YargsInstance } from "yargs";
 import { parse } from "semver";
-import { increment, IncrementKind } from "../util/increment.ts";
 import {
   printVersion,
   readVersionFile,
   writeVersionFile,
 } from "../util/version.ts";
 import { postVersionHook } from "../hooks/mod.ts";
-import { InvalidVersionError } from "../errors/invalidVersion.error.ts";
 import { IContext } from "../context.ts";
 import { config, output } from "./options.ts";
 
 export const set = {
-  command: "set <current>",
+  command: "set <version>",
   describe: "Set the version",
   builder(yargs: YargsInstance) {
     return yargs
-      .positional("current", {
+      .positional("version", {
         describe: "The version to set to",
       })
       .option("config", config)
@@ -24,21 +22,17 @@ export const set = {
   },
   async handler(args: Arguments & IContext) {
     const previous = await readVersionFile();
-    const value = args.current || previous || "0.1.0";
-    const version = parse(value);
-    if (!version) {
-      throw new InvalidVersionError(value);
-    }
-    const { current } = increment({
-      kind: IncrementKind.None,
-      version: version,
-    });
-    await writeVersionFile(current);
+    const version = args.current
+      ? parse(args.current)
+      : previous
+      ? previous
+      : parse("0.1.0");
+    await writeVersionFile(version);
     await postVersionHook(
       args,
       previous,
-      current,
+      version,
     );
-    await printVersion(args, current);
+    await printVersion(args, version);
   },
 };

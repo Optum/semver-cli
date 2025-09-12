@@ -67,7 +67,7 @@ Deno.test("custom config", async () => {
     stub(
       Deno,
       "readTextFile",
-      async (path: string, _opts: any) => {
+      async (path: string | URL, _opts?: Deno.ReadFileOptions) => {
         configPath = path;
         return await YAML.stringify({
           on: { post: [] },

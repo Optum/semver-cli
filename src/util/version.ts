@@ -69,11 +69,13 @@ export async function printVersion(
  * version then the default version `0.0.0` is returned.
  * @returns The parsed version or default version
  */
-export async function readVersionFile() {
+export async function readVersionFile(): Promise<SemVer> {
   try {
     const versionText = await Deno.readTextFile("VERSION");
     const trimmed = versionText.trim();
-    return parse(trimmed || DEFAULT_VERSION.toString()) || DEFAULT_VERSION;
+    return trimmed
+      ? parse(trimmed)
+      : DEFAULT_VERSION;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
       return DEFAULT_VERSION;

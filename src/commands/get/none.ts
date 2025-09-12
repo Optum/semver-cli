@@ -7,13 +7,12 @@ export const none = {
   command: ["none", "$0"],
   describe: "Gets the version",
   handler: async (args: Arguments & IContext) => {
-    const { pre, name, value, build } = args;
+    const { prerelease, build } = args;
     const version = await readVersionFile();
     const { current } = increment({
-      kind: IncrementKind.None,
       version,
-      pre: pre ? name : undefined,
-      value,
+      kind: IncrementKind.None,
+      prerelease,
       build,
     });
     await printVersion(args, current);

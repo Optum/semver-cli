@@ -7,13 +7,12 @@ export const minor = {
   command: "minor",
   describe: "A minor version increment",
   handler: async (args: Arguments & IContext) => {
-    const { pre, name, value, build } = args;
+    const { prerelease, build } = args;
     const version = await readVersionFile();
     const { current } = increment({
-      kind: IncrementKind.Minor,
       version,
-      pre: pre ? name : undefined,
-      value,
+      kind: IncrementKind.Minor,
+      prerelease,
       build,
     });
     await printVersion(args, current);

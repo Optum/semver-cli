@@ -48,15 +48,14 @@ describe("minor", () => {
     await minor.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
+        prerelease: "pr",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.3.0-pre.0"],
+      args: ["1.3.0-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.3.0-pre.0\n"],
+      args: ["VERSION", "1.3.0-pr.0\n"],
     });
   });
   it("minor02", async () => {
@@ -79,16 +78,14 @@ describe("minor", () => {
       {
         ...context,
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
       } as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.3.0-pre.7"],
+      args: ["1.3.0-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.3.0-pre.7\n"],
+      args: ["VERSION", "1.3.0-pr.0\n"],
     });
   });
   it("minor05", async () => {
@@ -96,17 +93,15 @@ describe("minor", () => {
       {
         ...context,
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
         build: "abc123",
       } as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.3.0-pre.7+abc123"],
+      args: ["1.3.0-pr.0+abc123"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.3.0-pre.7+abc123\n"],
+      args: ["VERSION", "1.3.0-pr.0+abc123\n"],
     });
   });
 });

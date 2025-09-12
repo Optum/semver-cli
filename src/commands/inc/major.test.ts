@@ -38,15 +38,14 @@ describe("major", () => {
     await major.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
+        prerelease: "pr",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["2.0.0-pre.0"],
+      args: ["2.0.0-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "2.0.0-pre.0\n"],
+      args: ["VERSION", "2.0.0-pr.0\n"],
     });
   });
   it("major02", async () => {
@@ -67,33 +66,29 @@ describe("major", () => {
     await major.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["2.0.0-pre.7"],
+      args: ["2.0.0-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "2.0.0-pre.7\n"],
+      args: ["VERSION", "2.0.0-pr.0\n"],
     });
   });
   it("major05", async () => {
     await major.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
         build: "abc123",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["2.0.0-pre.7+abc123"],
+      args: ["2.0.0-pr.0+abc123"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "2.0.0-pre.7+abc123\n"],
+      args: ["VERSION", "2.0.0-pr.0+abc123\n"],
     });
   });
 });
