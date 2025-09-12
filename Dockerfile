@@ -24,13 +24,13 @@ RUN mkdir -p /app/bin
 # Install dependencies from npm and JSR registries instead of copying deps folder
 COPY deno.json /app/
 COPY deno.lock /app/
-RUN deno install
+RUN rm deno.lock && \
+  deno install
 
 # These steps will be re-run upon any file change in your working directory:
 ADD src /app/src
 ADD main.ts /app
 
 # Compile the main app so that it doesn't need to be compiled each startup/entry.
-RUN deno cache main.ts
 RUN deno compile --allow-run --allow-env --allow-read --allow-write -o bin/semver main.ts
 ENTRYPOINT ["semver"]
