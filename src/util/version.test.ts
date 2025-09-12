@@ -1,12 +1,6 @@
-import { format, parse } from "../../deps/semver.ts";
-import {
-  assertEquals,
-  AssertionError,
-  assertRejects,
-  assertSpyCall,
-  resolvesNext,
-  stub,
-} from "../../deps/std.ts";
+import { format, parse } from "semver";
+import { assertEquals, AssertionError, assertRejects } from "assert";
+import { assertSpyCall, resolvesNext, stub } from "testing/mock";
 import { IContext } from "../context.ts";
 import { printVersion, readVersionFile, writeVersionFile } from "./version.ts";
 

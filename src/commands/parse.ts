@@ -1,5 +1,6 @@
-import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { parse as parseVersion } from "../../deps/semver.ts";
+import type { Arguments } from "yargs";
+import type { YargsInstance } from "yargs";
+import * as semver from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { printVersion, readVersionFile } from "../util/version.ts";
 import { IContext } from "../context.ts";
@@ -7,7 +8,7 @@ import { output } from "./options.ts";
 
 export const parse = {
   command: "parse [value]",
-  describe: "Parse the version and print as JSON",
+  describe: "Parse the version (or version file if not provided) and print",
   builder(yargs: YargsInstance) {
     return yargs
       .positional("value", {
@@ -17,11 +18,10 @@ export const parse = {
   },
   async handler(args: Arguments & IContext) {
     const { value } = args;
-    const current = value ?? await readVersionFile();
-    const semver = parseVersion(current);
-    if (!semver) {
-      throw new InvalidVersionError(current);
+    const result = value ? semver.parse(value) : await readVersionFile();
+    if (!result) {
+      throw new InvalidVersionError(`${result}`);
     }
-    await printVersion(args, semver, true);
+    await printVersion(args, result, true);
   },
 };

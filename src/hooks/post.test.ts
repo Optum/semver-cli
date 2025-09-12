@@ -1,6 +1,7 @@
-import { parse } from "../../deps/semver.ts";
-import { assertEquals, resolvesNext, stub } from "../../deps/std.ts";
-import { YAML } from "../../deps/yaml.ts";
+import { parse } from "semver";
+import { assertEquals } from "assert";
+import { resolvesNext, stub } from "testing/mock";
+import * as YAML from "yaml";
 import { IContext } from "../context.ts";
 import { postVersionHook } from "./post.ts";
 
@@ -66,7 +67,7 @@ Deno.test("custom config", async () => {
     stub(
       Deno,
       "readTextFile",
-      async (path, _opts) => {
+      async (path: string | URL, _opts?: Deno.ReadFileOptions) => {
         configPath = path;
         return await YAML.stringify({
           on: { post: [] },

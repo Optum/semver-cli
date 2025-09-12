@@ -5,19 +5,12 @@ on:
       pattern: '(?<=export const version = ").*(?=";)'
     - kind: regexp
       file: README.md
-      pattern: '(?<=semver-cli@).*(?=\/main.ts)'
-    - kind: regexp
-      file: README.md
-      pattern: "(?<=semver-cli@).*$"
-    - kind: regexp
-      file: Dockerfile
-      pattern: '(?<=VERSION=).*(?=; \\)'
+      pattern: "(?<=semver-cli@).*"
+      flags: g
     - kind: regexp
       file: setup/action.yml
       pattern: "(?<=default: ).*"
     - kind: regexp
-      file: action.yml
-      pattern: "(?<=default: ).*"
-    - kind: regexp
       file: Dockerfile.action
       pattern: "(?<=semver-cli:).*"
+      format: docker

@@ -1,5 +1,5 @@
-import { path } from "../../deps/std.ts";
-import { format, parse, SemVer } from "../../deps/semver.ts";
+import * as path from "path";
+import { format, parse, SemVer } from "semver";
 import { IContext } from "../context.ts";
 import { semverFormats } from "./variant.ts";
 
@@ -27,7 +27,7 @@ export async function printVersion(
   full = false,
 ) {
   const formatted = format(semver);
-  const { major, minor, patch, prerelease, build } = semver;
+  const { major, minor, patch, prerelease = [], build = [] } = semver;
   const pre = prerelease.join(".");
   const b = build.join(".");
   const { dotnet, docker } = semverFormats(semver);
@@ -69,11 +69,11 @@ export async function printVersion(
  * version then the default version `0.0.0` is returned.
  * @returns The parsed version or default version
  */
-export async function readVersionFile() {
+export async function readVersionFile(): Promise<SemVer> {
   try {
     const versionText = await Deno.readTextFile("VERSION");
     const trimmed = versionText.trim();
-    return parse(trimmed || DEFAULT_VERSION) || DEFAULT_VERSION;
+    return trimmed ? parse(trimmed) : DEFAULT_VERSION;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
       return DEFAULT_VERSION;
