@@ -13,7 +13,7 @@
     "yargs": "npm:yargs@^17.7.2"
   },
   "tasks": {
-    "check": "deno fmt && deno lint && deno task test",
+    "check": "deno fmt && deno lint && deno task test && deno run -A main.ts parse",
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",
     "test": "deno test && deno task test:node && deno task test:helm && deno task test:maven && deno task test:dotnet",
     "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --prerelease alpha --build xyz.987)",

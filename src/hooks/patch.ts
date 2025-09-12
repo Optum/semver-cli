@@ -3,13 +3,13 @@ import { applyEdits, modify } from "jsonc-parser";
 import { UnsupportedFileKindError } from "../errors/mod.ts";
 import { semverFormats } from "../util/variant.ts";
 import { exists } from "../util/exists.ts";
-import { SemVer } from "semver";
+import { format, SemVer } from "semver";
 
 export async function patch(
   file: string,
   version: SemVer,
 ) {
-  console.log(`patching ${version} in ${file}`);
+  console.log(`patching ${format(version)} in ${file}`);
   const ext = path.extname(file);
   const fileName = path.basename(file);
   if (ext === ".csproj" || ext === ".targets") {
