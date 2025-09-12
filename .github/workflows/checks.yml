@@ -18,6 +18,7 @@ jobs:
           deno-version: v2.x
 
       - run: deno --version
+      - run: deno install
       - run: deno fmt  --check
       - run: deno lint
       - run: deno task test
