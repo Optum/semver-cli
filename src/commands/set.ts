@@ -10,20 +10,21 @@ import { IContext } from "../context.ts";
 import { config, output } from "./options.ts";
 
 export const set = {
-  command: "set <version>",
+  command: "set <value>",
   describe: "Set the version",
   builder(yargs: YargsInstance) {
     return yargs
-      .positional("version", {
+      .positional("value", {
         describe: "The version to set to",
       })
       .option("config", config)
       .option("output", output);
   },
   async handler(args: Arguments & IContext) {
+    const { value } = args;
     const previous = await readVersionFile();
-    const version = args.current
-      ? parse(args.current)
+    const version = value
+      ? parse(value)
       : previous
       ? previous
       : parse("0.1.0");

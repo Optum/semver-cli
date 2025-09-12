@@ -4,31 +4,43 @@ branding:
   icon: activity
   color: orange
 inputs:
-  action:
-    description: "A versioning action to perform (get|set|inc|parse)"
-    required: false
   command:
+    type: choice
+    description: Command
+    default: get
+    required: false
+    options:
+      - get
+      - set
+      - inc
+      - parse
+  sub-command:
     type: choice
     description: "The kind of increment (major|minor|patch|none) for (get|inc) actions"
     required: false
+    default: none
     options:
-      - none
       - major
       - minor
       - patch
-  pre:
-    type: boolean
-    description: "Whether or not to create a pre-release version (inc|get)"
-  name:
-    description: "If pre is set, you may optionally specify a prerelease name"
+      - none
+  prerelease:
+    type: string
+    description: Optional Prerelease Metadata
+    required: false
+  build:
+    type: string
+    description: Optional Build Metadata
     required: false
   value:
-    description: "If pre is set, you may optionally specify a prerelease number"
-  build:
-    description: "Optional build metadata"
+    type: string
+    description: The Version (for set action or parse action)
     required: false
-  current:
-    description: "The version for the set command"
+  config:
+    type: string
+    description: "Path to a configuration file"
+    required: false
+    default: .github/version.yml
 
 outputs:
   version:
@@ -51,13 +63,12 @@ runs:
   using: "docker"
   image: "Dockerfile.action"
   args:
-    - ${{ inputs.action || 'get' }}
     - ${{ inputs.command }}
-    - ${{ inputs.pre && '--pre' || ''}}
-    - ${{ inputs.name && '--name' || '' }}
-    - ${{ inputs.name || '' }}
-    - ${{ inputs.value && '--value' || '' }}
+    - ${{ inputs.sub-command }}
     - ${{ inputs.value || '' }}
+    - ${{ inputs.prerelease && '--prerelease' || '' }}
+    - ${{ inputs.prerelease || '' }}
     - ${{ inputs.build && '--build' || '' }}
     - ${{ inputs.build || '' }}
-    - ${{ inputs.current }}
+    - ${{ inputs.config && '--config' || '' }}
+    - ${{ inputs.config || '' }}
