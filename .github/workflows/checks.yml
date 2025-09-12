@@ -17,7 +17,15 @@ jobs:
         with:
           deno-version: v2.x
 
-      - run: deno --version
+      # When we develop this internally we have to go through the repo1 mirror
+      # When we run it in GitHub its running outside of the optum network and cant access repo1
+      # Ideally these lock files wouldn't store the repository in it but just the sha of the module
+      # For now we have to remove the lock file in order to install the dependencies in the ci server
+      - name: Install Dependencies
+        run: |
+          rm deno.lock
+          deno install --no-lock
+
       - run: deno fmt  --check
       - run: deno lint
       - run: deno task test

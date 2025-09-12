@@ -1,4 +1,4 @@
-import { SemVer } from "../../deps/semver.ts";
+import { SemVer } from "semver";
 import { FormatKind, semverFormatByKey } from "../util/variant.ts";
 
 export async function regexp(

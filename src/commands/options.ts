@@ -19,31 +19,18 @@ export const json = {
   description: "Output comparison result as JSON",
 };
 
+export const prerelease = {
+  alias: "p",
+  type: "string",
+  description: "Include prerelease",
+  example: "pr.1",
+  default: undefined,
+};
+
 export const build = {
   alias: "b",
   type: "string",
   description: "Build metadata",
   example: "1234.abc",
-  default: undefined,
-};
-
-export const prerelease = {
-  alias: "p",
-  type: "flag",
-  description: "Include prerelease",
-};
-
-export const prereleaseName = {
-  alias: "n",
-  type: "string",
-  description: "Prerelease name",
-  example: "alpha",
-  default: "pre",
-};
-
-export const prereleaseValue = {
-  alias: "v",
-  type: "number",
-  description: "Prerelease number value",
   default: undefined,
 };

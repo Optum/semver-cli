@@ -1,4 +1,4 @@
-import { Arguments } from "../../../deps/yargs.ts";
+import type { Arguments } from "yargs";
 import { increment, IncrementKind } from "../../util/increment.ts";
 import {
   printVersion,
@@ -12,13 +12,12 @@ export const none = {
   command: ["none", "$0"],
   describe: "A none version increment",
   handler: async (args: Arguments & IContext) => {
-    const { pre, name, value, build } = args;
+    const { prerelease, build } = args;
     const version = await readVersionFile();
     const { previous, current } = increment({
-      kind: IncrementKind.None,
       version,
-      pre: pre ? name : undefined,
-      value,
+      kind: IncrementKind.None,
+      prerelease,
       build,
     });
     await writeVersionFile(current);

@@ -1,4 +1,4 @@
-import { format, SemVer } from "../../deps/semver.ts";
+import { format, SemVer } from "semver";
 
 export async function replace(
   file: string,

@@ -1,11 +1,24 @@
 {
+  "nodeModulesDir": "auto",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.14",
+    "json5": "npm:json5@^2.2.3",
+    "jsonc-parser": "npm:jsonc-parser@^3.2.1",
+    "semver": "jsr:@std/semver@^1.0.3",
+    "path": "jsr:@std/path@^1.0.6",
+    "assert": "jsr:@std/assert@^1.0.6",
+    "testing/bdd": "jsr:@std/testing@^1.0.3/bdd",
+    "testing/mock": "jsr:@std/testing@^1.0.3/mock",
+    "yaml": "jsr:@std/yaml@^1.0.5",
+    "yargs": "npm:yargs@^17.7.2"
+  },
   "tasks": {
-    "check": "deno fmt && deno lint && deno task test",
+    "check": "deno fmt && deno lint && deno task test && deno run -A main.ts parse",
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",
     "test": "deno test && deno task test:node && deno task test:helm && deno task test:maven && deno task test:dotnet",
-    "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --pre --name alpha --build xyz.987)",
-    "test:helm": "(cd test/helm && deno run -A ../../main.ts inc minor --pre --name beta  --build abc.123)",
-    "test:maven": "(cd test/maven && deno run -A ../../main.ts inc minor --pre --name omega --build def.456)",
-    "test:dotnet": "(cd test/dotnet && deno run -A ../../main.ts inc minor --pre --name lambda --build ghi.789)"
+    "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --prerelease alpha --build xyz.987)",
+    "test:helm": "(cd test/helm && deno run -A ../../main.ts inc minor --prerelease beta  --build abc.123)",
+    "test:maven": "(cd test/maven && deno run -A ../../main.ts inc minor --prerelease omega --build def.456)",
+    "test:dotnet": "(cd test/dotnet && deno run -A ../../main.ts inc minor --prerelease lambda --build ghi.789)"
   }
 }

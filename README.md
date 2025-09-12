@@ -96,15 +96,10 @@ semver parse 1.0.0 # {"major":1,"minor":1,"patch":0,"prerelease":[],"build":[]}
 
 When calling the command `inc` the `VERSION` file will be updated based on the
 sub command specified, `major`, `minor`, `patch`, `none`. Additional metadata
-may be added to the version using the `--pre` and `--build` parameters. If the
-`--name` parameter is specified then that will be used instead of the default
-`pre`. If the same prerelease name is used multiple times the prerelease number
-will be incremented and it defaults to `0` if set initially or changed to a new
-name. If the argument `--value` is set then the prerelease number will be
-specifically set to the value provided.
+may be added to the version using the `--prerelease` and `--build` parameters.
 
 `none` can be used to synchronize new or out of sync files with post hooks, and
-also it can be used in conjunction with `--pre` and `--build` without
+also it can be used in conjunction with `--prerelease` and `--build` without
 incrementing the main version numbers.
 
 #### examples
@@ -119,14 +114,10 @@ semver inc major # 2.0.0
 
 ```sh
 semver set 1.2.3-pre.0
-semver inc --pre              # 1.2.3-pre.1
-semver inc --pre --value 10   # 1.2.3-pre.10
-semver inc --pre --name alpha # 1.2.3-alpha.0
+semver inc --prerelease alpha # 1.2.3-alpha.0
+semver inc --prerelease alpha # 1.2.3-alpha.1
 semver inc --build 1          # 1.2.3-alpha.1+1
-semver inc --pre \
-  --name alpha \
-  --value 11 \
-  --build abc123              # 1.2.3-alpha.11+abc123
+semver inc --prerelease beta  # 1.2.3-beta.0+1
 ```
 
 ### Increment Post Hooks
@@ -197,7 +188,7 @@ jobs:
     steps:
       - if: inputs.pre
         name: Increment Pre-Release Version
-        uses: optum/semver-cli@0.9.20
+        uses: optum/semver-cli@0.9.27
         with:
           action: inc
           pre: true
@@ -207,7 +198,7 @@ jobs:
 
       - id: version
         name: Get Version
-        uses: optum/semver-cli@0.9.20
+        uses: optum/semver-cli@0.9.27
 
       - run: echo "The calculated ${{ steps.version.outputs.version }}"
 ```

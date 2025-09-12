@@ -1,4 +1,4 @@
-import { yargs } from "./deps/yargs.ts";
+import yargs from "yargs";
 import { version } from "./src/info.ts";
 import {
   compare,
@@ -31,6 +31,7 @@ await yargs()
   .command(less)
   .command(lessOrEqual)
   .command(equal)
+  .strictOptions()
   .strictCommands()
   .demandCommand(1)
   .version(version)

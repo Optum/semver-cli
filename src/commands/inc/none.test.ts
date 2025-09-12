@@ -1,12 +1,6 @@
-import {
-  assertSpyCall,
-  describe,
-  it,
-  resolvesNext,
-  returnsNext,
-  stub,
-} from "../../../deps/std.ts";
-import { Arguments } from "../../../deps/yargs.ts";
+import { describe, it } from "testing/bdd";
+import { assertSpyCall, resolvesNext, returnsNext, stub } from "testing/mock";
+import type { Arguments } from "yargs";
 import { none } from "./none.ts";
 import { testContext } from "../../util/testContext.ts";
 import { IContext } from "../../context.ts";
@@ -44,15 +38,14 @@ describe("none", () => {
     await none.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
+        prerelease: "pr",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.2.3-pre.0"],
+      args: ["1.2.3-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.2.3-pre.0\n"],
+      args: ["VERSION", "1.2.3-pr.0\n"],
     });
   });
   it("none02", async () => {
@@ -73,33 +66,29 @@ describe("none", () => {
     await none.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.2.3-pre.7"],
+      args: ["1.2.3-pr.0"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.2.3-pre.7\n"],
+      args: ["VERSION", "1.2.3-pr.0\n"],
     });
   });
   it("none04", async () => {
     await none.handler(
       {
         _: [],
-        pre: true,
-        name: "pre",
-        value: "7",
+        prerelease: "pr",
         build: "abc.123",
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx0.consoleLog, 0, {
-      args: ["1.2.3-pre.7+abc.123"],
+      args: ["1.2.3-pr.0+abc.123"],
     });
     assertSpyCall(ctx0.writeTextFile, 0, {
-      args: ["VERSION", "1.2.3-pre.7+abc.123\n"],
+      args: ["VERSION", "1.2.3-pr.0+abc.123\n"],
     });
   });
 });
