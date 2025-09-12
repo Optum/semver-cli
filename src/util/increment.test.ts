@@ -104,9 +104,9 @@ const testCases: (IncrementOptions & { expected: string })[] = [
 testCases.forEach((testCases, i) => {
   const { kind, version, prerelease, expected } = testCases;
   Deno.test({
-    name: `INC${
-      i.toLocaleString(undefined, { minimumIntegerDigits: 2 })
-    } - ${format(version)}:${kind}:${prerelease} -> ${expected}`,
+    name: `INC${i.toLocaleString(undefined, { minimumIntegerDigits: 2 })} - ${
+      format(version)
+    }:${kind}:${prerelease} -> ${expected}`,
     fn: () => {
       const result = increment({ kind, version, prerelease });
       assertEquals(format(result.current), expected);

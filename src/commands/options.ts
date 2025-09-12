@@ -18,7 +18,7 @@ export const prerelease = {
   type: "string",
   description: "Include prerelease",
   example: "pr.1",
-  default: undefined
+  default: undefined,
 };
 
 export const build = {

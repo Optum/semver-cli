@@ -73,9 +73,7 @@ export async function readVersionFile(): Promise<SemVer> {
   try {
     const versionText = await Deno.readTextFile("VERSION");
     const trimmed = versionText.trim();
-    return trimmed
-      ? parse(trimmed)
-      : DEFAULT_VERSION;
+    return trimmed ? parse(trimmed) : DEFAULT_VERSION;
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
       return DEFAULT_VERSION;

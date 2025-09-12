@@ -1,11 +1,6 @@
 import type { YargsInstance } from "yargs";
 import { major, minor, none, patch } from "./get/mod.ts";
-import {
-  build,
-  config,
-  output,
-  prerelease,
-} from "./options.ts";
+import { build, config, output, prerelease } from "./options.ts";
 
 export const get = {
   command: "get",

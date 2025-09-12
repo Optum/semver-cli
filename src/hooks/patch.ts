@@ -29,7 +29,8 @@ export async function patch(
 async function patchCsproj(file: string, version: SemVer) {
   const { dotnet } = semverFormats(version);
   const contents = await Deno.readTextFile(file);
-  const r = /(?<=<Project.*>(.|\n)*<PropertyGroup>(.|\n)*<Version>).*(?=<\/Version>)/;
+  const r =
+    /(?<=<Project.*>(.|\n)*<PropertyGroup>(.|\n)*<Version>).*(?=<\/Version>)/;
   const updated = contents.replace(r, dotnet);
   await Deno.writeTextFile(file, updated);
 }

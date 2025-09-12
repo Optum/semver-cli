@@ -4,7 +4,7 @@ import * as semver from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { printVersion, readVersionFile } from "../util/version.ts";
 import { IContext } from "../context.ts";
-import { output,  } from "./options.ts";
+import { output } from "./options.ts";
 
 export const parse = {
   command: "parse [version]",
@@ -14,8 +14,7 @@ export const parse = {
       .positional("version", {
         describe: "The version to parse, or the VERSION file (default)",
       })
-      .option("output", output)
-      ;
+      .option("output", output);
   },
   async handler(args: Arguments & IContext) {
     const { version } = args;

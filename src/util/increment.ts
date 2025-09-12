@@ -12,7 +12,7 @@ export interface IncrementOptions {
   kind: IncrementKind;
   prerelease?: string;
   build?: string;
-};
+}
 
 export function increment(options: IncrementOptions) {
   const { kind, version, prerelease, build } = options;
@@ -33,17 +33,13 @@ export function increment(options: IncrementOptions) {
             ? inc(version, "prepatch", { prerelease, build })
             : inc(version, "patch", { build });
         case IncrementKind.None:
-            return prerelease
-              ? inc(version, "pre", { prerelease, build })
-              : {
-                  ...version,
-                  prerelease: prerelease
-                    ? prerelease.split(".")
-                    : version.prerelease ?? [],
-                  build: build
-                    ? build.split(".")
-                    : version.build ?? []
-                };
+          return prerelease ? inc(version, "pre", { prerelease, build }) : {
+            ...version,
+            prerelease: prerelease
+              ? prerelease.split(".")
+              : version.prerelease ?? [],
+            build: build ? build.split(".") : version.build ?? [],
+          };
         default:
           throw new Error(`Unknown increment kind: ${kind}`);
       }

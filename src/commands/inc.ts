@@ -1,11 +1,6 @@
 import type { YargsInstance } from "yargs";
 import { major, minor, none, patch } from "./inc/mod.ts";
-import {
-  build,
-  config,
-  output,
-  prerelease,
-} from "./options.ts";
+import { build, config, output, prerelease } from "./options.ts";
 
 export const inc = {
   command: "inc",
