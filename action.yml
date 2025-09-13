@@ -68,6 +68,14 @@ outputs:
     description: "If parsing, the prerelease version"
   build:
     description: "If parsing, the build version"
+  v1:
+    description: "If comparing, the first version"
+  v2:
+    description: "If comparing, the second version"
+  result:
+    description: "If comparing, the result of the comparison (-1|0|1)"
+  command:
+    description: "If comparing, the comparison that was run"
 runs:
   using: "docker"
   image: "Dockerfile"
