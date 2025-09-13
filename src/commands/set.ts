@@ -7,7 +7,7 @@ import {
 } from "../util/version.ts";
 import { postVersionHook } from "../hooks/mod.ts";
 import { IContext } from "../context.ts";
-import { config, output } from "./options.ts";
+import { config, json, output } from "./options.ts";
 
 export const set = {
   command: "set <value>",
@@ -18,7 +18,8 @@ export const set = {
         describe: "The version to set to",
       })
       .option("config", config)
-      .option("output", output);
+      .option("output", output)
+      .option("json", json);
   },
   async handler(args: Arguments & IContext) {
     const { value } = args;
@@ -30,6 +31,6 @@ export const set = {
       previous,
       version,
     );
-    await printVersion(args, version);
+    await printVersion(args, version, args.json);
   },
 };

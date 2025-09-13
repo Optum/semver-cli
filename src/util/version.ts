@@ -24,7 +24,7 @@ async function writeGithubOutput(
 export async function printVersion(
   context: IContext,
   semver: SemVer,
-  full = false,
+  forceJson = false,
 ) {
   const formatted = format(semver);
   const { major, minor, patch, prerelease = [], build = [] } = semver;
@@ -47,7 +47,7 @@ export async function printVersion(
     version_dotnet: dotnet,
     version_docker: docker,
   });
-  if (full) {
+  if (forceJson) {
     console.log(JSON.stringify({
       version: formatted,
       major,
@@ -60,6 +60,76 @@ export async function printVersion(
     }));
   } else {
     console.log(formatted);
+  }
+}
+
+export async function printComparison(
+  context: IContext,
+  v1: string,
+  v2: string,
+  result: number,
+  command: string,
+  forceJson = false,
+) {
+  // Write to GitHub output if running in GitHub Actions
+  await writeGithubOutput(context, {
+    v1,
+    v2,
+    result,
+    command,
+  });
+
+  if (forceJson) {
+    // JSON output - emit structured data
+    console.log(JSON.stringify({
+      v1,
+      v2,
+      result,
+      command,
+    }));
+  } else {
+    // Human-readable output to stdout using the result parameter
+    if (command === "eq") {
+      if (result === 0) {
+        console.log(`${v1} is equal to ${v2}`);
+      } else {
+        console.log(`${v1} is not equal to ${v2}`);
+      }
+    } else if (command === "cmp") {
+      if (result === -1) {
+        console.log(`${v1} is less than ${v2}`);
+      } else if (result === 0) {
+        console.log(`${v1} is equal to ${v2}`);
+      } else {
+        console.log(`${v1} is greater than ${v2}`);
+      }
+    } else if (command == "gt") {
+      if (result === 0) {
+        console.log(`${v1} is greater than ${v2}`);
+      } else {
+        console.log(`${v1} is not greater than ${v2}`);
+      }
+    } else if (command == "gte") {
+      if (result === 0) {
+        console.log(`${v1} is greater than or equal to ${v2}`);
+      } else {
+        console.log(`${v1} is not greater than or equal to ${v2}`);
+      }
+    } else if (command == "lt") {
+      if (result === 0) {
+        console.log(`${v1} is less than ${v2}`);
+      } else {
+        console.log(`${v1} is not less than ${v2}`);
+      }
+    } else if (command == "lte") {
+      if (result === 0) {
+        console.log(`${v1} is less than or equal to ${v2}`);
+      } else {
+        console.log(`${v1} is not less than or equal to ${v2}`);
+      }
+    } else {
+      throw new Error(`Unknown command for printComparison: ${command}`);
+    }
   }
 }
 

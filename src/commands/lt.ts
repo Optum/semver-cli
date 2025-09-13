@@ -1,0 +1,52 @@
+import { Arguments, YargsInstance } from "yargs";
+import { lessThan, parse } from "semver";
+import { InvalidVersionError } from "../errors/mod.ts";
+import { IContext } from "../context.ts";
+import { printComparison } from "../util/version.ts";
+import { json, output } from "./options.ts";
+
+export const lt = {
+  command: "lt <v1> <v2>",
+  describe: "Return 1 if v1 is less than v2, 0 otherwise",
+  builder(yargs: YargsInstance) {
+    return yargs
+      .positional("v1", {
+        describe: "First version to compare",
+        type: "string",
+        demandOption: true,
+      })
+      .positional("v2", {
+        describe: "Second version to compare",
+        type: "string",
+        demandOption: true,
+      })
+      .option("output", output)
+      .option("json", json);
+  },
+  async handler(args: Arguments & IContext) {
+    const { v1, v2, json: jsonOutput } = args;
+
+    // Validate that both versions are valid semver
+    const version1 = parse(v1);
+    if (!version1) {
+      throw new InvalidVersionError(v1);
+    }
+
+    const version2 = parse(v2);
+    if (!version2) {
+      throw new InvalidVersionError(v2);
+    }
+
+    // Use parsed versions for comparison
+    const cmpResult = lessThan(version1, version2) ? 0 : 1;
+    await printComparison(
+      args,
+      v1,
+      v2,
+      cmpResult,
+      "lt",
+      jsonOutput,
+    );
+    Deno.exit(cmpResult);
+  },
+};

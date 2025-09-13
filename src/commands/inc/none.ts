@@ -26,6 +26,6 @@ export const none = {
       previous,
       current,
     );
-    await printVersion(args, current);
+    await printVersion(args, current, args.json);
   },
 };

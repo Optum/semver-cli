@@ -2,6 +2,7 @@
   "nodeModulesDir": "auto",
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.14",
+    "@std/fmt": "jsr:@std/fmt@^1.0.8",
     "json5": "npm:json5@^2.2.3",
     "jsonc-parser": "npm:jsonc-parser@^3.2.1",
     "semver": "jsr:@std/semver@^1.0.3",
@@ -13,9 +14,10 @@
     "yargs": "npm:yargs@^17.7.2"
   },
   "tasks": {
-    "check": "deno fmt && deno lint && deno task test && deno run -A main.ts parse",
+    "check": "deno fmt && deno lint && deno task test && deno run -A main.ts get -j && deno run -A main.ts parse 1.2.3-alpha.1+build.123 -j",
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",
     "test": "deno test && deno task test:node && deno task test:helm && deno task test:maven && deno task test:dotnet",
+    "test:watch": "deno test --watch",
     "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --prerelease alpha --build xyz.987)",
     "test:helm": "(cd test/helm && deno run -A ../../main.ts inc minor --prerelease beta  --build abc.123)",
     "test:maven": "(cd test/maven && deno run -A ../../main.ts inc minor --prerelease omega --build def.456)",

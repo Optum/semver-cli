@@ -4,6 +4,6 @@ public class Hello
 {
   public string Version()
   {
-    return "0.10.0-lambda.8+ghi.789";
+    return "0.17.0-lambda.15+ghi.789";
   }
 }

@@ -236,7 +236,7 @@ describe("set", () => {
       await set.handler(
         {
           _: [],
-          current: undefined,
+          value: undefined,
           hooks,
           config: "version.yml",
         } as unknown as Arguments & IContext,
