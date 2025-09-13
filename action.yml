@@ -71,7 +71,7 @@ outputs:
     description: "If parsing, the build version"
 runs:
   using: "docker"
-  image: "Dockerfile.action"
+  image: "Dockerfile"
   args:
     - ${{ inputs.command }}
     - ${{ inputs.sub-command }}
