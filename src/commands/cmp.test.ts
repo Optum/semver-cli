@@ -1,6 +1,7 @@
-import { assertSpyCall, describe, it, stub } from "../../deps/std.ts";
-import { Arguments } from "../../deps/yargs.ts";
-import { compare } from "./cmp.ts";
+import { describe, it } from "testing/bdd";
+import { assertSpyCall, stub } from "testing/mock";
+import { Arguments } from "yargs";
+import { cmp } from "./cmp.ts";
 import { testContext } from "../util/testContext.ts";
 import { IContext } from "../context.ts";
 
@@ -11,7 +12,7 @@ describe("compare", () => {
   });
 
   it("CMP00 - compares v1 < v2", async () => {
-    await compare.handler(
+    await cmp.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -28,7 +29,7 @@ describe("compare", () => {
   });
 
   it("CMP01 - compares v1 = v2", async () => {
-    await compare.handler(
+    await cmp.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -45,7 +46,7 @@ describe("compare", () => {
   });
 
   it("CMP02 - compares v1 > v2", async () => {
-    await compare.handler(
+    await cmp.handler(
       {
         _: [],
         v1: "2.0.0",
@@ -62,7 +63,7 @@ describe("compare", () => {
   });
 
   it("CMP03 - json output", async () => {
-    await compare.handler(
+    await cmp.handler(
       {
         _: [],
         v1: "1.0.0",

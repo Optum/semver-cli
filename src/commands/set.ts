@@ -31,6 +31,6 @@ export const set = {
       previous,
       version,
     );
-    await printVersion(args, current, args.json);
+    await printVersion(args, version, args.json);
   },
 };

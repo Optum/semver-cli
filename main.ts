@@ -1,14 +1,14 @@
 import yargs from "yargs";
 import { version } from "./src/info.ts";
 import {
-  compare,
-  equal,
+  cmp,
+  eq,
   get,
-  greater,
-  greaterOrEqual,
+  gt,
+  gte,
   inc,
-  less,
-  lessOrEqual,
+  lt,
+  lte,
   parse,
   set,
 } from "./src/commands/mod.ts";
@@ -25,12 +25,12 @@ await yargs()
   .command(set)
   .command(inc)
   .command(parse)
-  .command(compare)
-  .command(greater)
-  .command(greaterOrEqual)
-  .command(less)
-  .command(lessOrEqual)
-  .command(equal)
+  .command(cmp)
+  .command(gt)
+  .command(gte)
+  .command(lt)
+  .command(lte)
+  .command(eq)
   .strictOptions()
   .strictCommands()
   .demandCommand(1)

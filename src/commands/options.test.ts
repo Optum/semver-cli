@@ -1,13 +1,6 @@
-import { assertEquals, describe, it } from "../../deps/std.ts";
-import {
-  build,
-  config,
-  json,
-  output,
-  prerelease,
-  prereleaseName,
-  prereleaseValue,
-} from "./options.ts";
+import { describe, it } from "testing/bdd";
+import { assertEquals } from "assert";
+import { build, config, json, output, prerelease } from "./options.ts";
 
 describe("options", () => {
   it("OPT00 - config option", () => {
@@ -45,22 +38,7 @@ describe("options", () => {
 
   it("OPT04 - prerelease option", () => {
     assertEquals(prerelease.alias, "p");
-    assertEquals(prerelease.type, "flag");
+    assertEquals(prerelease.type, "string");
     assertEquals(prerelease.description, "Include prerelease");
-  });
-
-  it("OPT05 - prereleaseName option", () => {
-    assertEquals(prereleaseName.alias, "n");
-    assertEquals(prereleaseName.type, "string");
-    assertEquals(prereleaseName.description, "Prerelease name");
-    assertEquals(prereleaseName.example, "alpha");
-    assertEquals(prereleaseName.default, "pre");
-  });
-
-  it("OPT06 - prereleaseValue option", () => {
-    assertEquals(prereleaseValue.alias, "v");
-    assertEquals(prereleaseValue.type, "number");
-    assertEquals(prereleaseValue.description, "Prerelease number value");
-    assertEquals(prereleaseValue.default, undefined);
   });
 });

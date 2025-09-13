@@ -1,11 +1,11 @@
-import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { compare as semverCompare, parse } from "../../deps/semver.ts";
+import { Arguments, YargsInstance } from "yargs";
+import { compare, parse } from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { IContext } from "../context.ts";
 import { printComparison } from "../util/version.ts";
 import { json, output } from "./options.ts";
 
-export const compare = {
+export const cmp = {
   command: "cmp <v1> <v2>",
   describe: "Compare v1 to v2 and return -1/0/1",
   builder(yargs: YargsInstance) {
@@ -38,7 +38,7 @@ export const compare = {
     }
 
     // Use parsed versions for comparison
-    const result = semverCompare(version1, version2);
+    const result = compare(version1, version2);
     await printComparison(
       args,
       v1,

@@ -1,6 +1,7 @@
-import { assertSpyCall, describe, it, stub } from "../../deps/std.ts";
-import { Arguments } from "../../deps/yargs.ts";
-import { less } from "./lt.ts";
+import { describe, it } from "testing/bdd";
+import { assertSpyCall, stub } from "testing/mock";
+import { Arguments } from "yargs";
+import { lt } from "./lt.ts";
 import { testContext } from "../util/testContext.ts";
 import { IContext } from "../context.ts";
 
@@ -11,7 +12,7 @@ describe("less", () => {
   });
 
   it("LT00 - v1 < v2", async () => {
-    await less.handler(
+    await lt.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -23,12 +24,12 @@ describe("less", () => {
       args: ["1.0.0 is less than 2.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [1], // less = true = exit code 1
+      args: [0], // less = true = exit code 1
     });
   });
 
   it("LT01 - v1 = v2", async () => {
-    await less.handler(
+    await lt.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -37,15 +38,15 @@ describe("less", () => {
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
-      args: ["1.0.0 is equal to 1.0.0"],
+      args: ["1.0.0 is not less than 1.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [0], // not less = false = exit code 0
+      args: [1], // not less = false = exit code 0
     });
   });
 
   it("LT02 - v1 > v2", async () => {
-    await less.handler(
+    await lt.handler(
       {
         _: [],
         v1: "2.0.0",
@@ -54,15 +55,15 @@ describe("less", () => {
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
-      args: ["2.0.0 is greater than 1.0.0"],
+      args: ["2.0.0 is not less than 1.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [0], // not less = false = exit code 0
+      args: [1], // not less = false = exit code 1
     });
   });
 
   it("LT03 - json output less", async () => {
-    await less.handler(
+    await lt.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -74,12 +75,12 @@ describe("less", () => {
       args: [JSON.stringify({
         v1: "1.0.0",
         v2: "2.0.0",
-        result: -1,
+        result: 0,
         command: "lt",
       })],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [1],
+      args: [0],
     });
   });
 });

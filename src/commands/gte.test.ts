@@ -1,6 +1,7 @@
-import { assertSpyCall, describe, it, stub } from "../../deps/std.ts";
-import { Arguments } from "../../deps/yargs.ts";
-import { greaterOrEqual } from "./gte.ts";
+import { describe, it } from "testing/bdd";
+import { assertSpyCall, stub } from "testing/mock";
+import { Arguments } from "yargs";
+import { gte } from "./gte.ts";
 import { testContext } from "../util/testContext.ts";
 import { IContext } from "../context.ts";
 
@@ -11,7 +12,7 @@ describe("greaterOrEqual", () => {
   });
 
   it("GTE00 - v1 > v2", async () => {
-    await greaterOrEqual.handler(
+    await gte.handler(
       {
         _: [],
         v1: "2.0.0",
@@ -20,15 +21,15 @@ describe("greaterOrEqual", () => {
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
-      args: ["2.0.0 is greater than 1.0.0"],
+      args: ["2.0.0 is greater than or equal to 1.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [1], // greater or equal = true = exit code 1
+      args: [0],
     });
   });
 
   it("GTE01 - v1 = v2", async () => {
-    await greaterOrEqual.handler(
+    await gte.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -37,15 +38,15 @@ describe("greaterOrEqual", () => {
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
-      args: ["1.0.0 is equal to 1.0.0"],
+      args: ["1.0.0 is greater than or equal to 1.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [1], // greater or equal = true = exit code 1
+      args: [0],
     });
   });
 
   it("GTE02 - v1 < v2", async () => {
-    await greaterOrEqual.handler(
+    await gte.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -54,15 +55,15 @@ describe("greaterOrEqual", () => {
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
-      args: ["1.0.0 is less than 2.0.0"],
+      args: ["1.0.0 is not greater than or equal to 2.0.0"],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [0], // not greater or equal = false = exit code 0
+      args: [1],
     });
   });
 
   it("GTE03 - json output greater or equal", async () => {
-    await greaterOrEqual.handler(
+    await gte.handler(
       {
         _: [],
         v1: "1.0.0",
@@ -79,7 +80,7 @@ describe("greaterOrEqual", () => {
       })],
     });
     assertSpyCall(ctx.exit, 0, {
-      args: [1],
+      args: [0],
     });
   });
 });

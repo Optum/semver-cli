@@ -1,11 +1,11 @@
-import { Arguments, YargsInstance } from "../../deps/yargs.ts";
-import { compare as semverCompare, parse } from "../../deps/semver.ts";
+import { Arguments, YargsInstance } from "yargs";
+import { greaterOrEqual, parse } from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
 import { IContext } from "../context.ts";
 import { printComparison } from "../util/version.ts";
 import { json, output } from "./options.ts";
 
-export const greaterOrEqual = {
+export const gte = {
   command: "gte <v1> <v2>",
   describe: "Return 1 if v1 is greater than or equal to v2, 0 otherwise",
   builder(yargs: YargsInstance) {
@@ -38,7 +38,7 @@ export const greaterOrEqual = {
     }
 
     // Use parsed versions for comparison
-    const cmpResult = semverCompare(version1, version2);
+    const cmpResult = greaterOrEqual(version1, version2) ? 0 : 1;
     await printComparison(
       args,
       v1,

@@ -23,6 +23,6 @@ export const parse = {
     if (!result) {
       throw new InvalidVersionError(`${result}`);
     }
-    await printVersion(args, semver, args.json);
+    await printVersion(args, result, args.json);
   },
 };

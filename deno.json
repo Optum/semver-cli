@@ -16,6 +16,7 @@
     "check": "deno fmt && deno lint && deno task test && deno run -A main.ts parse",
     "install": "deno install --allow-run --allow-env --allow-read --allow-write -f main.ts -n semver",
     "test": "deno test && deno task test:node && deno task test:helm && deno task test:maven && deno task test:dotnet",
+    "test:watch": "deno test --watch",
     "test:node": "(cd test/node && deno run -A ../../main.ts inc minor --prerelease alpha --build xyz.987)",
     "test:helm": "(cd test/helm && deno run -A ../../main.ts inc minor --prerelease beta  --build abc.123)",
     "test:maven": "(cd test/maven && deno run -A ../../main.ts inc minor --prerelease omega --build def.456)",
