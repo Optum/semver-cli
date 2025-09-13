@@ -54,18 +54,98 @@ jobs:
           | build      | \`${{ steps.parse_version.outputs.build || ' ' }}\` |
           EOF
 
-  action:
+  setup-action:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: ./setup
         with:
           version: 0.9.5
+
       - run: semver parse
+
+  docker-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Default
+        uses: ./
+      - name: Get
+        uses: ./
+        with:
+          command: get
+      - name: Set
+        uses: ./
+        with:
+          command: set
+          value: 1.2.3
+      - name: Inc Major
+        uses: ./
+        with:
+          command: inc
+          sub-command: major
+      - name: Inc Minor
+        uses: ./
+        with:
+          command: inc
+          sub-command: minor
+      - name: Inc Patch
+        uses: ./
+        with:
+          command: inc
+          sub-command: patch
+      - name: Inc None
+        uses: ./
+        with:
+          command: inc
+          sub-command: none
+      - name: Parse
+        uses: ./
+        with:
+          command: parse
+          value: 1.2.3-alpha.1+build.123
+      - name: Equal
+        uses: ./
+        with:
+          command: eq
+          value: 1.2.3
+          compare-to: 1.2.3
+      - name: Compare
+        uses: ./
+        with:
+          command: cmp
+          value: 1.2.3
+          compare-to: 1.2.3
+      - name: Greater Than
+        uses: ./
+        with:
+          command: gt
+          value: 1.2.3
+          compare-to: 1.0.0
+      - name: Greater Than or Equal
+        uses: ./
+        with:
+          command: gte
+          value: 1.2.3
+          compare-to: 1.2.3
+      - name: Less Than
+        uses: ./
+        with:
+          command: lt
+          value: 1.2.3
+          compare-to: 2.0.0
+      - name: Less Than or Equal
+        uses: ./
+        with:
+          command: lte
+          value: 1.2.3
+          compare-to: 1.2.3
 
   docker:
     runs-on: ubuntu-latest
-    needs: action
+    needs:
+      - setup-action
+      - docker-action
     steps:
       - uses: actions/checkout@v4
 

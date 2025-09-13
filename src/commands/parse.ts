@@ -2,13 +2,13 @@ import type { Arguments } from "yargs";
 import type { YargsInstance } from "yargs";
 import * as semver from "semver";
 import { InvalidVersionError } from "../errors/mod.ts";
-import { printVersion, readVersionFile } from "../util/version.ts";
+import { printVersion } from "../util/version.ts";
 import { IContext } from "../context.ts";
 import { json, output } from "./options.ts";
 
 export const parse = {
   command: "parse [value]",
-  describe: "Parse the version (or version file if not provided) and print",
+  describe: "Parse the version and print",
   builder(yargs: YargsInstance) {
     return yargs
       .positional("value", {
@@ -19,7 +19,7 @@ export const parse = {
   },
   async handler(args: Arguments & IContext) {
     const { value } = args;
-    const result = value ? semver.parse(value) : await readVersionFile();
+    const result = semver.parse(value);
     if (!result) {
       throw new InvalidVersionError(`${result}`);
     }

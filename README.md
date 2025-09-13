@@ -65,9 +65,8 @@ all operate against a `VERSION` file found in the root folder of your project.
 If the `VERSION` file is not found the default version is `0.1.0`. The `inc`
 command will create the `VERSION` file if it doesn't already exist.
 
-The `parse` command can accept an optional version string as input, if one is
-not provided it will read from the `VERSION` file, if that is not found the
-version will be `0.1.0`.
+The `parse` command accepts a version string as input and parses and prints that
+version as output if it is valid.
 
 #### examples
 

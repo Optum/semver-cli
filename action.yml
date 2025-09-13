@@ -14,9 +14,15 @@ inputs:
       - set
       - inc
       - parse
+      - eq
+      - cmp
+      - gt
+      - gte
+      - lt
+      - lte
   sub-command:
     type: choice
-    description: "The kind of increment (major|minor|patch|none) for (get|inc) actions"
+    description: "The kind of increment (major|minor|patch|none) for (get|inc) commands"
     required: false
     default: none
     options:
@@ -34,7 +40,11 @@ inputs:
     required: false
   value:
     type: string
-    description: The Version (for set action or parse action)
+    description: The Version (for set, parse, eq, cmp, gt, gte, lt, lte commands)
+    required: false
+  compare-to:
+    type: string
+    description: "The version to compare to (for eq, cmp, gt, gte, lt, lte commands)"
     required: false
   config:
     type: string
@@ -66,6 +76,7 @@ runs:
     - ${{ inputs.command }}
     - ${{ inputs.sub-command }}
     - ${{ inputs.value || '' }}
+    - ${{ inputs.compare-to || '' }}
     - ${{ inputs.prerelease && '--prerelease' || '' }}
     - ${{ inputs.prerelease || '' }}
     - ${{ inputs.build && '--build' || '' }}
