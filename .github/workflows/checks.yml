@@ -33,7 +33,7 @@ jobs:
       - id: parse_version
         name: Get the Version
         run: |
-          deno run -a main.ts get
+          deno run -A main.ts get
 
       - name: Print the Version
         run: |
