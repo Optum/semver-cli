@@ -24,7 +24,6 @@ inputs:
     type: choice
     description: "The kind of increment (major|minor|patch|none) for (get|inc) commands"
     required: false
-    default: none
     options:
       - major
       - minor
