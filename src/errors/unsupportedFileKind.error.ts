@@ -9,7 +9,7 @@ export class UnsupportedFileKindError extends ApplicationError {
     super(
       ErrorCode.UnsupportedFileKind,
       ErrorExitCode.UnsupportedFileKind,
-      `File ${file} is not a supported kind (csproj)`,
+      `File ${file} is not a supported kind`,
       options,
     );
   }
