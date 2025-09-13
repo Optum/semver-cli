@@ -14,6 +14,7 @@ import {
   set,
 } from "./src/commands/mod.ts";
 import { getContext } from "./src/context.ts";
+import { ApplicationError } from "./src/errors/application.error.ts";
 
 const args = Deno.args
   .filter((arg) => arg?.trim())
@@ -47,6 +48,10 @@ try {
   if (error instanceof TypeError) {
     console.error(`${brightRed("error")}: ${error.message}`);
     Deno.exit(1);
+  } else if (error instanceof ApplicationError) {
+    const { exitCode, code, message, name } = error;
+    console.error(`${brightRed("error")}: ${name} ${code} ${message}`);
+    Deno.exit(exitCode);
   } else {
     console.error(error);
     Deno.exit(1);
