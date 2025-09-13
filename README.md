@@ -187,7 +187,7 @@ jobs:
     steps:
       - if: inputs.pre
         name: Increment Pre-Release Version
-        uses: optum/semver-cli@0.9.27
+        uses: optum/semver-cli@1.0.0-beta.0
         with:
           action: inc
           pre: true
@@ -197,7 +197,7 @@ jobs:
 
       - id: version
         name: Get Version
-        uses: optum/semver-cli@0.9.27
+        uses: optum/semver-cli@1.0.0-beta.0
 
       - run: echo "The calculated ${{ steps.version.outputs.version }}"
 ```
