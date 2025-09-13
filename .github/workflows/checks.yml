@@ -31,8 +31,9 @@ jobs:
       - run: deno task test
 
       - id: parse_version
-        name: Parse the Version
-        run: deno run -A main.ts parse
+        name: Get the Version
+        run: |
+          deno run -a main.ts get
 
       - name: Print the Version
         run: |
@@ -62,7 +63,7 @@ jobs:
         with:
           version: 0.9.5
 
-      - run: semver parse
+      - run: semver parse 1.2.3 -j
 
   docker-action:
     runs-on: ubuntu-latest
