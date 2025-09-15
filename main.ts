@@ -41,6 +41,7 @@ try {
     .fail((msg: string, _err: unknown, _yargs: YargsInstance) => {
       if (msg) {
         console.error(`${brightRed("error")}: ${msg}`);
+        Deno.exit(1);
       }
     })
     .parse(args, context);

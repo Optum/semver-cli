@@ -47,6 +47,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Setup
+        run: |
+          rm deno.lock
+          deno install --no-lock
+
       # Binaries are compiled on full Release
       - name: Compile
         if: github.event_name == 'release'
@@ -54,7 +59,6 @@ jobs:
           TARGET: ${{ matrix.target.name }}
           EXT: ${{ matrix.target.extension }}
         run: |
-          deno --version
           deno compile --allow-run --allow-env --allow-read --allow-write -o bin/$APP_NAME --target $TARGET main.ts
           cd bin && tar -czf $APP_NAME.$TARGET.tar.gz ${APP_NAME}${EXT}
           ls -la
