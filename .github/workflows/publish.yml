@@ -23,7 +23,10 @@ jobs:
 
       - id: parse_version
         name: Parse the Version
-        run: deno run -A main.ts parse
+        run: |
+          rm deno.lock
+          deno install
+          deno run -A main.ts parse
 
   assets:
     runs-on: ubuntu-latest
