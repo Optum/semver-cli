@@ -41,7 +41,8 @@ export function increment(options: IncrementOptions) {
             ? {
               ...inc(version, "pre", { prerelease, build }),
               prerelease: pre,
-            } : {
+            }
+            : {
               ...version,
               prerelease: version.prerelease ?? [],
               build: build ? build.split(".") : version.build ?? [],
@@ -105,7 +106,11 @@ function bumpPrerelease(
   const identifierValues = parsePrerelease(identifier);
   // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
   // 1.2.0-beta.foobar or 1.2.0-beta bumps to 1.2.0-beta.0
-  if (prereleaseValues[0] !== identifierValues[0] || isNaN(prereleaseValues[1] as number) || !isNaN(identifierValues[1] as number)) {
+  if (
+    prereleaseValues[0] !== identifierValues[0] ||
+    isNaN(prereleaseValues[1] as number) ||
+    !isNaN(identifierValues[1] as number)
+  ) {
     return [identifierValues[0], identifierValues[1] ?? 0];
   } else {
     return prereleaseValues;
