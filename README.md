@@ -105,9 +105,9 @@ may be added to the version using the `--prerelease` and `--build` parameters.
 
 When incrementing with a prerelease label such as `--prerelease beta` then a
 prerelease number will be added or incremented automatically such as `beta.0`.
-If the version is incremented again with `--prerelease beta` then it will increment
-the number to `beta.1`. Switching the prerelease label which reset the number.
-`--prerelease alpha` will reset the number back to `alpha.0`.
+If the version is incremented again with `--prerelease beta` then it will
+increment the number to `beta.1`. Switching the prerelease label which reset the
+number. `--prerelease alpha` will reset the number back to `alpha.0`.
 
 `none` can be used to synchronize new or out of sync files with post hooks, and
 also it can be used in conjunction with `--prerelease` and `--build` without
