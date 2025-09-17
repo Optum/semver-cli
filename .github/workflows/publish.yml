@@ -235,6 +235,7 @@ jobs:
           EOF
 
       - name: Create PR to Homebrew Tap
+        if: ${{ github.event.release.prerelease == false }}
         env:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
