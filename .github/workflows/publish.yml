@@ -129,7 +129,7 @@ jobs:
           platforms: linux/amd64
 
   homebrew:
-    if: ${{ github.event.release.prerelease == false }}
+    if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
     runs-on: ubuntu-latest
     needs:
       - version
@@ -235,7 +235,7 @@ jobs:
           EOF
 
       - name: Create PR to Homebrew Tap
-        if: ${{ github.event.release.prerelease == false }}
+        if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
         env:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
