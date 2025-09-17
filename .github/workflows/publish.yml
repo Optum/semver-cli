@@ -137,13 +137,22 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          # Configure git
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          gh auth setup-git
 
       - name: Download Release Assets and Generate Formula
         env:
           VERSION: ${{ needs.version.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p assets Formula
 
@@ -237,12 +246,7 @@ jobs:
         if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
         env:
           VERSION: ${{ needs.version.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Configure git
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
           # Clone the homebrew-tap repository
           gh repo clone Optum/homebrew-tap homebrew-tap-repo
           cd homebrew-tap-repo
