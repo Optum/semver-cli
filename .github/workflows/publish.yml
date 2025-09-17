@@ -138,8 +138,8 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
