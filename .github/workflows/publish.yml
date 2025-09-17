@@ -148,15 +148,15 @@ jobs:
         run: |
           mkdir -p assets Formula
 
-          # Download each asset and calculate SHA256
+          # Download each asset using GitHub CLI and calculate SHA256
           declare -A urls
           declare -A shas
 
           for target in "x86_64-unknown-linux-gnu" "x86_64-apple-darwin" "aarch64-apple-darwin"; do
-            asset_name="${APP_NAME}.${target}.tar.gz"
+            asset_name="semver.${target}.tar.gz"
             url="https://github.com/Optum/semver-cli/releases/download/${VERSION}/${asset_name}"
-            echo "Downloading ${asset_name} from ${url}"
-            curl -L -o "assets/${asset_name}" "${url}"
+            echo "Downloading ${asset_name} using GitHub CLI"
+            gh release download "${VERSION}" --pattern "${asset_name}" --dir assets --repo Optum/semver-cli
             sha=$(sha256sum "assets/${asset_name}" | cut -d " " -f1)
             urls[$target]=$url
             shas[$target]=$sha
@@ -216,6 +216,23 @@ jobs:
 
           echo "Generated Formula/semver.rb:"
           cat Formula/semver.rb
+
+          # Output to GitHub Summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## Homebrew Formula Generated
+
+          Successfully generated Homebrew formula for version **${VERSION}**.
+
+          ### Formula Details
+          - **Version**: ${VERSION}
+          - **Platforms**: Linux x86_64, macOS x86_64, macOS ARM64
+          - **License**: Apache2
+
+          ### File Generated
+          \`\`\`ruby
+          $(cat Formula/semver.rb)
+          \`\`\`
+          EOF
 
       - name: Create PR to Homebrew Tap
         env:
