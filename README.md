@@ -43,14 +43,20 @@ deno task install
 
 # Usage
 
-```
+```sh
 semver <command>
 
 Commands:
   semver get            Get the version
-  semver set <current>  Set the version
+  semver set <value>    Set the version
   semver inc            Increment the version
-  semver parse [value]  Parse the version
+  semver parse [value]  Parse the version and print
+  semver cmp <v1> <v2>  Compare v1 to v2 and return -1/0/1
+  semver gt <v1> <v2>   Return 0 if v1 is greater than v2, else 1
+  semver gte <v1> <v2>  Return 0 if v1 is greater than or equal to v2, else 1
+  semver lt <v1> <v2>   Return 0 if v1 is less than v2, else 1
+  semver lte <v1> <v2>  Return 0 if v1 is less than or equal to v2, else 1
+  semver eq <v1> <v2>   Return 0 if v1 is equal to v2, else 1
 
 Options:
   --help     Show help                                                 [boolean]
@@ -96,6 +102,12 @@ semver parse 1.0.0 # {"major":1,"minor":1,"patch":0,"prerelease":[],"build":[]}
 When calling the command `inc` the `VERSION` file will be updated based on the
 sub command specified, `major`, `minor`, `patch`, `none`. Additional metadata
 may be added to the version using the `--prerelease` and `--build` parameters.
+
+When incrementing with a prerelease label such as `--prerelease beta` then a
+prerelease number will be added or incremented automatically such as `beta.0`.
+If the version is incremented again with `--prerelease beta` then it will increment
+the number to `beta.1`. Switching the prerelease label which reset the number.
+`--prerelease alpha` will reset the number back to `alpha.0`.
 
 `none` can be used to synchronize new or out of sync files with post hooks, and
 also it can be used in conjunction with `--prerelease` and `--build` without
@@ -185,14 +197,12 @@ on:
 jobs:
   publish:
     steps:
-      - if: inputs.pre
+      - if: ${{ inputs.pre || github.event.release.prerelease }}
         name: Increment Pre-Release Version
         uses: optum/semver-cli@1.0.0-beta.0
         with:
           action: inc
-          pre: true
-          name: pr
-          value: ${{ github.run_number }}
+          prerelease: pre${{ github.run_number }}
           build: ${{ github.run_id }}
 
       - id: version
@@ -219,10 +229,11 @@ jobs:
       - id: version
         name: Parse Version
         run: |
-          echo "version=$(semver parse | jq -r '.version')" > $GITHUB_OUTPUT
-          echo "major=$(semver parse | jq -r '.major')" > $GITHUB_OUTPUT
-          echo "minor=$(semver parse | jq -r '.minor')" > $GITHUB_OUTPUT
-          echo "patch=$(semver parse | jq -r '.patch')" > $GITHUB_OUTPUT
+          VERSION=$(semver get)
+          echo "version=$(echo $VERSION | jq -r '.version')" > $GITHUB_OUTPUT
+          echo "major=$(echo $VERSION | jq -r '.major')" > $GITHUB_OUTPUT
+          echo "minor=$(echo $VERSION | jq -r '.minor')" > $GITHUB_OUTPUT
+          echo "patch=$(echo $VERSION | jq -r '.patch')" > $GITHUB_OUTPUT
 
       - run: echo "The calculated ${{ steps.version.outputs.version }}"
 ```

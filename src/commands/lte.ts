@@ -7,7 +7,7 @@ import { json, output } from "./options.ts";
 
 export const lte = {
   command: "lte <v1> <v2>",
-  describe: "Return 1 if v1 is less than or equal to v2, 0 otherwise",
+  describe: "Return 0 if v1 is less than or equal to v2, else 1",
   builder(yargs: YargsInstance) {
     return yargs
       .positional("v1", {

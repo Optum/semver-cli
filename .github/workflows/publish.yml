@@ -137,14 +137,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    env:
-      GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
     steps:
       - uses: actions/checkout@v4
 
       - name: Download Release Assets and Generate Formula
         env:
           VERSION: ${{ needs.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p assets Formula
 
@@ -238,6 +237,7 @@ jobs:
         if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
         env:
           VERSION: ${{ needs.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Configure git
           git config --global user.name 'github-actions[bot]'
