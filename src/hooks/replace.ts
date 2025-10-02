@@ -5,10 +5,10 @@ export async function replace(
   previous: SemVer,
   current: SemVer,
 ) {
-  console.log(`replacing ${previous} -> ${current} in ${file}`);
-  const contents = await Deno.readTextFile(file);
   const previousString = format(previous);
   const currentString = format(current);
+  console.log(`replacing ${previousString} -> ${currentString} in ${file}`);
+  const contents = await Deno.readTextFile(file);
   const updated = contents.replaceAll(previousString, currentString);
   await Deno.writeTextFile(file, updated);
 }
