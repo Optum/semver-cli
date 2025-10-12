@@ -12,6 +12,7 @@ import {
   lte,
   parse,
   set,
+  sort,
 } from "./src/commands/mod.ts";
 import { getContext } from "./src/context.ts";
 import { ApplicationError } from "./src/errors/application.error.ts";
@@ -34,6 +35,7 @@ try {
     .command(lt)
     .command(lte)
     .command(eq)
+    .command(sort)
     .strictOptions()
     .strictCommands()
     .demandCommand(1)
