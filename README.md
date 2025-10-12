@@ -47,16 +47,17 @@ deno task install
 semver <command>
 
 Commands:
-  semver get            Get the version
-  semver set <value>    Set the version
-  semver inc            Increment the version
-  semver parse [value]  Parse the version and print
-  semver cmp <v1> <v2>  Compare v1 to v2 and return -1/0/1
-  semver gt <v1> <v2>   Return 0 if v1 is greater than v2, else 1
-  semver gte <v1> <v2>  Return 0 if v1 is greater than or equal to v2, else 1
-  semver lt <v1> <v2>   Return 0 if v1 is less than v2, else 1
-  semver lte <v1> <v2>  Return 0 if v1 is less than or equal to v2, else 1
-  semver eq <v1> <v2>   Return 0 if v1 is equal to v2, else 1
+  semver get                Get the version
+  semver set <value>        Set the version
+  semver inc                Increment the version
+  semver parse [value]      Parse the version and print
+  semver cmp <v1> <v2>      Compare v1 to v2 and return -1/0/1
+  semver gt <v1> <v2>       Return 0 if v1 is greater than v2, else 1
+  semver gte <v1> <v2>      Return 0 if v1 is greater than or equal to v2, else 1
+  semver lt <v1> <v2>       Return 0 if v1 is less than v2, else 1
+  semver lte <v1> <v2>      Return 0 if v1 is less than or equal to v2, else 1
+  semver eq <v1> <v2>       Return 0 if v1 is equal to v2, else 1
+  semver sort [versions..]  Sort semantic versions
 
 Options:
   --help     Show help                                                 [boolean]
@@ -73,6 +74,10 @@ command will create the `VERSION` file if it doesn't already exist.
 
 The `parse` command accepts a version string as input and parses and prints that
 version as output if it is valid.
+
+The `sort` command accepts one or more version strings and outputs them in
+sorted order (descending by default, one version per line). Use the `-a` flag
+for ascending order, or read versions from stdin using `--`.
 
 #### examples
 
@@ -95,6 +100,28 @@ semver get # 1.2.3
 ```sh
 # parses a version string
 semver parse 1.0.0 # {"major":1,"minor":1,"patch":0,"prerelease":[],"build":[]}
+```
+
+```sh
+# sort versions in descending order (default)
+semver sort 2.0.0 1.0.0 3.0.0
+# 3.0.0
+# 2.0.0
+# 1.0.0
+```
+
+```sh
+# sort versions in ascending order
+semver sort -a 2.0.0 1.0.0 3.0.0
+# 1.0.0
+# 2.0.0
+# 3.0.0
+```
+
+```sh
+# sort versions from stdin
+cat versions.txt | semver sort --
+# (sorted output)
 ```
 
 ### Incrementing
