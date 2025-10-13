@@ -103,8 +103,25 @@ describe("sort", () => {
         desc: false,
       } as unknown as Arguments & IContext,
     );
-    // Build metadata should not affect sort order
+    // Build metadata doesn't affect version precedence (semver spec section 10)
+    // All three versions are considered equal, so sort order is not guaranteed
+    // Just verify all three are output
     assertSpyCalls(ctx.consoleLog, 3);
+    const calls = [
+      ctx.consoleLog.calls[0].args[0],
+      ctx.consoleLog.calls[1].args[0],
+      ctx.consoleLog.calls[2].args[0],
+    ];
+    // Verify all three versions are present (order doesn't matter)
+    if (
+      !calls.includes("1.0.0") ||
+      !calls.includes("1.0.0+build1") ||
+      !calls.includes("1.0.0+build2")
+    ) {
+      throw new Error(
+        `Expected all three versions to be output, got: ${calls.join(", ")}`,
+      );
+    }
   });
 
   it("SORT05 - sorts complex semver versions", async () => {
