@@ -148,4 +148,43 @@ describe("sort", () => {
     });
     assertSpyCalls(ctx.consoleLog, 1);
   });
+
+  it("SORT07 - handles empty versions array gracefully", async () => {
+    await sort.handler(
+      {
+        _: [],
+        versions: [],
+        asc: false,
+        desc: false,
+      } as unknown as Arguments & IContext,
+    );
+    // Should not output anything and not throw
+    assertSpyCalls(ctx.consoleLog, 0);
+  });
+
+  it("SORT08 - handles null versions gracefully", async () => {
+    await sort.handler(
+      {
+        _: [],
+        versions: null,
+        asc: false,
+        desc: false,
+      } as unknown as Arguments & IContext,
+    );
+    // Should not output anything and not throw
+    assertSpyCalls(ctx.consoleLog, 0);
+  });
+
+  it("SORT09 - handles undefined versions gracefully", async () => {
+    await sort.handler(
+      {
+        _: [],
+        versions: undefined,
+        asc: false,
+        desc: false,
+      } as unknown as Arguments & IContext,
+    );
+    // Should not output anything and not throw
+    assertSpyCalls(ctx.consoleLog, 0);
+  });
 });

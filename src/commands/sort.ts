@@ -31,11 +31,10 @@ export const sort = {
     let versionList: string[] = [];
 
     // Check if we should read from stdin
-    // The main.ts filters out "--" from args, so if versions is undefined or empty,
-    // we check if "--" was in the original Deno.args
+    // The main.ts filters out "--" from args, so we check if "--" was in the original Deno.args
     const hasStdinFlag = Deno.args.includes("--");
 
-    if (hasStdinFlag || !versions || versions.length === 0) {
+    if (hasStdinFlag) {
       // Read from stdin
       const decoder = new TextDecoder();
       const data = await Deno.stdin.readable;
@@ -56,12 +55,17 @@ export const sort = {
         .split("\n")
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
+    } else if (versions === null || versions === undefined) {
+      versionList = [];
     } else if (Array.isArray(versions)) {
       versionList = versions;
+    } else {
+      throw new Error("Invalid versions argument");
     }
 
+    // If no versions provided, exit early with success
     if (versionList.length === 0) {
-      throw new Error("No versions provided");
+      return;
     }
 
     // Parse and validate all versions
