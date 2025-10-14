@@ -200,3 +200,33 @@ The GitHub Actions workflow requires:
 
 **NEVER CANCEL operations - they complete very quickly. Set timeouts of 60+
 seconds minimum for safety.**
+
+## Adding New Subcommands
+
+When adding a new subcommand to the CLI, you MUST also update the following
+files:
+
+1. **action.yml**: Add the new subcommand to the `inputs.command.options` list
+   - This makes the command available in the GitHub Action
+   - Keep the list alphabetically sorted for consistency
+
+2. **.github/workflows/checks.yml**: Add an integration test step in the
+   `docker-action` job
+   - Add a step that tests the new subcommand using the action
+   - Follow the naming pattern: `- name: <Command Name>`
+   - Provide appropriate test values via the `with:` section
+   - This ensures the command works correctly in the Docker action context
+
+3. **README.md**: Update the usage documentation
+   - Add the new command to the commands list
+   - Provide usage examples
+   - Document any command-specific options or flags
+
+4. **src/commands/mod.ts**: Export the new command
+5. **main.ts**: Register the new command with yargs
+
+**Example**: When adding the `sort` subcommand:
+
+- Added `- sort` to action.yml command options
+- Added a "Sort" test step in docker-action job with test values
+- Updated README with sort command documentation and examples

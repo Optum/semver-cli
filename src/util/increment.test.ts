@@ -99,16 +99,40 @@ const testCases: (IncrementOptions & { expected: string })[] = [
     prerelease: "rc",
     expected: "1.0.0-rc.0",
   },
+  {
+    kind: IncrementKind.None,
+    version: parse("1.0.0"),
+    build: "build.123",
+    expected: "1.0.0+build.123",
+  },
+  {
+    kind: IncrementKind.None,
+    version: parse("1.0.0+build.456"),
+    build: "build.789",
+    expected: "1.0.0+build.789",
+  },
+  {
+    kind: IncrementKind.None,
+    version: parse("1.0.0-alpha.1"),
+    build: "build.123",
+    expected: "1.0.0-alpha.1+build.123",
+  },
+  {
+    kind: IncrementKind.None,
+    version: parse("1.0.0-alpha.1+build.456"),
+    build: "build.789",
+    expected: "1.0.0-alpha.1+build.789",
+  },
 ];
 
 testCases.forEach((testCases, i) => {
-  const { kind, version, prerelease, expected } = testCases;
+  const { kind, version, prerelease, build, expected } = testCases;
   Deno.test({
     name: `INC${i.toLocaleString(undefined, { minimumIntegerDigits: 2 })} - ${
       format(version)
-    }:${kind}:${prerelease} -> ${expected}`,
+    }:${kind}:${prerelease}${build ? `:build=${build}` : ""} -> ${expected}`,
     fn: () => {
-      const result = increment({ kind, version, prerelease });
+      const result = increment({ kind, version, prerelease, build });
       assertEquals(format(result.current), expected);
     },
   });
