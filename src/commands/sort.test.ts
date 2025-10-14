@@ -204,4 +204,25 @@ describe("sort", () => {
     // Should not output anything and not throw
     assertSpyCalls(ctx.consoleLog, 0);
   });
+
+  it("SORT10 - handles space-separated versions in single string", async () => {
+    await sort.handler(
+      {
+        _: [],
+        versions: ["2.0.0 1.0.0", "3.0.0"],
+        asc: true,
+        desc: false,
+      } as unknown as Arguments & IContext,
+    );
+    assertSpyCall(ctx.consoleLog, 0, {
+      args: ["1.0.0"],
+    });
+    assertSpyCall(ctx.consoleLog, 1, {
+      args: ["2.0.0"],
+    });
+    assertSpyCall(ctx.consoleLog, 2, {
+      args: ["3.0.0"],
+    });
+    assertSpyCalls(ctx.consoleLog, 3);
+  });
 });

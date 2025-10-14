@@ -58,7 +58,10 @@ export const sort = {
     } else if (versions === null || versions === undefined) {
       versionList = [];
     } else if (Array.isArray(versions)) {
-      versionList = versions;
+      // Split each version string by whitespace to handle cases like "2.0.0 1.0.0"
+      versionList = versions.flatMap((v) => v.split(/\s+/)).filter((v) =>
+        v.length > 0
+      );
     } else {
       throw new Error("Invalid versions argument");
     }
