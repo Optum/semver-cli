@@ -18,16 +18,10 @@ export const sort = {
         type: "boolean",
         description: "Sort in ascending order",
         default: false,
-      })
-      .option("desc", {
-        alias: "d",
-        type: "boolean",
-        description: "Sort in descending order (default)",
-        default: false,
       });
   },
   async handler(args: Arguments & IContext) {
-    const { versions, asc, desc } = args;
+    const { versions, asc } = args;
     let versionList: string[] = [];
 
     // Check if we should read from stdin
@@ -83,12 +77,8 @@ export const sort = {
     // Sort versions using semver compare
     parsedVersions.sort((a, b) => compare(a.parsed, b.parsed));
 
-    // Determine sort order
     // Default is descending unless -a/--asc is explicitly set
-    const isDescending = desc || (!asc && !desc);
-
-    // Reverse if descending
-    if (isDescending) {
+    if (!asc) {
       parsedVersions.reverse();
     }
 

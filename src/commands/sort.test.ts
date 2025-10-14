@@ -16,7 +16,6 @@ describe("sort", () => {
         _: [],
         versions: ["2.0.0", "1.0.0", "3.0.0"],
         asc: false,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -37,7 +36,6 @@ describe("sort", () => {
         _: [],
         versions: ["2.0.0", "1.0.0", "3.0.0"],
         asc: true,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -52,13 +50,12 @@ describe("sort", () => {
     assertSpyCalls(ctx.consoleLog, 3);
   });
 
-  it("SORT02 - sorts versions in descending order with -d flag", async () => {
+  it("SORT02 - sorts versions in descending order by default", async () => {
     await sort.handler(
       {
         _: [],
         versions: ["1.0.0", "3.0.0", "2.0.0"],
         asc: false,
-        desc: true,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -79,7 +76,6 @@ describe("sort", () => {
         _: [],
         versions: ["1.0.0", "1.0.0-alpha", "1.0.0-beta"],
         asc: true,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -100,7 +96,6 @@ describe("sort", () => {
         _: [],
         versions: ["1.0.0+build1", "1.0.0+build2", "1.0.0"],
         asc: true,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     // Build metadata doesn't affect version precedence (semver spec section 10)
@@ -130,7 +125,6 @@ describe("sort", () => {
         _: [],
         versions: ["1.0.0", "2.1.0", "2.0.0", "1.1.0", "1.0.1"],
         asc: true,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -157,7 +151,6 @@ describe("sort", () => {
         _: [],
         versions: ["1.0.0"],
         asc: false,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
@@ -172,7 +165,6 @@ describe("sort", () => {
         _: [],
         versions: [],
         asc: false,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     // Should not output anything and not throw
@@ -185,7 +177,6 @@ describe("sort", () => {
         _: [],
         versions: null,
         asc: false,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     // Should not output anything and not throw
@@ -198,7 +189,6 @@ describe("sort", () => {
         _: [],
         versions: undefined,
         asc: false,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     // Should not output anything and not throw
@@ -211,7 +201,6 @@ describe("sort", () => {
         _: [],
         versions: ["2.0.0 1.0.0", "3.0.0"],
         asc: true,
-        desc: false,
       } as unknown as Arguments & IContext,
     );
     assertSpyCall(ctx.consoleLog, 0, {
