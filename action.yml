@@ -40,7 +40,7 @@ inputs:
     required: false
   value:
     type: string
-    description: The Version (for set, parse, eq, cmp, gt, gte, lt, lte commands)
+    description: The Version (for set, parse, eq, cmp, gt, gte, lt, lte commands) or space-separated versions (for sort command)
     required: false
   compare-to:
     type: string
