@@ -20,6 +20,7 @@ inputs:
       - gte
       - lt
       - lte
+      - sort
   sub-command:
     type: choice
     description: "The kind of increment (major|minor|patch|none) for (get|inc) commands"
