@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "@std/assert";
 import { format, parse } from "semver";
 import { increment, IncrementKind, IncrementOptions } from "./increment.ts";
 

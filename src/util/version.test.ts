@@ -1,5 +1,5 @@
 import { format, parse } from "semver";
-import { assertEquals, AssertionError, assertRejects } from "assert";
+import { assertEquals, AssertionError, assertRejects } from "@std/assert";
 import { assertSpyCall, resolvesNext, stub } from "testing/mock";
 import { IContext } from "../context.ts";
 import { printVersion, readVersionFile, writeVersionFile } from "./version.ts";
@@ -40,7 +40,7 @@ Deno.test({
 Deno.test({
   name: "VER02",
   fn: async () => {
-    const err = new AssertionError("testing");
+    const err = new AssertionError({ message: "testing" });
     // deno-lint-ignore no-explicit-any
     (err as any).code = "TEST";
     const readTextFile = stub(
