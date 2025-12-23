@@ -1,5 +1,5 @@
 import { describe, it } from "testing/bdd";
-import { assertEquals } from "assert";
+import { assertEquals } from "@std/assert";
 
 describe("main", () => {
   it("MAIN00 - filters empty arguments", () => {
