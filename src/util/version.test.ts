@@ -1,5 +1,5 @@
 import { format, parse } from "semver";
-import { assertEquals, AssertionError, assertRejects } from "assert";
+import { assertEquals, AssertionError, assertRejects } from "@std/assert";
 import { assertSpyCall, resolvesNext, stub } from "testing/mock";
 import { IContext } from "../context.ts";
 import { printVersion, readVersionFile, writeVersionFile } from "./version.ts";

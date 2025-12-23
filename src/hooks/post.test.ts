@@ -1,5 +1,5 @@
 import { parse } from "semver";
-import { assertEquals } from "assert";
+import { assertEquals } from "@std/assert";
 import { resolvesNext, stub } from "testing/mock";
 import * as YAML from "yaml";
 import { IContext } from "../context.ts";
