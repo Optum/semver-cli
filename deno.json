@@ -7,7 +7,7 @@
     "jsonc-parser": "npm:jsonc-parser@^3.2.1",
     "semver": "jsr:@std/semver@^1.0.6",
     "path": "jsr:@std/path@^1.0.6",
-    "assert": "jsr:@std/assert@^1.0.6",
+    "assert": "jsr:@std/assert@^1.0.14",
     "testing/bdd": "jsr:@std/testing@^1.0.3/bdd",
     "testing/mock": "jsr:@std/testing@^1.0.3/mock",
     "yaml": "jsr:@std/yaml@^1.0.5",

@@ -6,7 +6,7 @@ import {
   returnsNext,
   stub,
 } from "testing/mock";
-import { assertRejects } from "assert";
+import { assertRejects } from "@std/assert";
 import type { Arguments } from "yargs";
 import { set } from "./set.ts";
 import { testContext } from "../util/testContext.ts";

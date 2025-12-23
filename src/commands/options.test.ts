@@ -1,5 +1,5 @@
 import { describe, it } from "testing/bdd";
-import { assertEquals } from "assert";
+import { assertEquals } from "@std/assert";
 import { build, config, json, output, prerelease } from "./options.ts";
 
 describe("options", () => {
