@@ -66,7 +66,15 @@ jobs:
           cd bin && tar -czf $APP_NAME.$TARGET.tar.gz ${APP_NAME}${EXT}
           ls -la
 
-      - name: Upload Release Asset
+      # Create ZIP file for Windows (required for winget)
+      - name: Create Windows ZIP
+        if: github.event_name == 'release' && matrix.target.name == 'x86_64-pc-windows-msvc'
+        run: |
+          cd bin
+          zip $APP_NAME.${{ matrix.target.name }}.zip ${APP_NAME}.exe
+          ls -la
+
+      - name: Upload Release Asset (tar.gz)
         uses: actions/upload-release-asset@v1
         if: github.event_name == 'release'
         env:
@@ -76,6 +84,17 @@ jobs:
           asset_path: ./bin/${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
           asset_name: ${{ env.APP_NAME }}.${{ matrix.target.name }}.tar.gz
           asset_content_type: application/tar+gzip
+
+      - name: Upload Release Asset (zip for Windows)
+        uses: actions/upload-release-asset@v1
+        if: github.event_name == 'release' && matrix.target.name == 'x86_64-pc-windows-msvc'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./bin/${{ env.APP_NAME }}.${{ matrix.target.name }}.zip
+          asset_name: ${{ env.APP_NAME }}.${{ matrix.target.name }}.zip
+          asset_content_type: application/zip
 
       - name: Print Output
         if: github.event_name == 'release'
@@ -277,6 +296,200 @@ jobs:
             --head "${branch_name}" \
             --base main
 
+  winget:
+    if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
+    runs-on: windows-latest
+    needs:
+      - version
+      - assets
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.SEMVER_PUBLISH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.SEMVER_PUBLISH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          gh auth setup-git
+
+      - name: Download Release Asset and Generate Winget Manifests
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          mkdir -p assets manifests
+
+          # Download the Windows ZIP asset using GitHub CLI
+          asset_name="semver.x86_64-pc-windows-msvc.zip"
+          echo "Downloading ${asset_name} using GitHub CLI"
+          gh release download "${VERSION}" --pattern "${asset_name}" --dir assets --repo Optum/semver-cli
+          
+          # Calculate SHA256 (PowerShell command via bash)
+          sha=$(powershell -Command "(Get-FileHash -Algorithm SHA256 assets/${asset_name}).Hash")
+          echo "SHA256: $sha"
+          
+          url="https://github.com/Optum/semver-cli/releases/download/${VERSION}/${asset_name}"
+          echo "URL: $url"
+
+          # Create manifest directory structure
+          # Winget uses: manifests/<first-letter>/<Publisher>/<PackageName>/<Version>/
+          manifest_dir="manifests/O/Optum/semver/${VERSION}"
+          mkdir -p "$manifest_dir"
+
+          # Generate the installer manifest
+          cat > "${manifest_dir}/Optum.semver.installer.yaml" << EOF
+          # yaml-language-server: \$schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+
+          PackageIdentifier: Optum.semver
+          PackageVersion: ${VERSION}
+          InstallerType: zip
+          UpgradeBehavior: install
+          Commands:
+          - semver
+          ReleaseDate: $(date -u +%Y-%m-%d)
+          Installers:
+          - Architecture: x64
+            NestedInstallerType: portable
+            NestedInstallerFiles:
+            - RelativeFilePath: semver.exe
+              PortableCommandAlias: semver
+            InstallerUrl: ${url}
+            InstallerSha256: ${sha}
+          ManifestType: installer
+          ManifestVersion: 1.6.0
+          EOF
+
+          # Generate the locale manifest
+          cat > "${manifest_dir}/Optum.semver.locale.en-US.yaml" << EOF
+          # yaml-language-server: \$schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+          PackageIdentifier: Optum.semver
+          PackageVersion: ${VERSION}
+          PackageLocale: en-US
+          Publisher: Optum
+          PublisherUrl: https://github.com/Optum
+          PublisherSupportUrl: https://github.com/Optum/semver-cli/issues
+          Author: Optum
+          PackageName: semver
+          PackageUrl: https://github.com/Optum/semver-cli
+          License: Apache-2.0
+          LicenseUrl: https://github.com/Optum/semver-cli/blob/HEAD/LICENSE
+          Copyright: Copyright (c) Optum
+          ShortDescription: A technology agnostic cli for common semantic versioning operations
+          Description: A technology agnostic cli for common semantic versioning operations. Built with Deno.
+          Moniker: semver
+          Tags:
+          - cli
+          - semver
+          - semantic-version
+          - versioning
+          - deno
+          ReleaseNotesUrl: https://github.com/Optum/semver-cli/releases/tag/${VERSION}
+          ManifestType: defaultLocale
+          ManifestVersion: 1.6.0
+          EOF
+
+          # Generate the version manifest
+          cat > "${manifest_dir}/Optum.semver.yaml" << EOF
+          # yaml-language-server: \$schema=https://aka.ms/winget-manifest.version.1.6.0.schema.json
+
+          PackageIdentifier: Optum.semver
+          PackageVersion: ${VERSION}
+          DefaultLocale: en-US
+          ManifestType: version
+          ManifestVersion: 1.6.0
+          EOF
+
+          echo "Generated manifests:"
+          ls -la "${manifest_dir}"
+          cat "${manifest_dir}/Optum.semver.installer.yaml"
+          cat "${manifest_dir}/Optum.semver.locale.en-US.yaml"
+          cat "${manifest_dir}/Optum.semver.yaml"
+
+      - name: Validate Winget Manifests
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          manifest_dir="manifests/O/Optum/semver/${VERSION}"
+          
+          # Install winget (if not already available on Windows runner)
+          # Windows runners typically have winget pre-installed
+          
+          # Validate manifests using winget
+          echo "Validating manifests with winget..."
+          winget validate "${manifest_dir}" || echo "Validation returned: $?"
+          
+          # Output to GitHub Summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## Winget Manifests Generated
+
+          Successfully generated Winget manifests for version **${VERSION}**.
+
+          ### Manifest Details
+          - **Package Identifier**: Optum.semver
+          - **Version**: ${VERSION}
+          - **Architecture**: x64
+          - **Installer Type**: zip (portable)
+
+          ### Files Generated
+          - Optum.semver.installer.yaml
+          - Optum.semver.locale.en-US.yaml
+          - Optum.semver.yaml
+          EOF
+
+      - name: Create PR to Winget Repository
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          # Clone the winget-pkgs repository
+          gh repo clone microsoft/winget-pkgs winget-pkgs-repo
+          cd winget-pkgs-repo
+
+          # Create a new branch
+          branch_name="Optum.semver-${VERSION}"
+          git checkout -b "${branch_name}"
+
+          # Copy the generated manifests
+          manifest_dir="../manifests/O/Optum/semver/${VERSION}"
+          target_dir="manifests/o/Optum/semver/${VERSION}"
+          mkdir -p "${target_dir}"
+          cp "${manifest_dir}"/* "${target_dir}/"
+
+          # Commit and push the changes
+          git add "manifests/o/Optum/semver/${VERSION}"
+          git commit -m "New version: Optum.semver version ${VERSION}"
+          git push origin "${branch_name}"
+
+          # Create the PR
+          gh pr create \
+            --repo microsoft/winget-pkgs \
+            --title "New version: Optum.semver version ${VERSION}" \
+            --body "This PR adds Optum.semver version ${VERSION} to the Windows Package Manager repository.
+
+          **Package Information:**
+          - **Package Identifier**: Optum.semver
+          - **Version**: ${VERSION}
+          - **Publisher**: Optum
+          - **License**: Apache-2.0
+
+          **Changes:**
+          - Added new package version ${VERSION}
+          - Installer type: zip (portable)
+          - Architecture: x64
+
+          This PR was automatically generated by the semver-cli release workflow.
+
+          **Release Notes**: https://github.com/Optum/semver-cli/releases/tag/${VERSION}" \
+            --head "${branch_name}" \
+            --base master
+
   tags:
     if: ${{ github.event.release.prerelease == false }}
     runs-on: ubuntu-latest
@@ -285,6 +498,7 @@ jobs:
       - assets
       - docker
       - homebrew
+      - winget
     permissions:
       contents: write
       id-token: write
