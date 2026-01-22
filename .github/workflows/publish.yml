@@ -329,12 +329,22 @@ jobs:
           echo "Downloading ${asset_name} using GitHub CLI"
           gh release download "${VERSION}" --pattern "${asset_name}" --dir assets --repo Optum/semver-cli
           
-          # Calculate SHA256 (PowerShell command via bash)
-          sha=$(powershell -Command "(Get-FileHash -Algorithm SHA256 assets/${asset_name}).Hash")
+          # Calculate SHA256 (PowerShell command via bash, convert to lowercase)
+          sha=$(powershell -Command "(Get-FileHash -Algorithm SHA256 assets/${asset_name}).Hash.ToLower()")
           echo "SHA256: $sha"
           
           url="https://github.com/Optum/semver-cli/releases/download/${VERSION}/${asset_name}"
           echo "URL: $url"
+          
+          # Get release date from GitHub event (fallback to current date if not available)
+          release_date="${{ github.event.release.published_at }}"
+          if [ -z "$release_date" ]; then
+            release_date=$(date -u +%Y-%m-%d)
+          else
+            # Extract just the date portion (YYYY-MM-DD) from the ISO timestamp
+            release_date=$(echo "$release_date" | cut -d'T' -f1)
+          fi
+          echo "Release Date: $release_date"
 
           # Create manifest directory structure
           # Winget uses: manifests/<first-letter-lowercase>/<Publisher>/<PackageName>/<Version>/
@@ -351,7 +361,7 @@ jobs:
           UpgradeBehavior: install
           Commands:
           - semver
-          ReleaseDate: $(date -u +%Y-%m-%d)
+          ReleaseDate: ${release_date}
           Installers:
           - Architecture: x64
             NestedInstallerType: portable
