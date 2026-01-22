@@ -337,8 +337,8 @@ jobs:
           echo "URL: $url"
 
           # Create manifest directory structure
-          # Winget uses: manifests/<first-letter>/<Publisher>/<PackageName>/<Version>/
-          manifest_dir="manifests/O/Optum/semver/${VERSION}"
+          # Winget uses: manifests/<first-letter-lowercase>/<Publisher>/<PackageName>/<Version>/
+          manifest_dir="manifests/o/Optum/semver/${VERSION}"
           mkdir -p "$manifest_dir"
 
           # Generate the installer manifest
@@ -416,14 +416,18 @@ jobs:
           VERSION: ${{ needs.version.outputs.version }}
         shell: bash
         run: |
-          manifest_dir="manifests/O/Optum/semver/${VERSION}"
+          manifest_dir="manifests/o/Optum/semver/${VERSION}"
           
           # Install winget (if not already available on Windows runner)
           # Windows runners typically have winget pre-installed
           
           # Validate manifests using winget
           echo "Validating manifests with winget..."
-          winget validate "${manifest_dir}" || echo "Validation returned: $?"
+          if ! winget validate "${manifest_dir}"; then
+            echo "::error::Winget manifest validation failed"
+            exit 1
+          fi
+          echo "Validation successful!"
           
           # Output to GitHub Summary
           cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -457,7 +461,7 @@ jobs:
           git checkout -b "${branch_name}"
 
           # Copy the generated manifests
-          manifest_dir="../manifests/O/Optum/semver/${VERSION}"
+          manifest_dir="../manifests/o/Optum/semver/${VERSION}"
           target_dir="manifests/o/Optum/semver/${VERSION}"
           mkdir -p "${target_dir}"
           cp "${manifest_dir}"/* "${target_dir}/"
