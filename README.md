@@ -25,7 +25,7 @@ via [optum](https://github.com/Optum/homebrew-tap)
 ## Winget (Windows Package Manager)
 
 ```sh
-winget install Optum.semver
+winget install Optum.semver-cli
 ```
 
 via [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs)

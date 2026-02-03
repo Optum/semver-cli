@@ -168,3 +168,34 @@ jobs:
           push: false
           tags: optum/semver-cli:pr
           platforms: linux/amd64
+
+  winget-check:
+    runs-on: windows-latest
+    needs:
+      - check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install Dependencies
+        run: |
+          rm deno.lock
+          deno install --no-lock
+
+      - name: Compile Windows Binary
+        run: |
+          deno compile --allow-run --allow-env --allow-read --allow-write -o bin/semver --target x86_64-pc-windows-msvc main.ts
+
+      - name: Test Winget Package Script
+        shell: bash
+        run: |
+          chmod +x scripts/winget-package.sh
+          ./scripts/winget-package.sh
+
+      - name: Test Winget Publish Script (Dry Run)
+        shell: bash
+        run: |
+          chmod +x scripts/winget-publish.sh
+          ./scripts/winget-publish.sh --dry-run
