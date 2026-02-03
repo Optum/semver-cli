@@ -22,6 +22,14 @@ brew install optum/tap/semver
 
 via [optum](https://github.com/Optum/homebrew-tap)
 
+## Winget (Windows Package Manager)
+
+```sh
+winget install Optum.semver-cli
+```
+
+via [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs)
+
 ## From Source
 
 Installation from source will require
