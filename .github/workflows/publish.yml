@@ -278,7 +278,7 @@ jobs:
             --base main
 
   winget:
-    if: ${{ github.event.release.prerelease == false }}
+    if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
     runs-on: windows-latest
     needs:
       - version
@@ -304,14 +304,9 @@ jobs:
         shell: bash
         run: |
           chmod +x scripts/winget-package.sh
-          if [ "${{ github.event_name }}" == "release" ]; then
-            ./scripts/winget-package.sh --release --version "${VERSION}"
-          else
-            ./scripts/winget-package.sh --version "${VERSION}"
-          fi
+          ./scripts/winget-package.sh --release --version "${VERSION}"
 
       - name: Upload ZIP as Release Asset
-        if: github.event_name == 'release'
         shell: bash
         run: |
           VERSION="${{ needs.version.outputs.version }}"
@@ -331,11 +326,7 @@ jobs:
         shell: bash
         run: |
           chmod +x scripts/winget-publish.sh
-          if [ "${{ github.event_name }}" == "release" ]; then
-            ./scripts/winget-publish.sh --release
-          else
-            ./scripts/winget-publish.sh --release --dry-run
-          fi
+          ./scripts/winget-publish.sh --release
 
   tags:
     if: ${{ github.event.release.prerelease == false }}
