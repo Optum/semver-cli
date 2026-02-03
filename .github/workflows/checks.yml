@@ -171,6 +171,8 @@ jobs:
 
   winget-check:
     runs-on: windows-latest
+    permissions:
+      contents: read
     needs:
       - check
     steps:
