@@ -5,7 +5,7 @@
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@^1.0.6": "1.1.4",
     "jsr:@std/semver@^1.0.6": "1.0.8",
-    "jsr:@std/yaml@^1.0.5": "1.0.11",
+    "jsr:@std/yaml@^1.0.5": "1.0.12",
     "npm:json5@^2.2.3": "2.2.3",
     "npm:jsonc-parser@^3.2.1": "3.3.1",
     "npm:yargs@^17.7.2": "17.7.2"
@@ -26,8 +26,8 @@
     "@std/semver@1.0.8": {
       "integrity": "dc830e8b8b6a380c895d53fbfd1258dc253704ca57bbe1629ac65fd7830179b7"
     },
-    "@std/yaml@1.0.11": {
-      "integrity": "bd139ce77f2d06cbed3713c8b26d301d2a2e12ecc7986130a268107e212143ee"
+    "@std/yaml@1.0.12": {
+      "integrity": "7deabca4545bcedd07c5f69ea53acea71b8b4c67562f224e17b90d75944cb20c"
     }
   },
   "npm": {
