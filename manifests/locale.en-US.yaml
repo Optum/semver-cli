@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: Optum.semver-cli
+PackageVersion: __VERSION__
+PackageLocale: en-US
+Publisher: Optum
+PublisherUrl: https://github.com/Optum
+PublisherSupportUrl: https://github.com/Optum/semver-cli/issues
+Author: Optum
+PackageName: semver-cli
+PackageUrl: https://github.com/Optum/semver-cli
+License: Apache-2.0
+LicenseUrl: https://github.com/Optum/semver-cli/blob/HEAD/LICENSE
+Copyright: Copyright (c) Optum
+ShortDescription: A technology agnostic cli for common semantic versioning operations
+Description: A technology agnostic cli for common semantic versioning operations. Built with Deno.
+Moniker: semver
+Tags:
+- cli
+- semver
+- semantic-version
+- versioning
+- deno
+ReleaseNotesUrl: https://github.com/Optum/semver-cli/releases/tag/__VERSION__
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
