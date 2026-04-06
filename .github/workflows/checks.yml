@@ -60,6 +60,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./setup
+        with:
+          version: 1.0.10
 
       - name: Default
         uses: ./
