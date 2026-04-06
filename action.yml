@@ -55,39 +55,53 @@ inputs:
 outputs:
   version:
     description: "The resulting version change"
+    value: ${{ steps.version.outputs.version }}
   version_docker:
     description: "The resulting version change formatted to be compatible with docker tags"
+    value: ${{ steps.version.outputs.version_docker }}
   version_dotnet:
     description: "The resulting version change formatted to be compatible with dotnet"
+    value: ${{ steps.version.outputs.version_dotnet }}
   major:
     description: "If parsing, the major version"
+    value: ${{ steps.version.outputs.major }}
   minor:
     description: "If parsing, the minor version"
+    value: ${{ steps.version.outputs.minor }}
   patch:
     description: "If parsing, the patch version"
+    value: ${{ steps.version.outputs.patch }}
   prerelease:
     description: "If parsing, the prerelease version"
+    value: ${{ steps.version.outputs.prerelease }}
   build:
     description: "If parsing, the build version"
+    value: ${{ steps.version.outputs.build }}
   v1:
     description: "If comparing, the first version"
+    value: ${{ steps.version.outputs.v1 }}
   v2:
     description: "If comparing, the second version"
+    value: ${{ steps.version.outputs.v2 }}
   result:
     description: "If comparing, the result of the comparison (-1|0|1)"
+    value: ${{ steps.version.outputs.result }}
   command:
     description: "If comparing, the comparison that was run"
+    value: ${{ steps.version.outputs.command }}
 runs:
-  using: "docker"
-  image: "Dockerfile"
-  args:
-    - ${{ inputs.command }}
-    - ${{ inputs.sub-command }}
-    - ${{ inputs.value || '' }}
-    - ${{ inputs.compare-to || '' }}
-    - ${{ inputs.prerelease && '--prerelease' || '' }}
-    - ${{ inputs.prerelease || '' }}
-    - ${{ inputs.build && '--build' || '' }}
-    - ${{ inputs.build || '' }}
-    - ${{ inputs.config && '--config' || '' }}
-    - ${{ inputs.config || '' }}
+  using: "composite"
+  steps:
+    - id: version
+      name: Run Semver ${{ inputs.command }}
+      shell: bash
+      run: |
+        semver $COMMAND $SUB_COMMAND $VALUE $COMPARE_TO $PRERELEASE $BUILD $CONFIG
+      env:
+        COMMAND: "${{ inputs.command }}"
+        SUB_COMMAND: "${{ inputs.sub-command }}"
+        VALUE: "${{ inputs.value && format(' {0}', inputs.value) || '' }}"
+        COMPARE_TO: "${{ inputs.compare-to && format('{0}', inputs.compare-to) || '' }}"
+        PRERELEASE: "${{ inputs.prerelease && format('--prerelease {0}', inputs.prerelease) || '' }}"
+        BUILD: "${{ inputs.build && format(' --build {0}', inputs.build) || '' }}"
+        CONFIG: "${{ inputs.config && format(' --config \"{0}\"', inputs.config) || '' }}"
