@@ -92,29 +92,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - id: debug
-      name: Debug
-      shell: bash
-      run: |
-        echo "ACTION: ${{ inputs.action }}"
-        echo "COMMAND: ${{ inputs.command }}"
-        echo "PRE: ${{ inputs.pre }}"
-        echo "NAME: ${{ inputs.name }}"
-        echo "VALUE: ${{ inputs.value }}"
-        echo "BUILD: ${{ inputs.build }}"
-        echo "CURRENT: ${{ inputs.current }}"
-        echo "CONFIG: ${{ inputs.config }}"
-
-    - id: debug-config-exists
-      name: Debug Config Exists
-      shell: bash
-      run: |
-        if [[ -f "${{ inputs.config }}" ]]; then
-          echo "Config file exists at path: ${{ inputs.config }}"
-        else
-          echo "No config file found at path: ${{ inputs.config }}"
-        fi
-
     - id: version
       name: Run Semver ${{ inputs.command }}
       shell: bash
