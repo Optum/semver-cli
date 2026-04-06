@@ -65,10 +65,12 @@ jobs:
 
       - run: semver parse 1.2.3 -j
 
-  docker-action:
+  test-action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./setup
+
       - name: Default
         uses: ./
       - name: Get
