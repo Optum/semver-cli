@@ -96,12 +96,19 @@ runs:
       name: Run Semver ${{ inputs.command }}
       shell: bash
       run: |
-        semver $COMMAND $SUB_COMMAND $VALUE $COMPARE_TO $PRERELEASE $BUILD $CONFIG
+        ARGS=("$COMMAND")
+        [[ -n "$SUB_COMMAND" ]] && ARGS+=("$SUB_COMMAND")
+        [[ -n "$VALUE" ]] && ARGS+=("$VALUE")
+        [[ -n "$COMPARE_TO" ]] && ARGS+=("$COMPARE_TO")
+        [[ -n "$PRERELEASE" ]] && ARGS+=("--prerelease" "$PRERELEASE")
+        [[ -n "$BUILD" ]] && ARGS+=("--build" "$BUILD")
+        [[ -n "$CONFIG" ]] && ARGS+=("--config" "$CONFIG")
+        semver "${ARGS[@]}"
       env:
         COMMAND: "${{ inputs.command }}"
         SUB_COMMAND: "${{ inputs.sub-command }}"
-        VALUE: "${{ inputs.value && format(' {0}', inputs.value) || '' }}"
-        COMPARE_TO: "${{ inputs.compare-to && format('{0}', inputs.compare-to) || '' }}"
-        PRERELEASE: "${{ inputs.prerelease && format('--prerelease {0}', inputs.prerelease) || '' }}"
-        BUILD: "${{ inputs.build && format(' --build {0}', inputs.build) || '' }}"
-        CONFIG: "${{ inputs.config && format(' --config \"{0}\"', inputs.config) || '' }}"
+        VALUE: "${{ inputs.value }}"
+        COMPARE_TO: "${{ inputs.compare-to }}"
+        PRERELEASE: "${{ inputs.prerelease }}"
+        BUILD: "${{ inputs.build }}"
+        CONFIG: "${{ inputs.config }}"
