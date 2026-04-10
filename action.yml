@@ -50,7 +50,6 @@ inputs:
     type: string
     description: "Path to a configuration file"
     required: false
-    default: .github/version.yml
 
 outputs:
   version:
