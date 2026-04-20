@@ -10,3 +10,12 @@ on:
     - kind: regexp
       file: setup/action.yml
       pattern: "(?<=default: ).*"
+    - kind: regexp
+      file: manifests/installer.yaml
+      pattern: "(?<=PackageVersion: ).*"
+    - kind: regexp
+      file: manifests/locale.en-US.yaml
+      pattern: "(?<=PackageVersion: ).*"
+    - kind: regexp
+      file: manifests/version.yaml
+      pattern: "(?<=PackageVersion: ).*"
