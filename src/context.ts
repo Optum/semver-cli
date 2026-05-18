@@ -12,7 +12,11 @@ export interface IContext {
   config?: string;
   githubDir: string;
   hooks: {
-    patch: (file: string, current: SemVer) => Promise<void>;
+    patch: (
+      file: string,
+      current: SemVer,
+      format?: FormatKind,
+    ) => Promise<void>;
     replace: (
       file: string,
       previous: SemVer,

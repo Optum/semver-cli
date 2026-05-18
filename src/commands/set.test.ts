@@ -161,6 +161,7 @@ describe("set", () => {
         args: [
           "src/test.csproj",
           parse("1.2.3"),
+          undefined,
         ],
       });
     });
@@ -184,6 +185,7 @@ describe("set", () => {
         args: [
           "src/test.csproj",
           parse("1.0.0"),
+          undefined
         ],
       });
     });

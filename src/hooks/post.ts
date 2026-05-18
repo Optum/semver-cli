@@ -34,7 +34,7 @@ export async function postVersionHook(
           await context.hooks.replace(hook.file, previous, current);
           break;
         case PostHookKind.Patch:
-          await context.hooks.patch(hook.file, current);
+          await context.hooks.patch(hook.file, current, hook.format);
           break;
         case PostHookKind.RegExp:
           await context.hooks.regexp(
