@@ -2,6 +2,7 @@ import { describe, it } from "testing/bdd";
 import { assertSpyCall, stub } from "testing/mock";
 import { parse } from "semver";
 import { patch } from "./patch.ts";
+import { FormatKind } from "../util/variant.ts";
 
 describe("patch", () => {
   it("should log formatted version string for csproj", async () => {
@@ -58,6 +59,39 @@ describe("patch", () => {
       // Verify console.log was called with formatted string, not [object Object]
       assertSpyCall(consoleLogStub, 0, {
         args: ["patching 1.2.3 in package.json"],
+      });
+    } finally {
+      consoleLogStub.restore();
+      readTextFileStub.restore();
+      writeTextFileStub.restore();
+      statStub.restore();
+    }
+  });
+
+  it("should log formatted Docker version string for Chart.yaml", async () => {
+    const consoleLogStub = stub(console, "log");
+    const readTextFileStub = stub(
+      Deno,
+      "readTextFile",
+      () => Promise.resolve("apiVersion: v2\nname: test-app\nversion: 1.0.0"),
+    );
+    const writeTextFileStub = stub(
+      Deno,
+      "writeTextFile",
+      () => Promise.resolve(),
+    );
+    const statStub = stub(
+      Deno,
+      "stat",
+      () => Promise.reject(new Deno.errors.NotFound()),
+    );
+
+    try {
+      await patch("Chart.yaml", parse("1.2.3-pr.4+5")!, FormatKind.Docker);
+
+      // Verify console.log was called with formatted string, not [object Object]
+      assertSpyCall(consoleLogStub, 0, {
+        args: ["patching 1.2.3-pr.4-5 in Chart.yaml"],
       });
     } finally {
       consoleLogStub.restore();

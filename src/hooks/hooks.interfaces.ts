@@ -13,6 +13,7 @@ export type ReplacePostHook = {
 export type PatchPostHook = {
   kind: PostHookKind.Patch;
   file: string;
+  format?: FormatKind;
 };
 export type RegExpPostHook = {
   kind: PostHookKind.RegExp;
