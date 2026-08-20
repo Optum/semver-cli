@@ -26,11 +26,11 @@ export const set = {
     const previous = await readVersionFile();
     const version = value ? parse(value) : previous ? previous : parse("0.1.0");
     await writeVersionFile(version);
-    await postVersionHook(
+    const hookWarnings = await postVersionHook(
       args,
       previous,
       version,
     );
-    await printVersion(args, version, args.json);
+    await printVersion(args, version, args.json, hookWarnings);
   },
 };

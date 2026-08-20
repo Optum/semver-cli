@@ -1,6 +1,7 @@
 import * as path from "path";
 import { format, parse, SemVer } from "semver";
 import { IContext } from "../context.ts";
+import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
@@ -25,6 +26,7 @@ export async function printVersion(
   context: IContext,
   semver: SemVer,
   forceJson = false,
+  hookWarnings: HookWarning[] = [],
 ) {
   const formatted = format(semver);
   const { major, minor, patch, prerelease = [], build = [] } = semver;
@@ -40,6 +42,9 @@ export async function printVersion(
     build: b,
     dotnet,
     docker,
+    ...hookWarnings.length > 0
+      ? { hook_warnings: JSON.stringify(hookWarnings) }
+      : {},
 
     // Adding these for backwards compatibility, do not remove or add more
     // todo: remove on next major version
