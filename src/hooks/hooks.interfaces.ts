@@ -37,3 +37,9 @@ export type VersionConfig = {
     post?: PostHook[];
   };
 };
+
+export type HookWarning = {
+  kind: PostHookKind;
+  file: string;
+  reason: string;
+};
