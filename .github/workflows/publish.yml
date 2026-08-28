@@ -277,6 +277,57 @@ jobs:
             --head "${branch_name}" \
             --base main
 
+  winget:
+    if: ${{ github.event_name == 'release' && github.event.release.prerelease == false }}
+    runs-on: windows-latest
+    needs:
+      - version
+      - assets
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.SEMVER_PUBLISH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.SEMVER_PUBLISH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          gh auth setup-git
+
+      - name: Package for Winget
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          chmod +x scripts/winget-package.sh
+          ./scripts/winget-package.sh --release --version "${VERSION}"
+
+      - name: Upload ZIP as Release Asset
+        shell: bash
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          ZIP_FILE="dist/winget/semver.x86_64-pc-windows-msvc.zip"
+          
+          if [ -f "$ZIP_FILE" ]; then
+            echo "Uploading $ZIP_FILE to release $VERSION"
+            gh release upload "${VERSION}" "$ZIP_FILE" --repo Optum/semver-cli --clobber
+          else
+            echo "Error: ZIP file not found at $ZIP_FILE"
+            exit 1
+          fi
+
+      - name: Publish to Winget
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          chmod +x scripts/winget-publish.sh
+          ./scripts/winget-publish.sh --release
+
   tags:
     if: ${{ github.event.release.prerelease == false }}
     runs-on: ubuntu-latest
@@ -285,6 +336,7 @@ jobs:
       - assets
       - docker
       - homebrew
+      - winget
     permissions:
       contents: write
       id-token: write

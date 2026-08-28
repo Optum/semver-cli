@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+
+PackageIdentifier: Optum.semver-cli
+PackageVersion: __VERSION__
+InstallerType: zip
+UpgradeBehavior: install
+Commands:
+- semver
+ReleaseDate: __RELEASE_DATE__
+Installers:
+- Architecture: x64
+  NestedInstallerType: portable
+  NestedInstallerFiles:
+  - RelativeFilePath: semver.exe
+    PortableCommandAlias: semver
+  InstallerUrl: __INSTALLER_URL__
+  InstallerSha256: __INSTALLER_SHA256__
+ManifestType: installer
+ManifestVersion: 1.6.0
