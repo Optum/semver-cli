@@ -1,13 +1,13 @@
 import { describe, it } from "testing/bdd";
-import { assertSpyCall, stub, spy } from "testing/mock";
+import { assertSpyCall, stub } from "testing/mock";
 import { testContext } from "../util/testContext.ts";
-import { gitLatest, gitClientFactory } from "./git-latest.ts";
+import { gitClientFactory, gitLatest } from "./git-latest.ts";
 import { type ConventionalGitClient } from "@conventional-changelog/git-client";
 
 describe("git-latest command", () => {
   const ctx = testContext({
     consoleError: () => stub(console, "error"),
-    consoleLog: () => spy(console, "log"),
+    consoleLog: () => stub(console, "log"),
     exit: () => stub(Deno, "exit"),
     clientFactory: () => stub(gitClientFactory, "create"),
   });
