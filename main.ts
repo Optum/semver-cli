@@ -5,6 +5,7 @@ import {
   cmp,
   eq,
   get,
+  gitLatest,
   gt,
   gte,
   inc,
@@ -36,6 +37,7 @@ try {
     .command(lte)
     .command(eq)
     .command(sort)
+    .command(gitLatest)
     .strictOptions()
     .strictCommands()
     .demandCommand(1)
