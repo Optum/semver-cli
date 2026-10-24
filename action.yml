@@ -21,6 +21,7 @@ inputs:
       - lt
       - lte
       - sort
+      - git-latest
   sub-command:
     type: choice
     description: "The kind of increment (major|minor|patch|none) for (get|inc) commands"

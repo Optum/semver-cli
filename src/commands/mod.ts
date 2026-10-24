@@ -9,3 +9,4 @@ export * from "./lt.ts";
 export * from "./lte.ts";
 export * from "./eq.ts";
 export * from "./sort.ts";
+export * from "./git-latest.ts";
