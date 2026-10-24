@@ -58,9 +58,10 @@ jobs:
   test-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - run: git fetch --tags --force
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          fetch-tags: true
 
       - uses: denoland/setup-deno@v2
         with:
