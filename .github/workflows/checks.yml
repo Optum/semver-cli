@@ -60,8 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 1
-          fetch-tags: true
+          fetch-depth: 0
 
       - uses: denoland/setup-deno@v2
         with:
