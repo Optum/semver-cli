@@ -140,6 +140,10 @@ jobs:
         with:
           command: sort
           value: 2.0.0 1.0.0 3.0.0
+      - name: Git Latest
+        uses: ./
+        with:
+          command: git-latest
 
   docker:
     runs-on: ubuntu-latest
