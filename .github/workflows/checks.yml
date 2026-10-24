@@ -17,7 +17,7 @@ jobs:
         with:
           deno-version: v2.x
 
-      # When we develop this internally we have to go through the repo1 mirror
+      # When we develop this internally we have to go through the mirror
       # When we run it in GitHub its running outside of the optum network and cant access repo1
       # Ideally these lock files wouldn't store the repository in it but just the sha of the module
       # For now we have to remove the lock file in order to install the dependencies in the ci server
@@ -59,9 +59,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # When we develop this internally we have to go through the mirror
+      # When we run it in GitHub its running outside of the optum network and cant access repo1
+      # Ideally these lock files wouldn't store the repository in it but just the sha of the module
+      # For now we have to remove the lock file in order to install the dependencies in the ci server
+      - name: Install Dependencies
+        run: |
+          rm deno.lock
+          deno install --no-lock
+
+      - name: Build bin
+        run: |
+          DIR=$HOME/.semver-cli/.bin
+          mkdir -p $DIR
+
+          deno install --global --compile --allow-run --allow-env --allow-read --allow-write --name semver ./main.ts
+
+          echo "$DIR" >> $GITHUB_PATH
+
       - uses: ./setup
         with:
-          version: 1.0.10
+          version: current
 
       - name: Default
         uses: ./
@@ -140,11 +162,10 @@ jobs:
         with:
           command: sort
           value: 2.0.0 1.0.0 3.0.0
-      # new commands can't be tested until after a release is published :(
-      # - name: Git Latest
-      #   uses: ./
-      #   with:
-      #     command: git-latest
+      - name: Git Latest
+        uses: ./
+        with:
+          command: git-latest
 
   docker:
     runs-on: ubuntu-latest
