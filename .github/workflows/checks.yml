@@ -81,10 +81,6 @@ jobs:
 
           echo "$DIR" >> $GITHUB_PATH
 
-      - uses: ./setup
-        with:
-          version: current
-
       - name: Default
         uses: ./
       - name: Get
