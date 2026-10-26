@@ -16,6 +16,13 @@ export const gitLatest = {
     const client = gitClientFactory.create();
 
     try {
+      const isShallow =
+        (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+      await client.fetch({
+        all: true,
+        tags: true,
+        ...(isShallow ? { unshallow: true } : {}),
+      });
       const version = await client.getVersionFromTags();
       if (!version) {
         throw new Error("Unable to resolve version from tags");
