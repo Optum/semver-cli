@@ -3,6 +3,7 @@ import { format, parse, SemVer } from "semver";
 import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
+import { ConventionalGitClient } from "@conventional-changelog/git-client";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -42,9 +43,9 @@ export async function printVersion(
     build: b,
     dotnet,
     docker,
-    ...hookWarnings.length > 0
+    ...(hookWarnings.length > 0
       ? { hook_warnings: JSON.stringify(hookWarnings) }
-      : {},
+      : {}),
 
     // Adding these for backwards compatibility, do not remove or add more
     // todo: remove on next major version
@@ -53,16 +54,18 @@ export async function printVersion(
     version_docker: docker,
   });
   if (forceJson) {
-    console.log(JSON.stringify({
-      version: formatted,
-      major,
-      minor,
-      patch,
-      prerelease: pre,
-      build: b,
-      dotnet,
-      docker,
-    }));
+    console.log(
+      JSON.stringify({
+        version: formatted,
+        major,
+        minor,
+        patch,
+        prerelease: pre,
+        build: b,
+        dotnet,
+        docker,
+      }),
+    );
   } else {
     console.log(formatted);
   }
@@ -86,12 +89,14 @@ export async function printComparison(
 
   if (forceJson) {
     // JSON output - emit structured data
-    console.log(JSON.stringify({
-      v1,
-      v2,
-      result,
-      command,
-    }));
+    console.log(
+      JSON.stringify({
+        v1,
+        v2,
+        result,
+        command,
+      }),
+    );
   } else {
     // Human-readable output to stdout using the result parameter
     if (command === "eq") {
@@ -164,4 +169,41 @@ export async function readVersionFile(): Promise<SemVer> {
  */
 export async function writeVersionFile(version: SemVer) {
   await Deno.writeTextFile("VERSION", `${format(version)}\n`);
+}
+
+/**
+ * Creates a local git client
+ */
+export const gitClientFactory = {
+  create() {
+    return new ConventionalGitClient(Deno.cwd());
+  },
+};
+
+/**
+ * Attempts to determine the latest version as specified by git tags
+ */
+export async function getVersionFromGitTags() {
+  const client = gitClientFactory.create();
+
+  try {
+    const isShallow =
+      (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+    await client.exec(
+      "fetch",
+      "--filter=tree:0",
+      "--tags",
+      ...(isShallow ? ["--unshallow"] : []),
+      "origin",
+    );
+    const version = await client.getVersionFromTags();
+    if (!version) {
+      throw new Error("Unable to resolve version from tags");
+    }
+    return parse(version);
+  } catch (e) {
+    console.error("Failed to get the latest semver git tag.");
+    console.error(e);
+    Deno.exit(1);
+  }
 }
