@@ -84,8 +84,8 @@ for ascending order, or read versions from stdin using `--`.
 
 The `git-latest` command returns the most recent parseable git tag. If an error
 occurs (e.g., git is unavailable, not in a git repo, no tags, etc.), exits 1.
-This **does not** create or modify tags. Supports the same subcommands and options
-as `get`/`set`/`inc`, i.e.:
+This **does not** create or modify tags. Supports the same subcommands and
+options as `get`/`set`/`inc`, i.e.:
 
 ```sh
 semver git-latest # 1.2.3
