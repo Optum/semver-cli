@@ -2,7 +2,14 @@ import { format, parse } from "semver";
 import { assertEquals, AssertionError, assertRejects } from "@std/assert";
 import { assertSpyCall, resolvesNext, stub } from "testing/mock";
 import { IContext } from "../context.ts";
-import { printVersion, readVersionFile, writeVersionFile } from "./version.ts";
+import {
+  printVersion,
+  readVersionFile,
+  writeVersionFile,
+  gitClientFactory,
+  getVersionFromGitTags,
+} from "./version.ts";
+import { type ConventionalGitClient } from "@conventional-changelog/git-client";
 
 Deno.test({
   name: "VER00",
@@ -158,25 +165,13 @@ Deno.test({
         ],
       });
       assertSpyCall(appendTextFile, 1, {
-        args: [
-          "/test/output",
-          "major=1\n",
-          { create: true, append: true },
-        ],
+        args: ["/test/output", "major=1\n", { create: true, append: true }],
       });
       assertSpyCall(appendTextFile, 2, {
-        args: [
-          "/test/output",
-          "minor=2\n",
-          { create: true, append: true },
-        ],
+        args: ["/test/output", "minor=2\n", { create: true, append: true }],
       });
       assertSpyCall(appendTextFile, 3, {
-        args: [
-          "/test/output",
-          "patch=3\n",
-          { create: true, append: true },
-        ],
+        args: ["/test/output", "patch=3\n", { create: true, append: true }],
       });
       assertSpyCall(appendTextFile, 4, {
         args: [
@@ -186,11 +181,7 @@ Deno.test({
         ],
       });
       assertSpyCall(appendTextFile, 5, {
-        args: [
-          "/test/output",
-          "build=1\n",
-          { create: true, append: true },
-        ],
+        args: ["/test/output", "build=1\n", { create: true, append: true }],
       });
       assertSpyCall(appendTextFile, 6, {
         args: [
@@ -231,6 +222,69 @@ Deno.test({
       mkdirp.restore();
       consoleLog.restore();
       appendTextFile.restore();
+    }
+  },
+});
+
+Deno.test({
+  name: "GIT01",
+  fn: async () => {
+    const clientFactory = stub(
+      gitClientFactory,
+      "create",
+      () =>
+        ({
+          getVersionFromTags: () => "0.1.0",
+          fetch: () => {},
+          exec: () => {},
+        }) as unknown as ConventionalGitClient,
+    );
+
+    try {
+      await getVersionFromGitTags();
+
+      assertSpyCall(clientFactory, 0, {
+        args: [],
+      });
+    } finally {
+      clientFactory.restore();
+    }
+  },
+});
+
+Deno.test({
+  name: "GIT02",
+  fn: async () => {
+    const clientFactory = stub(
+      gitClientFactory,
+      "create",
+      () =>
+        ({
+          getVersionFromTags: () => {
+            throw new Error("failed in a test");
+          },
+          fetch: () => {},
+          exec: () => {},
+        }) as unknown as ConventionalGitClient,
+    );
+    const consoleError = stub(console, "error");
+    const exit = stub(Deno, "exit");
+    try {
+      await getVersionFromGitTags();
+
+      assertSpyCall(clientFactory, 0, {
+        args: [],
+      });
+      assertSpyCall(consoleError, 0, {
+        args: ["Failed to get the latest semver git tag."],
+      });
+      assertSpyCall(exit, 0, {
+        args: [1],
+      });
+    } finally {
+      clientFactory.restore();
+      consoleError.restore();
+      exit.restore();
     }
   },
 });
