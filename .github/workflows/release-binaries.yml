@@ -5,8 +5,12 @@ name: Release Binaries
 on:
   workflow_dispatch:
     inputs:
+      release_id:
+        description: Numeric draft release ID (recommended for recovery runs).
+        required: false
+        type: string
       tag:
-        description: Draft release tag. Leave empty to use the latest draft.
+        description: Planned version. Leave empty to use the draft's name.
         required: false
         type: string
   repository_dispatch:
@@ -26,7 +30,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.target.outputs.tag }}
+      version: ${{ steps.target.outputs.version }}
       sha: ${{ steps.target.outputs.sha }}
       release_id: ${{ steps.target.outputs.release_id }}
     steps:
@@ -38,44 +42,66 @@ jobs:
         id: target
         env:
           GH_TOKEN: ${{ github.token }}
+          INPUT_RELEASE_ID: ${{ github.event.inputs.release_id || '' }}
+          DISPATCH_RELEASE_ID: ${{ github.event.client_payload.release_id || '' }}
           INPUT_TAG: ${{ github.event.inputs.tag || '' }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag || '' }}
         run: |
           set -euo pipefail
-          tag="${INPUT_TAG:-${DISPATCH_TAG}}"
-          if [[ -z "$tag" ]]; then
-            tag="$(gh release list --limit 50 --json tagName,isDraft,createdAt \
-              --jq '[.[] | select(.isDraft)] | sort_by(.createdAt) | last | .tagName // empty')"
+          release_id="${INPUT_RELEASE_ID:-${DISPATCH_RELEASE_ID}}"
+          version="${INPUT_TAG:-${DISPATCH_TAG}}"
+          if [[ -z "$release_id" ]]; then
+            # Manual runs can select a draft by its planned version or use the
+            # latest draft. The release ID is authoritative once resolved.
+            releases="$(gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100")"
+            release_id="$(jq -er --arg version "$version" \
+              '[.[] | select(.draft and ($version == "" or .name == $version or .tag_name == $version))] |
+               if length == 0 then error("No matching draft release")
+               elif $version != "" and length != 1 then error("Ambiguous draft release")
+               else sort_by(.created_at) | last | .id end' <<< "$releases")"
           fi
-          if [[ -z "$tag" ]]; then
-            echo "No draft release found; supply its tag when running manually." >&2
+          [[ "$release_id" =~ ^[0-9]+$ ]] || { echo "Invalid release ID." >&2; exit 1; }
+          meta="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${release_id}")"
+          if [[ "$(jq -r .draft <<< "$meta")" != true ]]; then
+            echo "Release $release_id is already published; refusing to change immutable assets." >&2
             exit 1
           fi
-
-          # Drafts may not have a Git tag yet. gh release view resolves them.
-          meta="$(gh release view "$tag" --json tagName,isDraft,databaseId,targetCommitish)"
-          if [[ "$(jq -r .isDraft <<< "$meta")" != true ]]; then
-            echo "Release $tag is already published; refusing to change immutable assets." >&2
+          if [[ -z "$version" ]]; then
+            version="$(jq -r .name <<< "$meta")"
+          fi
+          if ! jq -e --arg version "$version" \
+            '.name == $version or .tag_name == $version' <<< "$meta" >/dev/null; then
+            echo "Release $release_id does not match version $version." >&2
             exit 1
           fi
-          if [[ "$(jq -r .tagName <<< "$meta")" != "$tag" ]]; then
-            echo "Resolved release tag differs from $tag." >&2
-            exit 1
+          stored_tag="$(jq -r .tag_name <<< "$meta")"
+          if [[ "$stored_tag" != "$version" ]]; then
+            if [[ "$stored_tag" != untagged-* ]]; then
+              echo "Draft $release_id has unexpected tag $stored_tag." >&2
+              exit 1
+            fi
+            meta="$(gh api --method PATCH \
+              "repos/${GITHUB_REPOSITORY}/releases/${release_id}" \
+              -f "tag_name=${version}")"
+            if [[ "$(jq -r .tag_name <<< "$meta")" != "$version" ]]; then
+              echo "Could not set draft $release_id tag to $version." >&2
+              exit 1
+            fi
           fi
-          sha="$(jq -r .targetCommitish <<< "$meta")"
+          sha="$(jq -r .target_commitish <<< "$meta")"
           if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "Draft $tag is not pinned to a build commit." >&2
+            echo "Draft $release_id is not pinned to a build commit." >&2
             exit 1
           fi
           git fetch --no-tags --depth=1 origin "$sha"
-          version="$(git show "${sha}:VERSION" | tr -d '[:space:]')"
-          if [[ "$version" != "${tag#v}" ]]; then
-            echo "VERSION=$version does not match draft tag $tag; wait for the version update on main." >&2
+          file_version="$(git show "${sha}:VERSION" | tr -d '[:space:]')"
+          if [[ "$file_version" != "${version#v}" ]]; then
+            echo "VERSION=$file_version does not match draft version $version." >&2
             exit 1
           fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "release_id=$(jq -r .databaseId <<< "$meta")" >> "$GITHUB_OUTPUT"
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
 
   compile:
     needs: prepare
@@ -129,14 +155,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
           RELEASE_ID: ${{ needs.prepare.outputs.release_id }}
         run: |
           set -euo pipefail
           meta="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}")"
           if [[ "$(jq -r .draft <<< "$meta")" != true ]] || \
-             [[ "$(jq -r .tag_name <<< "$meta")" != "$TAG" ]]; then
-            echo "Draft $TAG changed or was published while binaries were building." >&2
+             ! jq -e --arg version "$VERSION" \
+               '.name == $version or .tag_name == $version' <<< "$meta" >/dev/null; then
+            echo "Draft $RELEASE_ID changed or was published while binaries were building." >&2
             exit 1
           fi
           for target in \
@@ -146,7 +173,26 @@ jobs:
             aarch64-apple-darwin; do
             test -s "dist/${APP_NAME}.${target}.tar.gz"
           done
-          gh release upload "$TAG" dist/*.tar.gz --clobber
+          # Upload by release ID. Untagged drafts cannot reliably be looked up
+          # by their planned version through `gh release upload`.
+          upload_url="$(jq -r .upload_url <<< "$meta")"
+          upload_url="${upload_url%%\{*}"
+          [[ "$upload_url" == https://uploads.github.com/* ]] || exit 1
+          for file in dist/*.tar.gz; do
+            asset="$(basename "$file")"
+            existing="$(jq -r --arg name "$asset" \
+              '.assets[] | select(.name == $name) | .id' <<< "$meta")"
+            if [[ -n "$existing" ]]; then
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/assets/${existing}"
+            fi
+            curl --fail-with-body --silent --show-error \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'Content-Type: application/gzip' \
+              --data-binary "@${file}" \
+              "${upload_url}?name=${asset}" | jq -e --arg name "$asset" \
+                '.name == $name and .state == "uploaded"' >/dev/null
+          done
           assets="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" --jq '[.assets[].name]')"
           for target in \
             x86_64-unknown-linux-gnu \
@@ -156,4 +202,4 @@ jobs:
             jq -e --arg name "${APP_NAME}.${target}.tar.gz" \
               'index($name) != null' <<< "$assets" >/dev/null
           done
-          echo "Attached four binaries to draft $TAG. Verify them before publishing." >> "$GITHUB_STEP_SUMMARY"
+          echo "Attached four binaries to draft $RELEASE_ID ($VERSION). Verify them before publishing." >> "$GITHUB_STEP_SUMMARY"
