@@ -1,0 +1,159 @@
+name: Release Binaries
+
+# Release Drafter dispatches this after updating the version on main. Attach
+# binaries to the draft before anyone publishes it (and makes it immutable).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Draft release tag. Leave empty to use the latest draft.
+        required: false
+        type: string
+  repository_dispatch:
+    types: [release-binaries]
+
+concurrency:
+  group: release-binaries
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  APP_NAME: semver
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.target.outputs.tag }}
+      sha: ${{ steps.target.outputs.sha }}
+      release_id: ${{ steps.target.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Resolve draft and build commit
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ github.event.inputs.tag || '' }}
+          DISPATCH_TAG: ${{ github.event.client_payload.tag || '' }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG:-${DISPATCH_TAG}}"
+          if [[ -z "$tag" ]]; then
+            tag="$(gh release list --limit 50 --json tagName,isDraft,createdAt \
+              --jq '[.[] | select(.isDraft)] | sort_by(.createdAt) | last | .tagName // empty')"
+          fi
+          if [[ -z "$tag" ]]; then
+            echo "No draft release found; supply its tag when running manually." >&2
+            exit 1
+          fi
+
+          # Drafts may not have a Git tag yet. gh release view resolves them.
+          meta="$(gh release view "$tag" --json tagName,isDraft,databaseId,targetCommitish)"
+          if [[ "$(jq -r .isDraft <<< "$meta")" != true ]]; then
+            echo "Release $tag is already published; refusing to change immutable assets." >&2
+            exit 1
+          fi
+          if [[ "$(jq -r .tagName <<< "$meta")" != "$tag" ]]; then
+            echo "Resolved release tag differs from $tag." >&2
+            exit 1
+          fi
+          sha="$(jq -r .targetCommitish <<< "$meta")"
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Draft $tag is not pinned to a build commit." >&2
+            exit 1
+          fi
+          git fetch --no-tags --depth=1 origin "$sha"
+          version="$(git show "${sha}:VERSION" | tr -d '[:space:]')"
+          if [[ "$version" != "${tag#v}" ]]; then
+            echo "VERSION=$version does not match draft tag $tag; wait for the version update on main." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "release_id=$(jq -r .databaseId <<< "$meta")" >> "$GITHUB_OUTPUT"
+
+  compile:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: x86_64-unknown-linux-gnu
+            extension: ""
+          - name: x86_64-pc-windows-msvc
+            extension: .exe
+          - name: x86_64-apple-darwin
+            extension: ""
+          - name: aarch64-apple-darwin
+            extension: ""
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Compile and package
+        env:
+          TARGET: ${{ matrix.target.name }}
+          EXT: ${{ matrix.target.extension }}
+        run: |
+          set -euo pipefail
+          deno install --no-lock
+          mkdir -p bin
+          deno compile --allow-run --allow-env --allow-read --allow-write \
+            -o "bin/${APP_NAME}" --target "$TARGET" main.ts
+          tar -czf "bin/${APP_NAME}.${TARGET}.tar.gz" -C bin "${APP_NAME}${EXT}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: semver-${{ matrix.target.name }}
+          path: bin/semver.${{ matrix.target.name }}.tar.gz
+          if-no-files-found: error
+
+  attach:
+    needs: [prepare, compile]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: semver-*
+          path: dist
+          merge-multiple: true
+      - name: Attach binaries to draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          RELEASE_ID: ${{ needs.prepare.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          meta="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}")"
+          if [[ "$(jq -r .draft <<< "$meta")" != true ]] || \
+             [[ "$(jq -r .tag_name <<< "$meta")" != "$TAG" ]]; then
+            echo "Draft $TAG changed or was published while binaries were building." >&2
+            exit 1
+          fi
+          for target in \
+            x86_64-unknown-linux-gnu \
+            x86_64-pc-windows-msvc \
+            x86_64-apple-darwin \
+            aarch64-apple-darwin; do
+            test -s "dist/${APP_NAME}.${target}.tar.gz"
+          done
+          gh release upload "$TAG" dist/*.tar.gz --clobber
+          assets="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" --jq '[.assets[].name]')"
+          for target in \
+            x86_64-unknown-linux-gnu \
+            x86_64-pc-windows-msvc \
+            x86_64-apple-darwin \
+            aarch64-apple-darwin; do
+            jq -e --arg name "${APP_NAME}.${target}.tar.gz" \
+              'index($name) != null' <<< "$assets" >/dev/null
+          done
+          echo "Attached four binaries to draft $TAG. Verify them before publishing." >> "$GITHUB_STEP_SUMMARY"
