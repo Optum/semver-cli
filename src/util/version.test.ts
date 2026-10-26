@@ -235,7 +235,6 @@ Deno.test({
       () =>
         ({
           getVersionFromTags: () => "0.1.0",
-          fetch: () => {},
           exec: () => {},
         }) as unknown as ConventionalGitClient,
     );
@@ -263,7 +262,6 @@ Deno.test({
           getVersionFromTags: () => {
             throw new Error("failed in a test");
           },
-          fetch: () => {},
           exec: () => {},
         }) as unknown as ConventionalGitClient,
     );
