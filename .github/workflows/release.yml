@@ -45,3 +45,25 @@ jobs:
           else
             echo "No changes detected, skipping commit."
           fi
+
+      - name: Dispatch binaries for draft release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.release_draft.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_TAG"
+          meta="$(gh release view "$RELEASE_TAG" --json databaseId,isDraft)"
+          if [[ "$(jq -r .isDraft <<< "$meta")" != true ]]; then
+            echo "Release $RELEASE_TAG is no longer a draft." >&2
+            exit 1
+          fi
+          release_id="$(jq -r .databaseId <<< "$meta")"
+          sha="$(git rev-parse HEAD)"
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${release_id}" \
+            -f "target_commitish=${sha}" >/dev/null
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/dispatches" \
+            -f event_type=release-binaries \
+            -f "client_payload[tag]=${RELEASE_TAG}"
+          echo "Pinned draft ${RELEASE_TAG} to ${sha} and dispatched Release Binaries. Publish after that workflow succeeds." >> "$GITHUB_STEP_SUMMARY"
