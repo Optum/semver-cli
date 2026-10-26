@@ -3,11 +3,11 @@ import { assertEquals, AssertionError, assertRejects } from "@std/assert";
 import { assertSpyCall, resolvesNext, stub } from "testing/mock";
 import { IContext } from "../context.ts";
 import {
+  getVersionFromGitTags,
+  gitClientFactory,
   printVersion,
   readVersionFile,
   writeVersionFile,
-  gitClientFactory,
-  getVersionFromGitTags,
 } from "./version.ts";
 import { type ConventionalGitClient } from "@conventional-changelog/git-client";
 

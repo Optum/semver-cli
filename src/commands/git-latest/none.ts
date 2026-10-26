@@ -1,6 +1,6 @@
 import type { Arguments } from "yargs";
 import { increment, IncrementKind } from "../../util/increment.ts";
-import { printVersion, getVersionFromGitTags } from "../../util/version.ts";
+import { getVersionFromGitTags, printVersion } from "../../util/version.ts";
 import { IContext } from "../../context.ts";
 
 export const none = {
