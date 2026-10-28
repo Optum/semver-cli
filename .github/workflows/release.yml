@@ -47,7 +47,6 @@ jobs:
           fi
 
       - name: Dispatch binaries for draft release
-        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ steps.release_draft.outputs.tag_name }}
