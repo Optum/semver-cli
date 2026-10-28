@@ -4,6 +4,7 @@ import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
 import { ConventionalGitClient } from "@conventional-changelog/git-client";
+import { getVersionSource } from "./config.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -145,8 +146,8 @@ export async function printComparison(
 
 /**
  * This reads the current version file found at $CWD/VERSION and parses it as a
- * valid SemVer. If the file is not found, is empty, or contains an invalid
- * version then the default version `0.0.0` is returned.
+ * valid SemVer. If the file is not found or is empty, the default version
+ * `0.1.0` is returned. Invalid versions raise a parse error.
  * @returns The parsed version or default version
  */
 export async function readVersionFile(): Promise<SemVer> {
@@ -185,25 +186,52 @@ export const gitClientFactory = {
  */
 export async function getVersionFromGitTags() {
   const client = gitClientFactory.create();
+  const version = await client.getVersionFromTags();
+  return version ? parse(version) : DEFAULT_VERSION;
+}
 
+export async function readCurrentVersion(context: IContext): Promise<SemVer> {
+  let contents: string | undefined;
   try {
-    const isShallow =
-      (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
-    await client.exec(
-      "fetch",
-      "--filter=tree:0",
-      "--tags",
-      ...(isShallow ? ["--unshallow"] : []),
-      "origin",
-    );
-    const version = await client.getVersionFromTags();
-    if (!version) {
-      throw new Error("Unable to resolve version from tags");
+    contents = await Deno.readTextFile("VERSION");
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) throw error;
+  }
+  if (await getVersionSource(context) === "git") {
+    await removeVersionFile();
+    return await getVersionFromGitTags();
+  }
+  if (contents === undefined) {
+    let version: SemVer;
+    try {
+      version = await getVersionFromGitTags();
+    } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !error.message.includes("not a git repository")
+      ) {
+        throw error;
+      }
+      version = DEFAULT_VERSION;
     }
-    return parse(version);
-  } catch (e) {
-    console.error("Failed to get the latest semver git tag.");
-    console.error(e);
-    Deno.exit(1);
+    await writeVersionFile(version);
+    return version;
+  }
+  return contents.trim() ? parse(contents.trim()) : DEFAULT_VERSION;
+}
+
+export async function removeVersionFile() {
+  try {
+    await Deno.remove("VERSION");
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) throw error;
+  }
+}
+
+export async function writeCurrentVersion(context: IContext, version: SemVer) {
+  if (await getVersionSource(context) === "file") {
+    await writeVersionFile(version);
+  } else {
+    await removeVersionFile();
   }
 }

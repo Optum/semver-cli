@@ -265,24 +265,18 @@ Deno.test({
           exec: () => {},
         }) as unknown as ConventionalGitClient,
     );
-    const consoleError = stub(console, "error");
-    const exit = stub(Deno, "exit");
     try {
-      await getVersionFromGitTags();
+      await assertRejects(
+        () => getVersionFromGitTags(),
+        Error,
+        "failed in a test",
+      );
 
       assertSpyCall(clientFactory, 0, {
         args: [],
       });
-      assertSpyCall(consoleError, 0, {
-        args: ["Failed to get the latest semver git tag."],
-      });
-      assertSpyCall(exit, 0, {
-        args: [1],
-      });
     } finally {
       clientFactory.restore();
-      consoleError.restore();
-      exit.restore();
     }
   },
 });

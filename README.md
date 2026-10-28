@@ -69,11 +69,11 @@ Options:
 
 ### About
 
-The `get`, `set` and `inc` commands operate against your working directory. They
-all operate against a `VERSION` file found in the root folder of your project.
+The `get`, `set` and `inc` commands operate against your working directory. By
+default, they use a `VERSION` file in the root folder of your project.
 
-If the `VERSION` file is not found the default version is `0.1.0`. The `inc`
-command will create the `VERSION` file if it doesn't already exist.
+If the `VERSION` file is not found, semver initializes it from the current ref's
+local git tags, falling back to `0.1.0` when there are no tags.
 
 The `parse` command accepts a version string as input and parses and prints that
 version as output if it is valid.
@@ -82,10 +82,10 @@ The `sort` command accepts one or more version strings and outputs them in
 sorted order (descending by default, one version per line). Use the `-a` flag
 for ascending order, or read versions from stdin using `--`.
 
-The `git-latest` command returns the most recent parseable git tag. If an error
-occurs (e.g., git is unavailable, not in a git repo, no tags, etc.), exits 1.
-This **does not** create or modify tags. Supports the same subcommands and
-options as `get`/`set`/`inc`, i.e.:
+The `git-latest` command returns the highest parseable local git tag reachable
+from the current ref, or `0.1.0` when there are no tags. Git errors still
+exit 1. This **does not** create or modify tags. Supports the same subcommands
+and options as `get`/`set`/`inc`, i.e.:
 
 ```sh
 semver git-latest # 1.2.3
@@ -178,6 +178,23 @@ semver inc --prerelease beta  # 1.2.3-beta.0+1
 In addition to updating the `VERSION` file, semver can optionally update source
 code files in your project. To configure the version command you can provide a
 configuration file at `.github/version.yml`.
+
+The optional top level `source` setting selects where the current version comes
+from. The default is `file`: an existing `VERSION` is authoritative. When the
+file is missing, semver initializes it from the latest local git tag reachable
+from the current ref, or `0.1.0` if there is no tag. With `source: git`, local
+git tags are authoritative and any `VERSION` file is removed. `get`, `parse`
+(without a value), and `inc` use the tag version, falling back to `0.1.0`. `inc`
+only prints the proposed version in this mode; `set` applies its specified
+version to the configured post hooks without creating a file or tag.
+
+```yml
+source: git
+on:
+  post:
+    - kind: patch
+      file: package.json
+```
 
 There are a number of supported post hook kinds and a number of supported known
 project kinds which make updating source code files easy.

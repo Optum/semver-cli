@@ -33,6 +33,7 @@ export type PostHook =
   );
 
 export type VersionConfig = {
+  source?: "file" | "git";
   on?: {
     post?: PostHook[];
   };

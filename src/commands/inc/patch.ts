@@ -2,10 +2,11 @@ import type { Arguments } from "yargs";
 import { increment, IncrementKind } from "../../util/increment.ts";
 import {
   printVersion,
-  readVersionFile,
-  writeVersionFile,
+  readCurrentVersion,
+  writeCurrentVersion,
 } from "../../util/version.ts";
 import { postVersionHook } from "../../hooks/mod.ts";
+import { getVersionSource } from "../../util/config.ts";
 import { IContext } from "../../context.ts";
 
 export const patch = {
@@ -13,19 +14,17 @@ export const patch = {
   describe: "A patch version increment",
   handler: async (args: Arguments & IContext) => {
     const { prerelease, build } = args;
-    const version = await readVersionFile();
+    const version = await readCurrentVersion(args);
     const { previous, current } = increment({
       version,
       kind: IncrementKind.Patch,
       prerelease,
       build,
     });
-    await writeVersionFile(current);
-    const hookWarnings = await postVersionHook(
-      args,
-      previous,
-      current,
-    );
+    await writeCurrentVersion(args, current);
+    const hookWarnings = await getVersionSource(args) === "file"
+      ? await postVersionHook(args, previous, current)
+      : [];
     await printVersion(args, current, args.json, hookWarnings);
   },
 };
