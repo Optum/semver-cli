@@ -1,33 +1,34 @@
 ---
 id: version-sources-009
-title: Shallow clones fetch current history and reachable tags only
+title: Shallow clones stop deepening at the nearest version tag
 spec_ref: ".agents/specifications/version-sources.spec.md#tag-lookup"
 ---
 
-# Shallow clones fetch current history and reachable tags only
+# Shallow clones stop deepening at the nearest version tag
 
 ## Requirement
 
 Preconditions:
 
-- A shallow checkout has an `origin` remote and a parseable tag on an earlier
-  commit reachable through that remote.
-- The tag is absent from the shallow checkout before version resolution.
-- A lower version tag is closer to the current ref than the highest version tag.
+- A shallow checkout has an `origin` remote and a parseable tag beyond its
+  shallow boundary.
+- An older reachable tag has a higher version number.
 - Another branch has an unrelated, higher version tag.
 
 Expected behavior:
 
-- Tag based resolution MUST fetch the current checkout's missing commit history
-  from `origin` with a tree and blob filter.
-- It MUST fetch only the highest parseable tag on that history without fetching
-  other tags or unrelated branch histories.
-- It MUST return the reachable tag's version instead of the fallback.
+- Tag based resolution MUST deepen only the current checkout's commit history,
+  with a tree and blob filter, until the nearest parseable tag is found.
+- It MUST stop deepening once that tag is found and fetch only that tag object.
+- It MUST report the nearest tag's version even when an older reachable tag has
+  a higher version number.
+- If the remote has no parseable version tags, it MUST use `0.1.0` without
+  deepening the checkout.
 
 Postconditions:
 
-- The reachable tag is available locally and the repository is no longer
-  shallow.
-- The lower and unrelated tags, the unrelated commit, and historical tree and
-  blob objects are absent locally.
+- The selected tag is available locally and the repository remains shallow when
+  older history exists beyond it.
+- The older and unrelated tags, their commits, and historical tree and blob
+  objects are absent locally.
 - Tests: `src/util/source.test.ts` (`req:version-sources-009`).

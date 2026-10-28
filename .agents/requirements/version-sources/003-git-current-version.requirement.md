@@ -14,8 +14,10 @@ Preconditions:
 
 Expected behavior:
 
-- `get` and `parse` without a value MUST report the version from the highest
+- `get` and `parse` without a value MUST report the version from the nearest
   parseable local tag reachable from the current ref, or `0.1.0` if none exists.
+- If several version tags point to that commit, the highest version among them
+  MUST be selected.
 - Resolving the current version MUST remove an existing `VERSION` file.
 
 Postconditions:

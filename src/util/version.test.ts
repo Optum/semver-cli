@@ -259,10 +259,9 @@ Deno.test({
       "create",
       () =>
         ({
-          getVersionFromTags: () => {
+          exec: () => {
             throw new Error("failed in a test");
           },
-          exec: () => "",
         }) as unknown as ConventionalGitClient,
     );
     try {

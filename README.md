@@ -82,12 +82,13 @@ The `sort` command accepts one or more version strings and outputs them in
 sorted order (descending by default, one version per line). Use the `-a` flag
 for ascending order, or read versions from stdin using `--`.
 
-The `git-latest` command returns the highest parseable local git tag reachable
+The `git-latest` command returns the nearest parseable local git tag reachable
 from the current ref, or `0.1.0` when there are no tags. Git errors still
-exit 1. In a shallow checkout with `origin`, it fetches the current checkout's
-commit history and the highest reachable version tag without historical file
-trees or unrelated branch histories. This **does not** create release tags. It
-supports the same subcommands and options as `get`/`set`/`inc`, i.e.:
+exit 1. In a shallow checkout with `origin`, it deepens the current checkout's
+commit history only until it finds a version tag, then fetches just that tag
+without historical file trees or unrelated branch histories. This **does not**
+create release tags. It supports the same subcommands and options as
+`get`/`set`/`inc`, i.e.:
 
 ```sh
 semver git-latest # 1.2.3

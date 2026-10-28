@@ -12,7 +12,7 @@ is `file`.
 ## File source
 
 An existing `VERSION` file in the working directory is authoritative. When it is
-absent, the CLI initializes it from the highest parseable local Git tag
+absent, the CLI initializes it from the nearest parseable local Git tag
 reachable from the current ref. If no such tag exists, it initializes the file
 to `0.1.0`.
 
@@ -23,7 +23,7 @@ configured post hooks.
 
 ## Git source
 
-The highest parseable local Git tag reachable from the current ref is
+The nearest parseable local Git tag reachable from the current ref is
 authoritative. If no such tag exists, the current version is `0.1.0`. Commands
 that resolve the current version remove an existing `VERSION` file.
 
@@ -35,10 +35,14 @@ to configured post hooks without creating a `VERSION` file or a tag.
 
 ## Tag lookup
 
-Tag based version resolution uses tags reachable from the current ref. In a
-shallow repository with an `origin` remote, it obtains the missing commit
-history for the current checkout without downloading historical file trees or
-blobs. It fetches only the highest parseable tag whose target is in that
-history; unrelated branch histories and their tags are excluded. A complete
-repository, or one without `origin`, uses its existing local tags. If no
-parseable tag is reachable, resolution uses `0.1.0`.
+The nearest tag is the first parseable version tag encountered while walking
+commits from the current ref in Git date order. When several version tags name
+that commit, the highest version among them wins. Tags on unrelated branches are
+excluded.
+
+In a shallow repository with an `origin` remote, resolution discovers tag refs
+without fetching their objects, then deepens only the current checkout's commit
+history until it finds that nearest tag. It stops at that point and fetches only
+the selected tag. Historical file trees and blobs are excluded from these
+fetches. A complete repository, or one without `origin`, uses its existing local
+tags. If no parseable tag is reachable, resolution uses `0.1.0`.

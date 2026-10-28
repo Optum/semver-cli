@@ -120,7 +120,7 @@ async function exists(path: string) {
   }
 }
 
-Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async () => {
+Deno.test("req:version-sources-009 - stops at the nearest tag in a shallow clone", async () => {
   const root = await Deno.makeTempDir();
   const source = `${root}/source`;
   const remote = `${root}/origin.git`;
@@ -135,12 +135,21 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
     await git("add", "README");
     await git("commit", "-qm", "tagged");
     await git("tag", "-a", "v1.2.3", "-m", "release 1.2.3");
+    const olderCommit = await git("rev-parse", "HEAD");
     const oldTree = await git("rev-parse", "v1.2.3^{tree}");
     const oldBlob = await git("rev-parse", "v1.2.3:README");
     await Deno.writeTextFile(`${source}/README`, "second\n");
     await git("add", "README");
     await git("commit", "-qm", "untagged head");
     await git("tag", "v1.1.0");
+    await Deno.writeTextFile(`${source}/README`, "third\n");
+    await git("add", "README");
+    await git("commit", "-qm", "head after nearest tag");
+    for (const content of ["fourth", "fifth"]) {
+      await Deno.writeTextFile(`${source}/README`, `${content}\n`);
+      await git("add", "README");
+      await git("commit", "-qm", content);
+    }
     const currentBranch = await git("branch", "--show-current");
     await git("switch", "-q", "-c", "unrelated");
     await Deno.writeTextFile(`${source}/README`, "unrelated\n");
@@ -167,6 +176,7 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
       shallow,
     ]);
     const cloneGit = (...args: string[]) => run(shallow, "git", args);
+    await cloneGit("checkout", "--detach", "-q");
     assertEquals(
       await cloneGit("rev-parse", "--is-shallow-repository"),
       "true",
@@ -183,14 +193,14 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
         main,
         "get",
       ]),
-      "1.2.3",
+      "1.1.0",
     );
     assertEquals(
       await cloneGit("rev-parse", "--is-shallow-repository"),
-      "false",
+      "true",
     );
-    assertEquals(await cloneGit("tag", "--list"), "v1.2.3");
-    for (const object of [oldTree, oldBlob, unrelatedCommit]) {
+    assertEquals(await cloneGit("tag", "--list"), "v1.1.0");
+    for (const object of [olderCommit, oldTree, oldBlob, unrelatedCommit]) {
       const check = await new Deno.Command("git", {
         args: ["cat-file", "-e", object],
         cwd: shallow,
@@ -200,6 +210,95 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
       }).output();
       assertEquals(check.code, 1, `${object} should not be fetched`);
     }
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("req:version-sources-002 req:version-sources-003 - nearest tag wins in a complete repository", async () => {
+  const cwd = await Deno.makeTempDir();
+  const git = (...args: string[]) => run(cwd, "git", args);
+  const cli = (...args: string[]) =>
+    run(cwd, Deno.execPath(), ["run", "--cached-only", "-A", main, ...args]);
+  try {
+    await git("init", "-q");
+    await git("config", "user.name", "Test");
+    await git("config", "user.email", "test@example.com");
+    await Deno.writeTextFile(`${cwd}/README`, "old\n");
+    await git("add", "README");
+    await git("commit", "-qm", "old release");
+    await git("tag", "v2.0.0");
+    await Deno.writeTextFile(`${cwd}/README`, "new\n");
+    await git("add", "README");
+    await git("commit", "-qm", "new release");
+    await git("tag", "v1.0.0");
+    await git("tag", "v0.9.0");
+    await Deno.writeTextFile(`${cwd}/README`, "head\n");
+    await git("add", "README");
+    await git("commit", "-qm", "head");
+
+    assertEquals(await cli("get"), "1.0.0");
+    assertEquals(await Deno.readTextFile(`${cwd}/VERSION`), "1.0.0\n");
+    await Deno.mkdir(`${cwd}/.github`);
+    await Deno.writeTextFile(`${cwd}/.github/version.yml`, "source: git\n");
+    assertEquals(await cli("get"), "1.0.0");
+    assertEquals(await exists(`${cwd}/VERSION`), false);
+  } finally {
+    await Deno.remove(cwd, { recursive: true });
+  }
+});
+
+Deno.test("req:version-sources-009 - no tags leaves a shallow checkout shallow", async () => {
+  const root = await Deno.makeTempDir();
+  const source = `${root}/source`;
+  const remote = `${root}/origin.git`;
+  const shallow = `${root}/shallow`;
+  try {
+    await Deno.mkdir(source);
+    const git = (...args: string[]) => run(source, "git", args);
+    await git("init", "-q");
+    await git("config", "user.name", "Test");
+    await git("config", "user.email", "test@example.com");
+    await Deno.writeTextFile(`${source}/README`, "first\n");
+    await git("add", "README");
+    await git("commit", "-qm", "first");
+    const olderCommit = await git("rev-parse", "HEAD");
+    await Deno.writeTextFile(`${source}/README`, "second\n");
+    await git("add", "README");
+    await git("commit", "-qm", "second");
+    await run(root, "git", ["clone", "--bare", source, remote]);
+    await run(root, "git", [
+      "clone",
+      "--depth",
+      "1",
+      "--no-tags",
+      `file://${remote}`,
+      shallow,
+    ]);
+    await Deno.mkdir(`${shallow}/.github`);
+    await Deno.writeTextFile(`${shallow}/.github/version.yml`, "source: git\n");
+
+    assertEquals(
+      await run(shallow, Deno.execPath(), [
+        "run",
+        "--cached-only",
+        "-A",
+        main,
+        "get",
+      ]),
+      "0.1.0",
+    );
+    assertEquals(
+      await run(shallow, "git", ["rev-parse", "--is-shallow-repository"]),
+      "true",
+    );
+    const oldCommitCheck = await new Deno.Command("git", {
+      args: ["cat-file", "-e", olderCommit],
+      cwd: shallow,
+      stdout: "null",
+      stderr: "null",
+    }).output();
+    assertEquals(oldCommitCheck.code, 1);
   } finally {
     await Deno.remove(root, { recursive: true });
   }

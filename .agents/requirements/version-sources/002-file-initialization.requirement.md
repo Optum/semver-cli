@@ -14,7 +14,7 @@ Preconditions:
 
 Expected behavior:
 
-- The CLI MUST create `VERSION` containing the highest parseable local tag
+- The CLI MUST create `VERSION` containing the nearest parseable local tag
   reachable from the current ref, or `0.1.0` when no such tag exists.
 - Initialization MUST work outside a Git repository by using `0.1.0`.
 
