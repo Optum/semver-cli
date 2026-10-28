@@ -29,9 +29,9 @@ that resolve the current version remove an existing `VERSION` file.
 
 `get` and `parse` without an explicit value derive their result from that
 current version. `inc` calculates and reports a proposed version using the same
-version calculation as `git-latest`; it does not write a file, create a tag, or
-apply post hooks. `set` applies the specified version to configured post hooks
-without creating a `VERSION` file or a tag.
+version calculation as `git-latest` and applies configured post hooks. It does
+not write a `VERSION` file or create a tag. `set` applies the specified version
+to configured post hooks without creating a `VERSION` file or a tag.
 
 ## Tag lookup
 

@@ -66,14 +66,16 @@ Deno.test("req:version-sources-001 - version sources use file or Git", async () 
     await Deno.writeTextFile(`${cwd}/package.json`, '{"version":"1.2.3"}\n');
     assertEquals(await cli("get"), "1.2.3");
     assertEquals(await exists(`${cwd}/VERSION`), false);
-    // req:version-sources-004 - inc matches git-latest without persistence.
+    // req:version-sources-004 - inc matches git-latest and runs hooks without persistence.
     const proposed = await cli("git-latest", "patch");
     assertEquals(proposed, "1.2.4");
-    assertEquals(await cli("inc", "patch"), proposed);
+    const incOutput = await cli("inc", "patch");
+    assertStringIncludes(incOutput, "Invoking post_version hook...");
+    assertEquals(incOutput.split("\n").at(-1), proposed);
     assertEquals(await exists(`${cwd}/VERSION`), false);
-    assertEquals(
+    assertStringIncludes(
       await Deno.readTextFile(`${cwd}/package.json`),
-      '{"version":"1.2.3"}\n',
+      "1.2.4",
     );
 
     // req:version-sources-005 - set applies a prerelease to the hook only.
@@ -83,6 +85,24 @@ Deno.test("req:version-sources-001 - version sources use file or Git", async () 
       await Deno.readTextFile(`${cwd}/package.json`),
       "1.2.4-rc.1",
     );
+
+    for (
+      const [kind, expected] of [
+        ["major", "2.0.0"],
+        ["minor", "1.3.0"],
+        ["none", "1.2.3"],
+      ]
+    ) {
+      await Deno.writeTextFile(`${cwd}/package.json`, '{"version":"1.2.3"}\n');
+      const output = await cli("inc", kind);
+      assertStringIncludes(output, "Invoking post_version hook...");
+      assertEquals(output.split("\n").at(-1), expected);
+      assertStringIncludes(
+        await Deno.readTextFile(`${cwd}/package.json`),
+        expected,
+      );
+      assertEquals(await exists(`${cwd}/VERSION`), false);
+    }
     assertEquals(await git("tag", "--list"), "v1.2.3\nv9.9.9");
     assertEquals(await cli("parse"), "1.2.3");
   } finally {

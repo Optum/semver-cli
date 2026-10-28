@@ -6,7 +6,6 @@ import {
   writeCurrentVersion,
 } from "../../util/version.ts";
 import { postVersionHook } from "../../hooks/mod.ts";
-import { getVersionSource } from "../../util/config.ts";
 import { IContext } from "../../context.ts";
 
 export const none = {
@@ -22,9 +21,7 @@ export const none = {
       build,
     });
     await writeCurrentVersion(args, current);
-    const hookWarnings = await getVersionSource(args) === "file"
-      ? await postVersionHook(args, previous, current)
-      : [];
+    const hookWarnings = await postVersionHook(args, previous, current);
     await printVersion(args, current, args.json, hookWarnings);
   },
 };

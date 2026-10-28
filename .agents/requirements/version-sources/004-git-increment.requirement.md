@@ -1,10 +1,10 @@
 ---
 id: version-sources-004
-title: Git increment reports a proposal without changing state
+title: Git increment updates hooks without writing the source of truth
 spec_ref: ".agents/specifications/version-sources.spec.md#git-source"
 ---
 
-# Git increment reports a proposal without changing state
+# Git increment updates hooks without writing the source of truth
 
 ## Requirement
 
@@ -15,9 +15,11 @@ Preconditions:
 Expected behavior:
 
 - `inc patch` MUST report the same proposed version as `git-latest patch`.
-- It MUST NOT create `VERSION` or a tag, and MUST NOT run the post hook.
+- Every `inc` variant MUST apply configured post hooks with its proposed
+  version.
+- It MUST NOT create `VERSION` or a tag.
 
 Postconditions:
 
-- Local tags and the hook target retain their original content.
+- Local tags are unchanged, and the hook target reflects the proposed version.
 - Tests: `src/util/source.test.ts` (`req:version-sources-004`).

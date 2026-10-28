@@ -185,8 +185,8 @@ file is missing, semver initializes it from the latest local git tag reachable
 from the current ref, or `0.1.0` if there is no tag. With `source: git`, local
 git tags are authoritative and any `VERSION` file is removed. `get`, `parse`
 (without a value), and `inc` use the tag version, falling back to `0.1.0`. `inc`
-only prints the proposed version in this mode; `set` applies its specified
-version to the configured post hooks without creating a file or tag.
+applies configured post hooks with its proposed version, and `set` applies its
+specified version to those hooks. Neither command creates a file or tag.
 
 ```yml
 source: git
