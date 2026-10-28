@@ -1,5 +1,5 @@
 import * as path from "path";
-import { format, parse, SemVer } from "semver";
+import { compare, format, parse, SemVer, tryParse } from "semver";
 import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
@@ -215,16 +215,21 @@ export async function getVersionFromGitTags() {
       else tag.object = object;
       tags.set(name, tag);
     }
-    const reachableTags = [...tags]
-      .filter(([, tag]) => commits.has(tag.commit ?? tag.object ?? ""))
-      .map(([ref]) => `${ref}:${ref}`);
-    if (reachableTags.length > 0) {
+    let bestTag: { ref: string; version: SemVer } | undefined;
+    for (const [ref, tag] of tags) {
+      if (!commits.has(tag.commit ?? tag.object ?? "")) continue;
+      const version = tryParse(ref.slice("refs/tags/".length));
+      if (version && (!bestTag || compare(version, bestTag.version) > 0)) {
+        bestTag = { ref, version };
+      }
+    }
+    if (bestTag) {
       await client.exec(
         "fetch",
         "--filter=tree:0",
         "--no-tags",
         "origin",
-        ...reachableTags,
+        `${bestTag.ref}:${bestTag.ref}`,
       );
     }
   }

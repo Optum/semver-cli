@@ -38,7 +38,7 @@ to configured post hooks without creating a `VERSION` file or a tag.
 Tag based version resolution uses tags reachable from the current ref. In a
 shallow repository with an `origin` remote, it obtains the missing commit
 history for the current checkout without downloading historical file trees or
-blobs. It obtains only tags whose targets are in that history; unrelated branch
-histories and their tags are excluded. A complete repository, or one without
-`origin`, uses its existing local tags. If no parseable tag is reachable,
-resolution uses `0.1.0`.
+blobs. It fetches only the highest parseable tag whose target is in that
+history; unrelated branch histories and their tags are excluded. A complete
+repository, or one without `origin`, uses its existing local tags. If no
+parseable tag is reachable, resolution uses `0.1.0`.

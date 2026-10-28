@@ -140,6 +140,7 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
     await Deno.writeTextFile(`${source}/README`, "second\n");
     await git("add", "README");
     await git("commit", "-qm", "untagged head");
+    await git("tag", "v1.1.0");
     const currentBranch = await git("branch", "--show-current");
     await git("switch", "-q", "-c", "unrelated");
     await Deno.writeTextFile(`${source}/README`, "unrelated\n");
