@@ -84,9 +84,10 @@ for ascending order, or read versions from stdin using `--`.
 
 The `git-latest` command returns the highest parseable local git tag reachable
 from the current ref, or `0.1.0` when there are no tags. Git errors still
-exit 1. When an `origin` remote exists, it fetches tags and completes shallow
-history before looking up the version. This **does not** create or modify tags.
-It supports the same subcommands and options as `get`/`set`/`inc`, i.e.:
+exit 1. In a shallow checkout with `origin`, it fetches the current checkout's
+commit history and reachable tags without historical file trees or unrelated
+branch histories. This **does not** create release tags. It supports the same
+subcommands and options as `get`/`set`/`inc`, i.e.:
 
 ```sh
 semver git-latest # 1.2.3

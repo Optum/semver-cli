@@ -134,12 +134,29 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
     await Deno.writeTextFile(`${source}/README`, "first\n");
     await git("add", "README");
     await git("commit", "-qm", "tagged");
-    await git("tag", "v1.2.3");
+    await git("tag", "-a", "v1.2.3", "-m", "release 1.2.3");
+    const oldTree = await git("rev-parse", "v1.2.3^{tree}");
+    const oldBlob = await git("rev-parse", "v1.2.3:README");
     await Deno.writeTextFile(`${source}/README`, "second\n");
     await git("add", "README");
     await git("commit", "-qm", "untagged head");
+    const currentBranch = await git("branch", "--show-current");
+    await git("switch", "-q", "-c", "unrelated");
+    await Deno.writeTextFile(`${source}/README`, "unrelated\n");
+    await git("add", "README");
+    await git("commit", "-qm", "unrelated branch");
+    const unrelatedCommit = await git("rev-parse", "HEAD");
+    await git("tag", "v9.9.9");
+    await git("switch", "-q", currentBranch);
 
     await run(root, "git", ["clone", "--bare", source, remote]);
+    await run(root, "git", [
+      "--git-dir",
+      remote,
+      "config",
+      "uploadpack.allowFilter",
+      "true",
+    ]);
     await run(root, "git", [
       "clone",
       "--depth",
@@ -172,6 +189,16 @@ Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async 
       "false",
     );
     assertEquals(await cloneGit("tag", "--list"), "v1.2.3");
+    for (const object of [oldTree, oldBlob, unrelatedCommit]) {
+      const check = await new Deno.Command("git", {
+        args: ["cat-file", "-e", object],
+        cwd: shallow,
+        env: { GIT_NO_LAZY_FETCH: "1" },
+        stdout: "null",
+        stderr: "null",
+      }).output();
+      assertEquals(check.code, 1, `${object} should not be fetched`);
+    }
   } finally {
     await Deno.remove(root, { recursive: true });
   }

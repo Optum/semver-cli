@@ -186,17 +186,47 @@ export const gitClientFactory = {
  */
 export async function getVersionFromGitTags() {
   const client = gitClientFactory.create();
-  const remotes = await client.exec("remote");
-  if (remotes.split(/\s+/).includes("origin")) {
-    const isShallow =
-      (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+  const isShallow =
+    (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+  if (
+    isShallow && (await client.exec("remote")).split(/\s+/).includes("origin")
+  ) {
+    const head = await client.exec("rev-parse", "HEAD");
     await client.exec(
       "fetch",
       "--filter=tree:0",
-      "--tags",
-      ...(isShallow ? ["--unshallow"] : []),
+      "--no-tags",
+      "--unshallow",
       "origin",
+      head,
     );
+    const commits = new Set(
+      (await client.exec("rev-list", "HEAD")).split("\n"),
+    );
+    const remoteTags = await client.exec("ls-remote", "--tags", "origin");
+    const tags = new Map<string, { object?: string; commit?: string }>();
+    for (const line of remoteTags.split("\n")) {
+      const [object, ref] = line.split("\t");
+      if (!object || !ref?.startsWith("refs/tags/")) continue;
+      const peeled = ref.endsWith("^{}");
+      const name = peeled ? ref.slice(0, -3) : ref;
+      const tag = tags.get(name) ?? {};
+      if (peeled) tag.commit = object;
+      else tag.object = object;
+      tags.set(name, tag);
+    }
+    const reachableTags = [...tags]
+      .filter(([, tag]) => commits.has(tag.commit ?? tag.object ?? ""))
+      .map(([ref]) => `${ref}:${ref}`);
+    if (reachableTags.length > 0) {
+      await client.exec(
+        "fetch",
+        "--filter=tree:0",
+        "--no-tags",
+        "origin",
+        ...reachableTags,
+      );
+    }
   }
   const version = await client.getVersionFromTags();
   return version ? parse(version) : DEFAULT_VERSION;
