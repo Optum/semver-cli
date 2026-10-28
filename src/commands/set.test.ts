@@ -109,20 +109,21 @@ describe("set", () => {
   });
 
   describe("with an invalid version file", () => {
-    const notfound = new Deno.errors.NotFound("not found");
-    // deno-lint-ignore no-explicit-any
-    (notfound as any).code = "ENOENT";
     it("SET08", async () => {
-      await assertRejects(async () => {
-        await set.handler(
-          {
-            _: [],
-            current: "1.2.3",
-            hooks,
-            config: "version.yml",
-          } as unknown as Arguments & IContext,
-        );
-      });
+      const readTextFile = stub(
+        Deno,
+        "readTextFile",
+        resolvesNext(["invalid"]),
+      );
+      try {
+        await assertRejects(async () => {
+          await set.handler(
+            { _: [], value: "1.2.3", hooks } as unknown as Arguments & IContext,
+          );
+        });
+      } finally {
+        readTextFile.restore();
+      }
     });
   });
   describe("patch with csproj posthook", () => {

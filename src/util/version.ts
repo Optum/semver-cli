@@ -1,9 +1,10 @@
 import * as path from "path";
-import { format, parse, SemVer } from "semver";
+import { compare, format, parse, SemVer, tryParse } from "semver";
 import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
 import { ConventionalGitClient } from "@conventional-changelog/git-client";
+import { getVersionSource } from "./config.ts";
 
 export const DEFAULT_VERSION = parse("0.1.0");
 
@@ -145,8 +146,8 @@ export async function printComparison(
 
 /**
  * This reads the current version file found at $CWD/VERSION and parses it as a
- * valid SemVer. If the file is not found, is empty, or contains an invalid
- * version then the default version `0.0.0` is returned.
+ * valid SemVer. If the file is not found or is empty, the default version
+ * `0.1.0` is returned. Invalid versions raise a parse error.
  * @returns The parsed version or default version
  */
 export async function readVersionFile(): Promise<SemVer> {
@@ -181,29 +182,119 @@ export const gitClientFactory = {
 };
 
 /**
+ * Finds the nearest parseable version tag reachable from HEAD, using only the
+ * commit history currently available locally.
+ */
+async function findNearestLocalTag(
+  client: ConventionalGitClient,
+): Promise<SemVer | undefined> {
+  const tagsByCommit = new Map<string, SemVer>();
+  const refs = await client.exec(
+    "for-each-ref",
+    "--format=%(objectname)%09%(*objectname)%09%(refname:short)",
+    "refs/tags",
+  );
+  for (const line of refs.split("\n")) {
+    const [object, peeled, name] = line.split("\t");
+    const commit = peeled || object;
+    if (!commit || !name) continue;
+    const version = tryParse(name);
+    if (!version) continue;
+    const existing = tagsByCommit.get(commit);
+    if (!existing || compare(version, existing) > 0) {
+      tagsByCommit.set(commit, version);
+    }
+  }
+  if (tagsByCommit.size === 0) return undefined;
+
+  const history = await client.exec("rev-list", "HEAD");
+  for (const commit of history.split("\n")) {
+    const version = tagsByCommit.get(commit);
+    if (version) return version;
+  }
+  return undefined;
+}
+
+/**
  * Attempts to determine the latest version as specified by git tags
  */
-export async function getVersionFromGitTags() {
+export async function getVersionFromGitTags(): Promise<SemVer> {
   const client = gitClientFactory.create();
 
-  try {
-    const isShallow =
-      (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
-    await client.exec(
-      "fetch",
-      "--filter=tree:0",
-      "--tags",
-      ...(isShallow ? ["--unshallow"] : []),
+  let version = await findNearestLocalTag(client);
+  const isShallow = !version &&
+    (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+  if (isShallow) {
+    const hasOrigin = (await client.exec("remote")).split(/\s+/).includes(
       "origin",
     );
-    const version = await client.getVersionFromTags();
-    if (!version) {
-      throw new Error("Unable to resolve version from tags");
+    const hasRemoteTags = hasOrigin &&
+      (await client.exec("ls-remote", "--tags", "origin")).trim().length > 0;
+    if (hasRemoteTags) {
+      let deepen = 1;
+      let shallow = true;
+      while (!version && shallow) {
+        await client.exec(
+          "fetch",
+          "--filter=tree:0",
+          "--tags",
+          `--deepen=${deepen}`,
+          "origin",
+          "HEAD",
+        );
+        version = await findNearestLocalTag(client);
+        shallow =
+          (await client.exec("rev-parse", "--is-shallow-repository")) ===
+            "true";
+        deepen *= 2;
+      }
     }
-    return parse(version);
-  } catch (e) {
-    console.error("Failed to get the latest semver git tag.");
-    console.error(e);
-    Deno.exit(1);
+  }
+  return version ?? DEFAULT_VERSION;
+}
+
+export async function readCurrentVersion(context: IContext): Promise<SemVer> {
+  let contents: string | undefined;
+  try {
+    contents = await Deno.readTextFile("VERSION");
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) throw error;
+  }
+  if (await getVersionSource(context) === "git") {
+    await removeVersionFile();
+    return await getVersionFromGitTags();
+  }
+  if (contents === undefined) {
+    let version: SemVer;
+    try {
+      version = await getVersionFromGitTags();
+    } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !error.message.includes("not a git repository")
+      ) {
+        throw error;
+      }
+      version = DEFAULT_VERSION;
+    }
+    await writeVersionFile(version);
+    return version;
+  }
+  return contents.trim() ? parse(contents.trim()) : DEFAULT_VERSION;
+}
+
+export async function removeVersionFile() {
+  try {
+    await Deno.remove("VERSION");
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) throw error;
+  }
+}
+
+export async function writeCurrentVersion(context: IContext, version: SemVer) {
+  if (await getVersionSource(context) === "file") {
+    await writeVersionFile(version);
+  } else {
+    await removeVersionFile();
   }
 }

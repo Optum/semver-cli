@@ -2,8 +2,8 @@ import type { Arguments, YargsInstance } from "yargs";
 import { parse } from "semver";
 import {
   printVersion,
-  readVersionFile,
-  writeVersionFile,
+  readCurrentVersion,
+  writeCurrentVersion,
 } from "../util/version.ts";
 import { postVersionHook } from "../hooks/mod.ts";
 import { IContext } from "../context.ts";
@@ -23,9 +23,9 @@ export const set = {
   },
   async handler(args: Arguments & IContext) {
     const { value } = args;
-    const previous = await readVersionFile();
+    const previous = await readCurrentVersion(args);
     const version = value ? parse(value) : previous ? previous : parse("0.1.0");
-    await writeVersionFile(version);
+    await writeCurrentVersion(args, version);
     const hookWarnings = await postVersionHook(
       args,
       previous,

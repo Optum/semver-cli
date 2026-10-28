@@ -1,11 +1,6 @@
-import * as YAML from "yaml";
 import { HookError } from "../errors/mod.ts";
-import { exists } from "../util/exists.ts";
-import {
-  HookWarning,
-  PostHookKind,
-  VersionConfig,
-} from "./hooks.interfaces.ts";
+import { getVersionConfig } from "../util/config.ts";
+import { HookWarning, PostHookKind } from "./hooks.interfaces.ts";
 import { IContext } from "../context.ts";
 import { SemVer } from "semver";
 
@@ -72,21 +67,4 @@ export async function postVersionHook(
     }
   }
   return warnings;
-}
-
-async function getVersionConfig(context: IContext) {
-  const { c: configShorthand, config, githubDir } = context;
-  const configPath = config ?? configShorthand;
-  const paths = configPath ? [configPath] : [
-    [githubDir, "version.yml"].filter((p) => p).join("/"),
-    [githubDir, "version.yaml"].filter((p) => p).join("/"),
-  ];
-
-  for (const p of paths) {
-    if (await exists(p)) {
-      const contents = await Deno.readTextFile(p);
-      return YAML.parse(contents) as VersionConfig;
-    }
-  }
-  return undefined;
 }

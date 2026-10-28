@@ -1,6 +1,6 @@
 import type { Arguments } from "yargs";
 import { increment, IncrementKind } from "../../util/increment.ts";
-import { printVersion, readVersionFile } from "../../util/version.ts";
+import { printVersion, readCurrentVersion } from "../../util/version.ts";
 import { IContext } from "../../context.ts";
 
 export const patch = {
@@ -8,7 +8,7 @@ export const patch = {
   describe: "A patch version increment",
   handler: async (args: Arguments & IContext) => {
     const { prerelease, build } = args;
-    const version = await readVersionFile();
+    const version = await readCurrentVersion(args);
     const { current } = increment({
       version,
       kind: IncrementKind.Patch,
