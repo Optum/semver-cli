@@ -120,6 +120,63 @@ async function exists(path: string) {
   }
 }
 
+Deno.test("req:version-sources-009 - fetches tags and unshallows origin", async () => {
+  const root = await Deno.makeTempDir();
+  const source = `${root}/source`;
+  const remote = `${root}/origin.git`;
+  const shallow = `${root}/shallow`;
+  try {
+    await Deno.mkdir(source);
+    const git = (...args: string[]) => run(source, "git", args);
+    await git("init", "-q");
+    await git("config", "user.name", "Test");
+    await git("config", "user.email", "test@example.com");
+    await Deno.writeTextFile(`${source}/README`, "first\n");
+    await git("add", "README");
+    await git("commit", "-qm", "tagged");
+    await git("tag", "v1.2.3");
+    await Deno.writeTextFile(`${source}/README`, "second\n");
+    await git("add", "README");
+    await git("commit", "-qm", "untagged head");
+
+    await run(root, "git", ["clone", "--bare", source, remote]);
+    await run(root, "git", [
+      "clone",
+      "--depth",
+      "1",
+      "--no-tags",
+      `file://${remote}`,
+      shallow,
+    ]);
+    const cloneGit = (...args: string[]) => run(shallow, "git", args);
+    assertEquals(
+      await cloneGit("rev-parse", "--is-shallow-repository"),
+      "true",
+    );
+    assertEquals(await cloneGit("tag", "--list"), "");
+    await Deno.mkdir(`${shallow}/.github`);
+    await Deno.writeTextFile(`${shallow}/.github/version.yml`, "source: git\n");
+
+    assertEquals(
+      await run(shallow, Deno.execPath(), [
+        "run",
+        "--cached-only",
+        "-A",
+        main,
+        "get",
+      ]),
+      "1.2.3",
+    );
+    assertEquals(
+      await cloneGit("rev-parse", "--is-shallow-repository"),
+      "false",
+    );
+    assertEquals(await cloneGit("tag", "--list"), "v1.2.3");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
 Deno.test("req:version-sources-002 - file source initializes without Git", async () => {
   const cwd = await Deno.makeTempDir();
   try {

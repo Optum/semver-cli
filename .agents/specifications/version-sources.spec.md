@@ -35,5 +35,7 @@ to configured post hooks without creating a `VERSION` file or a tag.
 
 ## Tag lookup
 
-Tag based version resolution uses local tags for the current ref and does not
-fetch from a remote. If no parseable tag is reachable, it uses `0.1.0`.
+When an `origin` remote exists, tag based version resolution fetches its tags
+and completes shallow history before examining the local tags reachable from the
+current ref. A repository without `origin` uses its existing local tags. If no
+parseable tag is reachable, resolution uses `0.1.0`.

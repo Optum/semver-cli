@@ -186,6 +186,18 @@ export const gitClientFactory = {
  */
 export async function getVersionFromGitTags() {
   const client = gitClientFactory.create();
+  const remotes = await client.exec("remote");
+  if (remotes.split(/\s+/).includes("origin")) {
+    const isShallow =
+      (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
+    await client.exec(
+      "fetch",
+      "--filter=tree:0",
+      "--tags",
+      ...(isShallow ? ["--unshallow"] : []),
+      "origin",
+    );
+  }
   const version = await client.getVersionFromTags();
   return version ? parse(version) : DEFAULT_VERSION;
 }
