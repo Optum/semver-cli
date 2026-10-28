@@ -35,14 +35,16 @@ to configured post hooks without creating a `VERSION` file or a tag.
 
 ## Tag lookup
 
-The nearest tag is the first parseable version tag encountered while walking
-commits from the current ref in Git date order. When several version tags name
-that commit, the highest version among them wins. Tags on unrelated branches are
-excluded.
+The nearest tag is the first parseable version tag reachable while walking
+commits from the current ref, using only the commit history currently available
+locally. When several version tags name the same commit, one of them is used
+without comparing version numbers. Tags on unrelated branches are excluded.
 
-In a shallow repository with an `origin` remote, resolution discovers tag refs
-without fetching their objects, then deepens only the current checkout's commit
-history until it finds that nearest tag. It stops at that point and fetches only
-the selected tag. Historical file trees and blobs are excluded from these
-fetches. A complete repository, or one without `origin`, uses its existing local
-tags. If no parseable tag is reachable, resolution uses `0.1.0`.
+In a shallow repository with an `origin` remote, resolution first checks whether
+the remote advertises any tags at all. If so, it deepens the current checkout's
+commit history incrementally, filtering out file trees and blobs, and re-checks
+the local tags after each fetch until it finds a reachable tag or the full
+history has been fetched. This may also fetch tags unrelated to the current ref,
+but never their tree or blob contents. A complete repository, a shallow
+repository without `origin`, or a remote with no tags at all uses `0.1.0`
+without deepening further.

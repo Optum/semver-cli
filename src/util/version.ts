@@ -1,5 +1,5 @@
 import * as path from "path";
-import { compare, format, parse, SemVer, tryParse } from "semver";
+import { format, parse, SemVer, tryParse } from "semver";
 import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
@@ -182,107 +182,71 @@ export const gitClientFactory = {
 };
 
 /**
- * Attempts to determine the latest version as specified by git tags
+ * Finds the nearest parseable version tag reachable from HEAD, using only the
+ * commit history currently available locally.
  */
-export async function getVersionFromGitTags() {
-  const client = gitClientFactory.create();
-  const tags = new Map<
-    string,
-    { ref: string; version: SemVer; remote: boolean }[]
-  >();
-  const localRefs = new Set<string>();
-  function addTag(commit: string, ref: string, remote: boolean) {
-    const version = tryParse(ref.slice("refs/tags/".length));
-    if (!version || !commit) return;
-    const entries = tags.get(commit) ?? [];
-    entries.push({ ref, version, remote });
-    tags.set(commit, entries);
-  }
-
-  const localTags = await client.exec(
+async function findNearestLocalTag(
+  client: ConventionalGitClient,
+): Promise<SemVer | undefined> {
+  const tagsByCommit = new Map<string, SemVer>();
+  const refs = await client.exec(
     "for-each-ref",
-    "--format=%(refname)%09%(objectname)%09%(*objectname)",
+    "--format=%(objectname)%09%(*objectname)%09%(refname:short)",
     "refs/tags",
   );
-  for (const line of localTags.split("\n")) {
-    const [ref, object, peeled] = line.split("\t");
-    if (!ref?.startsWith("refs/tags/")) continue;
-    localRefs.add(ref);
-    addTag(peeled || object, ref, false);
+  for (const line of refs.split("\n")) {
+    const [object, peeled, name] = line.split("\t");
+    const commit = peeled || object;
+    if (!commit || !name || tagsByCommit.has(commit)) continue;
+    const version = tryParse(name);
+    if (version) tagsByCommit.set(commit, version);
   }
+  if (tagsByCommit.size === 0) return undefined;
 
-  let isShallow =
+  const history = await client.exec("rev-list", "HEAD");
+  for (const commit of history.split("\n")) {
+    const version = tagsByCommit.get(commit);
+    if (version) return version;
+  }
+  return undefined;
+}
+
+/**
+ * Attempts to determine the latest version as specified by git tags
+ */
+export async function getVersionFromGitTags(): Promise<SemVer> {
+  const client = gitClientFactory.create();
+
+  let version = await findNearestLocalTag(client);
+  const isShallow = !version &&
     (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
-  const hasOrigin = isShallow &&
-    (await client.exec("remote")).split(/\s+/).includes("origin");
-  if (hasOrigin) {
-    const remoteTags = await client.exec("ls-remote", "--tags", "origin");
-    const remoteRefs = new Map<string, { object?: string; commit?: string }>();
-    for (const line of remoteTags.split("\n")) {
-      const [object, ref] = line.split("\t");
-      if (!object || !ref?.startsWith("refs/tags/")) continue;
-      const peeled = ref.endsWith("^{}");
-      const name = peeled ? ref.slice(0, -3) : ref;
-      const tag = remoteRefs.get(name) ?? {};
-      if (peeled) tag.commit = object;
-      else tag.object = object;
-      remoteRefs.set(name, tag);
-    }
-    for (const [ref, tag] of remoteRefs) {
-      if (!localRefs.has(ref)) {
-        addTag(tag.commit ?? tag.object ?? "", ref, true);
-      }
-    }
-  }
-
-  async function nearestTag() {
-    const history = await client.exec("rev-list", "--date-order", "HEAD");
-    for (const commit of history.split("\n")) {
-      const candidates = tags.get(commit);
-      if (candidates?.length) {
-        return candidates.reduce((best, tag) =>
-          compare(tag.version, best.version) > 0 ? tag : best
+  if (isShallow) {
+    const hasOrigin = (await client.exec("remote")).split(/\s+/).includes(
+      "origin",
+    );
+    const hasRemoteTags = hasOrigin &&
+      (await client.exec("ls-remote", "--tags", "origin")).trim().length > 0;
+    if (hasRemoteTags) {
+      let deepen = 1;
+      let shallow = true;
+      while (!version && shallow) {
+        await client.exec(
+          "fetch",
+          "--filter=tree:0",
+          "--tags",
+          `--deepen=${deepen}`,
+          "origin",
+          "HEAD",
         );
+        version = await findNearestLocalTag(client);
+        shallow =
+          (await client.exec("rev-parse", "--is-shallow-repository")) ===
+            "true";
+        deepen *= 2;
       }
     }
   }
-
-  let nearest = await nearestTag();
-  if (hasOrigin) {
-    const head = await client.exec("rev-parse", "HEAD");
-    let deepen = 1;
-    while (!nearest && isShallow && tags.size > 0) {
-      const before = await client.exec("rev-list", "--count", "HEAD");
-      await client.exec(
-        "fetch",
-        "--filter=tree:0",
-        "--no-tags",
-        `--deepen=${deepen}`,
-        "origin",
-        head,
-      );
-      nearest = await nearestTag();
-      isShallow =
-        (await client.exec("rev-parse", "--is-shallow-repository")) === "true";
-      if (
-        isShallow &&
-        (await client.exec("rev-list", "--count", "HEAD")) === before
-      ) {
-        throw new Error("Unable to deepen the current Git history from origin");
-      }
-      deepen *= 2;
-    }
-    if (nearest?.remote) {
-      await client.exec(
-        "fetch",
-        "--filter=tree:0",
-        "--no-tags",
-        "origin",
-        `${nearest.ref}:${nearest.ref}`,
-      );
-    }
-  }
-  return nearest?.version ?? DEFAULT_VERSION;
+  return version ?? DEFAULT_VERSION;
 }
 
 export async function readCurrentVersion(context: IContext): Promise<SemVer> {

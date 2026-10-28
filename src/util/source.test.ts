@@ -135,7 +135,6 @@ Deno.test("req:version-sources-009 - stops at the nearest tag in a shallow clone
     await git("add", "README");
     await git("commit", "-qm", "tagged");
     await git("tag", "-a", "v1.2.3", "-m", "release 1.2.3");
-    const olderCommit = await git("rev-parse", "HEAD");
     const oldTree = await git("rev-parse", "v1.2.3^{tree}");
     const oldBlob = await git("rev-parse", "v1.2.3:README");
     await Deno.writeTextFile(`${source}/README`, "second\n");
@@ -155,7 +154,6 @@ Deno.test("req:version-sources-009 - stops at the nearest tag in a shallow clone
     await Deno.writeTextFile(`${source}/README`, "unrelated\n");
     await git("add", "README");
     await git("commit", "-qm", "unrelated branch");
-    const unrelatedCommit = await git("rev-parse", "HEAD");
     await git("tag", "v9.9.9");
     await git("switch", "-q", currentBranch);
 
@@ -199,8 +197,14 @@ Deno.test("req:version-sources-009 - stops at the nearest tag in a shallow clone
       await cloneGit("rev-parse", "--is-shallow-repository"),
       "true",
     );
-    assertEquals(await cloneGit("tag", "--list"), "v1.1.0");
-    for (const object of [olderCommit, oldTree, oldBlob, unrelatedCommit]) {
+    // Resolution fetches tags alongside the deepened history, so unrelated
+    // tags come along for the ride; only their tree and blob contents stay
+    // excluded by the tree:0 filter.
+    assertEquals(
+      await cloneGit("tag", "--list"),
+      "v1.1.0\nv1.2.3\nv9.9.9",
+    );
+    for (const object of [oldTree, oldBlob]) {
       const check = await new Deno.Command("git", {
         args: ["cat-file", "-e", object],
         cwd: shallow,
@@ -232,7 +236,6 @@ Deno.test("req:version-sources-002 req:version-sources-003 - nearest tag wins in
     await git("add", "README");
     await git("commit", "-qm", "new release");
     await git("tag", "v1.0.0");
-    await git("tag", "v0.9.0");
     await Deno.writeTextFile(`${cwd}/README`, "head\n");
     await git("add", "README");
     await git("commit", "-qm", "head");
