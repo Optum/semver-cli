@@ -236,6 +236,7 @@ Deno.test("req:version-sources-002 req:version-sources-003 - nearest tag wins in
     await git("add", "README");
     await git("commit", "-qm", "new release");
     await git("tag", "v1.0.0");
+    await git("tag", "v0.9.0");
     await Deno.writeTextFile(`${cwd}/README`, "head\n");
     await git("add", "README");
     await git("commit", "-qm", "head");

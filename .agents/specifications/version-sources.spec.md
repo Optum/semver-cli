@@ -37,8 +37,8 @@ to configured post hooks without creating a `VERSION` file or a tag.
 
 The nearest tag is the first parseable version tag reachable while walking
 commits from the current ref, using only the commit history currently available
-locally. When several version tags name the same commit, one of them is used
-without comparing version numbers. Tags on unrelated branches are excluded.
+locally. When several version tags name the same commit, the highest version
+among them is used. Tags on unrelated branches are excluded.
 
 In a shallow repository with an `origin` remote, resolution first checks whether
 the remote advertises any tags at all. If so, it deepens the current checkout's

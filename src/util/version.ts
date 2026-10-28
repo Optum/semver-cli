@@ -1,5 +1,5 @@
 import * as path from "path";
-import { format, parse, SemVer, tryParse } from "semver";
+import { compare, format, parse, SemVer, tryParse } from "semver";
 import { IContext } from "../context.ts";
 import { HookWarning } from "../hooks/hooks.interfaces.ts";
 import { semverFormats } from "./variant.ts";
@@ -197,9 +197,13 @@ async function findNearestLocalTag(
   for (const line of refs.split("\n")) {
     const [object, peeled, name] = line.split("\t");
     const commit = peeled || object;
-    if (!commit || !name || tagsByCommit.has(commit)) continue;
+    if (!commit || !name) continue;
     const version = tryParse(name);
-    if (version) tagsByCommit.set(commit, version);
+    if (!version) continue;
+    const existing = tagsByCommit.get(commit);
+    if (!existing || compare(version, existing) > 0) {
+      tagsByCommit.set(commit, version);
+    }
   }
   if (tagsByCommit.size === 0) return undefined;
 
